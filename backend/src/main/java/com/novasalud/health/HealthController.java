@@ -1,5 +1,4 @@
-package com.novasalud.modules.health.controller;
-import com.novasalud.modules.health.service.HealthService;
+package com.novasalud.health;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;
 @RestController

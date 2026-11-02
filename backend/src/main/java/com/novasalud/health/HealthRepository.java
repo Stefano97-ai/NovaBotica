@@ -1,4 +1,4 @@
-package com.novasalud.modules.health.repository;
+package com.novasalud.health;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 @Repository

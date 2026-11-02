@@ -1,5 +1,4 @@
-package com.novasalud.modules.health.service;
-import com.novasalud.modules.health.repository.HealthRepository;
+package com.novasalud.health;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
