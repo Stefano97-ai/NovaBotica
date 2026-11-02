@@ -1,5 +1,5 @@
 package com.novasalud.config;
-import com.novasalud.modules.auth.security.SessionFilter;
+import com.novasalud.auth.SessionFilter;
 import org.springframework.context.annotation.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

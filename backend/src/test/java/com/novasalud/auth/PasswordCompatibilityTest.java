@@ -1,5 +1,4 @@
-package com.novasalud;
-import com.novasalud.modules.auth.service.PasswordService;
+package com.novasalud.auth;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 class PasswordCompatibilityTest {

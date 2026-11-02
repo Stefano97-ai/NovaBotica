@@ -1,4 +1,4 @@
-package com.novasalud.modules.auth.service;
+package com.novasalud.auth;
 import java.nio.file.*;
 import org.springframework.boot.*;
 import org.springframework.beans.factory.annotation.Value;

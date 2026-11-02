@@ -1,4 +1,4 @@
-package com.novasalud.modules.auth.security;
+package com.novasalud.auth;
 import jakarta.servlet.http.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;

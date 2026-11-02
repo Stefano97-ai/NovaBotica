@@ -1,6 +1,4 @@
-package com.novasalud.modules.auth.service;
-import com.novasalud.modules.auth.model.*;
-import com.novasalud.modules.auth.repository.AuthRepository;
+package com.novasalud.auth;
 import java.util.Locale;
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;

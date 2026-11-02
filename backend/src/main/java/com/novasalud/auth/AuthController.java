@@ -1,8 +1,5 @@
-package com.novasalud.modules.auth.controller;
-import com.novasalud.modules.auth.dto.*;
-import com.novasalud.modules.auth.model.SessionUser;
-import com.novasalud.modules.auth.service.AuthService;
-import com.novasalud.modules.auth.security.SessionCookie;
+package com.novasalud.auth;
+import com.novasalud.auth.dto.*;
 import jakarta.servlet.http.*;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

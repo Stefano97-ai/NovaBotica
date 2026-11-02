@@ -1,6 +1,5 @@
-package com.novasalud.modules.auth.security;
+package com.novasalud.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.novasalud.modules.auth.service.AuthService;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import java.io.IOException;

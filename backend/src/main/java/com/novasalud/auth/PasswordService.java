@@ -1,4 +1,4 @@
-package com.novasalud.modules.auth.service;
+package com.novasalud.auth;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.HexFormat;

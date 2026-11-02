@@ -1,2 +1,2 @@
-package com.novasalud.modules.auth.model;
+package com.novasalud.auth;
 public record Account(SessionUser user,String passwordHash,boolean active) {}

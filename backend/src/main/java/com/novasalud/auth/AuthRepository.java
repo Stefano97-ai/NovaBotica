@@ -1,5 +1,4 @@
-package com.novasalud.modules.auth.repository;
-import com.novasalud.modules.auth.model.*;
+package com.novasalud.auth;
 import java.sql.*;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;

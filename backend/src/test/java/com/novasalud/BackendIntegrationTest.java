@@ -1,5 +1,5 @@
 package com.novasalud;
-import com.novasalud.modules.auth.service.PasswordService;
+import com.novasalud.auth.PasswordService;
 import com.novasalud.inicio.InicioRepository;
 import com.novasalud.shared.database.DatabaseMigration;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -102,7 +102,7 @@ class BackendIntegrationTest {
  @Test void adminBootstrapCreatesOnceWithoutChangingPassword()throws Exception{
   var file=java.nio.file.Files.createTempDirectory("nova-admin-test").resolve("credentials.txt");
   var tx=new org.springframework.transaction.support.TransactionTemplate(new org.springframework.jdbc.datasource.DataSourceTransactionManager(source));
-  var bootstrap=new com.novasalud.modules.auth.service.AdminBootstrap(jdbc,tx,passwords,true,file.toString(),"");
+  var bootstrap=new com.novasalud.auth.AdminBootstrap(jdbc,tx,passwords,true,file.toString(),"");
   try{
    bootstrap.run(new org.springframework.boot.DefaultApplicationArguments());
    String first=java.nio.file.Files.readString(file);String hash=jdbc.queryForObject("SELECT password_hash FROM usuario WHERE username='admin'",String.class);
