@@ -55,7 +55,7 @@ La concurrencia requiere implementación y pruebas con PostgreSQL. Un patrón ar
 
 El SRS propone 18 entidades: ROL, USUARIO, CATEGORIA, PRODUCTO, LOTE, MOVIMIENTO, PROVEEDOR, COMPRA, DETALLE_COMPRA, RECEPCION_LOTE, CLIENTE, VENTA, DETALLE_VENTA, DETALLE_VENTA_LOTE, PAGO, TIPO_COMPROBANTE, SERIE_COMPROBANTE y COMPROBANTE.
 
-Antes de implementar los casos de uso: confirmar unidades y conversiones; precios con/sin impuesto; matriz de permisos; ventanas de alertas; anulaciones y excepciones de pago. La migración inicial incluye fecha de ingreso de lote, fecha/motivo/referencia de movimientos e idempotencia de ventas y recepciones. Los supuestos de unidad y caducidad están en base-de-datos.md. La persistencia de sesiones sigue pendiente.
+Antes de implementar los casos de uso: confirmar unidades y conversiones; precios con/sin impuesto; matriz de permisos; ventanas de alertas; anulaciones y excepciones de pago. La migración inicial incluye fecha de ingreso de lote, fecha/motivo/referencia de movimientos e idempotencia de ventas y recepciones. Los supuestos de unidad y caducidad están en base-de-datos.md. Las sesiones y los límites de acceso se persisten mediante la migración 002_auth.sql; consultar login.md.
 
 Se eligió pg (node-postgres) con migraciones SQL versionadas. La migración inicial crea las 18 entidades y DatabaseService coordina conexiones y transacciones. Los supuestos iniciales y reglas pendientes se documentan en base-de-datos.md. Credenciales locales fuera de Git.
 

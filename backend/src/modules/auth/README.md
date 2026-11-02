@@ -1,12 +1,7 @@
 # Auth
 
-Módulo reservado; todavía no implementa operaciones de negocio.
+Autenticación implementada mediante controlador HTTP, servicio, repositorio PostgreSQL y guard global. `password.ts` encapsula scrypt. `auth.types.ts` define sesión y roles.
 
-Al desarrollar esta funcionalidad agregar:
-- `auth.controller.ts`: entrada HTTP y validación de DTOs.
-- `auth.service.ts`: reglas y coordinación de casos de uso.
-- `auth.repository.ts`: acceso a PostgreSQL con contexto transaccional cuando corresponda.
-- `dto/`: contratos y validaciones de entrada.
-- `entities/`: modelos del módulo.
+Los controladores validan las entradas; el servicio coordina sesiones y límites; el repositorio ejecuta SQL y transacciones. Los endpoints de negocio requieren sesión por defecto. Usar `Roles` para sus permisos explícitos y `Public` solamente para recursos públicos deliberados.
 
-Los controladores no acceden directamente a la base de datos. Colaborar entre servicios, nunca entre controladores. Exportar solo los servicios necesarios para otros módulos.
+Consultar `docs/login.md` desde la raíz para configuración, pruebas y alcance.

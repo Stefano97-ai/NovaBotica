@@ -23,7 +23,7 @@ PG_BIN puede apuntar a otra carpeta bin de PostgreSQL. Los scripts de instancia 
 
 ## Modelo
 
-001_initial.sql crea las 18 entidades del SRS, la vista stock_disponible y semillas de tres roles, tres tipos de comprobante y series de demostración. schema_migrations guarda versiones y checksum. No se crea usuario de acceso ni datos comerciales de ejemplo.
+001_initial.sql crea las 18 entidades del SRS, la vista stock_disponible y semillas de tres roles, tres tipos de comprobante y series de demostración. schema_migrations guarda versiones y checksum. La migración no crea usuarios de acceso ni datos comerciales de ejemplo. Ejecutar `npm run auth:admin` después de migrar para crear el administrador local. 002_auth.sql agrega las tablas sesion y acceso_limite y unicidad del username normalizado.
 
 Las migraciones tienen transacciones y bloqueo para impedir ejecuciones simultáneas. No editar una migración aplicada; agregar una nueva. Reejecutar db:migrate no duplica tablas ni semillas.
 

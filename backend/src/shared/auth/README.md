@@ -1,3 +1,3 @@
-# Acceso pendiente
+# Política de acceso
 
-Implementar autenticación y autorización antes de habilitar endpoints de negocio. Roles: administrador, vendedor y almacenero. La matriz CRUD sigue pendiente de aprobación. Denegar por defecto; comprobar permisos en la API y permitir invalidar sesiones al cerrar sesión. No confiar en controles visuales del frontend.
+La implementación reside en `modules/auth`: guard global de autenticación y decorador Roles. No duplicar aquí la lógica de sesión. Los roles disponibles son ADMINISTRADOR, VENDEDOR y ALMACENERO. La matriz detallada de operaciones comerciales sigue pendiente de confirmación; cada endpoint nuevo debe comprobar sus permisos en el servidor.

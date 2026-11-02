@@ -12,7 +12,9 @@
     "db:stop": "node scripts/local-db.mjs stop",
     "db:status": "node scripts/local-db.mjs status",
     "db:migrate": "node scripts/migrate.mjs",
-    "db:test": "npm run build && node --test test/database.integration.test.cjs"
+    "db:test": "npm run build && node --test test/database.integration.test.cjs",
+    "auth:admin": "npm run build && node scripts/create-admin.mjs",
+    "auth:test": "npm run build && node --test test/auth.integration.test.cjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.0.0",
     "@types/pg": "^8.15.0",
     "typescript": "^5.9.0"

@@ -1,1 +1,21 @@
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;color:#17312c;background:#f4f7f6}.layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh}aside{background:#fff;padding:28px 20px;border-right:1px solid #dce5e1}aside strong{font-size:23px}nav{display:grid;gap:5px;margin-top:28px}nav a{padding:10px 12px;border-radius:8px;text-decoration:none;color:#365b51}nav a.active{background:#dcefe8;color:#126044}main{padding:48px;max-width:1100px}h1{font-size:36px;margin-top:10px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:#477366;font-size:12px}.notice{padding:20px;background:white;border:1px solid #dce5e1;border-radius:12px;margin-top:30px}@media(max-width:700px){.layout{grid-template-columns:1fr}aside{border-right:0}nav{grid-template-columns:repeat(2,1fr)}main{padding:24px}}
+*{box-sizing:border-box}body{margin:0;font-family:"DM Sans",system-ui,sans-serif;color:#17312c;background:#f4f7f6}.layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh}aside{background:#fff;padding:28px 20px;border-right:1px solid #dce5e1}aside strong{font-size:23px}nav{display:grid;gap:5px;margin-top:28px}nav a{padding:10px 12px;border-radius:8px;text-decoration:none;color:#365b51}nav a.active{background:#dcefe8;color:#126044}main{padding:48px;max-width:1100px}h1{font-size:36px;margin-top:10px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:#477366;font-size:12px}.notice{padding:20px;background:white;border:1px solid #dce5e1;border-radius:12px;margin-top:30px}@media(max-width:700px){.layout{grid-template-columns:1fr}aside{border-right:0}nav{grid-template-columns:repeat(2,1fr)}main{padding:24px}}
+
+button,input{font:inherit}button:focus-visible,a:focus-visible{outline:2px solid #2c7355;outline-offset:3px}::selection{background:#d2e6d8;color:#17312c}input{caret-color:#20533f}.session-account{margin-top:32px;display:grid;gap:8px;font-size:13px}.session-account strong{overflow-wrap:anywhere}.session-account span{color:#52645b}.session-account button,.session-state button{min-height:44px;background:#fff;border:1px solid #a5b4aa;border-radius:6px;color:#203b31;cursor:pointer}.session-account p{color:#a02929;font-size:13px}.menu-toggle{display:none}.session-state{max-width:480px;margin:15vh auto;padding:24px;display:grid;gap:16px}.session-state h1{font-size:26px}.session-state a{color:#20533f}@media(max-width:700px){.layout aside{padding:20px}.menu-toggle{display:block;float:right;min-height:44px;background:none;border:1px solid #a5b4aa;border-radius:6px;padding:0 12px}.layout nav{display:none}.layout nav.is-open{display:grid}.session-account{margin-top:16px;grid-template-columns:1fr auto;align-items:center}.session-account span{grid-column:1}.session-account button{grid-column:2;grid-row:1/3;padding-inline:12px}.session-account p{grid-column:1/-1}}
+.session-account strong{font-size:14px;line-height:1.5}
+
+/* Shared theme preference applies to login and the authenticated workspace. */
+:root{color-scheme:light;--surface:#fff;--ink:#203b31;--muted:#52645b;--line:#a5b4aa;--accent:#20533f}
+:root[data-theme=dark]{color-scheme:dark;--surface:#182b25;--ink:#e6f2eb;--muted:#b4c8bd;--line:#648174;--accent:#97d5b3}
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 13px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:13px;cursor:pointer;white-space:nowrap}
+.layout aside>.theme-toggle{margin-top:24px}
+[data-theme=dark] body{color:var(--ink);background:#10201a}
+[data-theme=dark] aside,[data-theme=dark] .notice{background:var(--surface);border-color:#365045}
+[data-theme=dark] nav a{color:var(--muted)}
+[data-theme=dark] nav a.active{background:#294b3c;color:#c8f0d9}
+[data-theme=dark] .eyebrow,[data-theme=dark] .session-account span{color:var(--muted)}
+[data-theme=dark] .session-account button,[data-theme=dark] .session-state button,[data-theme=dark] .menu-toggle{background:var(--surface);color:var(--ink);border-color:var(--line)}
+[data-theme=dark] .nova-brand,[data-theme=dark] .session-state a{color:var(--accent)}
+[data-theme=dark] .session-account p{color:#ffb4ad}
+[data-theme=dark] input{caret-color:var(--ink)}
+[data-theme=dark] :focus-visible{outline-color:#97d5b3}
+[data-theme=dark] ::selection{background:#426952;color:#fff}

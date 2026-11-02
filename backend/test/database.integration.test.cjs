@@ -17,7 +17,7 @@ test('NestJS responde salud de base de datos por HTTP', async () => {
     await app.listen(0, '127.0.0.1');
     const response = await fetch(`${await app.getUrl()}/api/health/db`);
     assert.equal(response.status,200);
-    assert.deepEqual(await response.json(),{status:'ok', database:'connected', migration:'001_initial.sql'});
+    assert.deepEqual(await response.json(),{status:'ok', database:'connected', migration:'002_auth.sql'});
   } finally { await app.close(); }
 });
 
