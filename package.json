@@ -3,25 +3,32 @@
   "private": true,
   "version": "0.1.0",
   "workspaces": [
-    "frontend",
-    "backend"
+    "frontend"
   ],
   "engines": {
     "node": ">=22.12.0"
   },
   "scripts": {
     "dev:web": "npm run dev --workspace frontend",
-    "dev:api": "npm run dev --workspace backend",
-    "build": "npm run build --workspaces",
-    "typecheck": "npm run typecheck --workspaces",
-    "db:setup": "npm run db:setup --workspace backend",
-    "db:start": "npm run db:start --workspace backend",
-    "db:stop": "npm run db:stop --workspace backend",
-    "db:status": "npm run db:status --workspace backend",
-    "db:migrate": "npm run db:migrate --workspace backend",
-    "db:test": "npm run db:test --workspace backend",
-    "auth:admin": "npm run auth:admin --workspace backend",
-    "auth:test": "npm run auth:test --workspace backend",
-    "inicio:test": "npm run inicio:test --workspace backend"
+    "dev:api": "mvn -f backend/pom.xml spring-boot:run",
+    "build": "npm run build --workspace frontend && mvn -f backend/pom.xml package -DskipTests",
+    "typecheck": "npm run typecheck --workspace frontend && mvn -f backend/pom.xml compile",
+    "db:setup": "node scripts/database/local-db.mjs setup",
+    "db:start": "node scripts/database/local-db.mjs start",
+    "db:stop": "node scripts/database/local-db.mjs stop",
+    "db:status": "node scripts/database/local-db.mjs status",
+    "db:migrate": "mvn -f backend/pom.xml spring-boot:run -Dspring-boot.run.arguments=--nova.command=migrate",
+    "db:test": "mvn -f backend/pom.xml test",
+    "auth:admin": "mvn -f backend/pom.xml spring-boot:run -Dspring-boot.run.arguments=--nova.command=admin",
+    "auth:test": "mvn -f backend/pom.xml test",
+    "inicio:test": "mvn -f backend/pom.xml test",
+    "docker:setup": "node scripts/docker-setup.mjs",
+    "docker:up": "npm run docker:setup && docker compose --env-file .local/docker.env up -d --build --wait",
+    "docker:down": "docker compose --env-file .local/docker.env down",
+    "docker:logs": "docker compose --env-file .local/docker.env logs --tail=100",
+    "docker:status": "docker compose --env-file .local/docker.env ps"
+  },
+  "devDependencies": {
+    "pg": "^8.16.0"
   }
 }

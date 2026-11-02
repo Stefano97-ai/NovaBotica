@@ -8,6 +8,6 @@ Ventas confirmadas del día en America/Lima: administrador ve todas, vendedor so
 
 La pantalla carga al entrar y permite actualización manual, con timeout de 15 segundos, mensajes de error y conservación explícita del último resultado si falla una actualización. No existe actualización en tiempo real. La fecha del navegador y la fecha de los datos pueden diferir si el reloj del equipo está desajustado; el resumen se calcula en el servidor.
 
-Archivos: frontend/src/features/inicio/pages e implementación NestJS en backend/src/modules/inicio. El usuario autenticado llega al inicio mediante el contexto del Outlet. Accesos respetan la navegación por rol y anuncian que los módulos siguen en preparación.
+Archivos: frontend/src/features/inicio/pages e implementación Spring MVC en backend/src/main/java/com/novasalud/modules/inicio. El usuario autenticado llega al inicio mediante el contexto del Outlet. Accesos respetan la navegación por rol y anuncian que los módulos siguen en preparación.
 
-Validación: npm run inicio:test verifica stock, vencimientos y privacidad con fixtures revertidos en PostgreSQL. Revisión visual de escritorio/móvil y ambos temas. Sin datos comerciales ficticios persistidos.
+Validación: npm run inicio:test verifica stock, vencimientos y privacidad con PostgreSQL temporal de Testcontainers. Revisión visual de escritorio/móvil y ambos temas. Sin datos comerciales ficticios persistidos.

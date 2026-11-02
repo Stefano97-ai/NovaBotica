@@ -13,12 +13,12 @@ El acceso utiliza cuentas PostgreSQL y sesiones opacas de 8 horas. La cookie es 
 - POST /api/auth/login: usuario y contraseña; devuelve datos del usuario y establece la cookie.
 - GET /api/auth/me: consulta la sesión y el estado activo de la cuenta.
 - POST /api/auth/logout: revoca la sesión y borra la cookie.
-- El guard global protege los endpoints salvo los marcados Public (health y entrada/salida de sesión). El decorador Roles permite restringir operaciones del servidor.
+- El filtro global de Spring Security protege los endpoints salvo los declarados públicos (health y entrada/salida de sesión). El @PreAuthorize permite restringir operaciones del servidor.
 - La navegación distingue administrador, vendedor y almacenero. Los módulos comerciales continúan como pantallas iniciales; sus futuras operaciones deben declarar permisos en el servidor.
 - Límite compartido en PostgreSQL: 10 intentos por usuario y 30 por IP en 15 minutos, incluyendo accesos correctos.
 - Las operaciones POST requieren X-Nova-Client: web y, si existe Origin, debe estar permitido por APP_ORIGINS. No se habilita CORS abierto.
 
-En producción usar HTTPS, NODE_ENV=production y APP_ORIGINS con los orígenes exactos separados por comas; servir frontend y /api bajo el mismo origen. Configurar la IP del cliente de forma segura si se introduce un proxy. No hay registro público ni recuperación automática de contraseña.
+En producción usar HTTPS, COOKIE_SECURE=true y APP_ORIGINS con los orígenes exactos separados por comas; servir frontend y /api bajo el mismo origen. Configurar la IP del cliente de forma segura si se introduce un proxy. No hay registro público ni recuperación automática de contraseña.
 
 ## Verificación
 
@@ -39,3 +39,5 @@ El botón Modo claro / Modo oscuro está disponible en el acceso y en el menú d
 Fondo local: `frontend/public/images/pharmacy-background.png`. Creado con la herramienta integrada de generación de imágenes. Dirección del prompt: ilustración editorial panorámica 16:9 de una botica contemporánea, estantes verde salvia con cajas de medicamentos sin marca y frascos ámbar, mostrador, luz natural, tonos marfil y verde, composición central tranquila para el formulario; sin personas, texto, logotipos ni marcas de agua. El oscurecimiento es una capa CSS independiente, por lo que no se necesita descargar una segunda imagen.
 
 Comprobados en navegador: cambio de tema, persistencia al recargar, escritorio 1366px y ausencia de desbordamiento a 390px y 320px. Compilación satisfactoria.
+
+Implementación Java: backend/src/main/java/com/novasalud/modules/auth. Las rutas y los formatos scrypt/sesión se conservan. La suite es JUnit/MockMvc con Testcontainers. Ver backend/README.md.

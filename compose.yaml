@@ -1,0 +1,66 @@
+name: nova-salud
+services:
+  db:
+    image: postgres:18-bookworm
+    environment:
+      POSTGRES_DB: nova_salud
+      POSTGRES_USER: nova_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run npm run docker:setup first}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Run npm run docker:setup first}
+      TZ: America/Lima
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./docker/init-db.sh:/docker-entrypoint-initdb.d/01-app.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U nova_admin -d nova_salud']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  migrate:
+    build:
+      context: .
+      target: api
+    environment:
+      DATABASE_URL: postgresql://nova_salud_app:${APP_DB_PASSWORD}@db:5432/nova_salud
+    command: ["--nova.command=migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+  api:
+    build:
+      context: .
+      target: api
+    environment:
+      DATABASE_URL: postgresql://nova_salud_app:${APP_DB_PASSWORD}@db:5432/nova_salud
+      HOST: 0.0.0.0
+      PORT: 3000
+      COOKIE_SECURE: 'false'
+      NOVA_CREATE_ADMIN: 'true'
+      NOVA_CREDENTIALS_FILE: /app/.local/login-admin.txt
+      APP_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+
+    volumes:
+      - ./.local/docker:/app/.local
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, http://127.0.0.1:3000/api/health/db]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    restart: unless-stopped
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - 127.0.0.1:8080:80
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  postgres_data:

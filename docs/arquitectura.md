@@ -2,7 +2,7 @@
 
 ## Decisión
 
-Monolito modular organizado por funcionalidades. React actúa como vista y consume una API HTTP de NestJS. En el backend se aplica controlador → servicio → repositorio. Es una adaptación de MVC para una SPA separada, no renderizado MVC de plantillas en el servidor.
+Monolito modular organizado por funcionalidades. React actúa como vista y consume una API HTTP de Spring MVC (Java 21 / Spring Boot). En el backend se aplica controlador → servicio → repositorio. Es una adaptación de MVC para una SPA separada, no renderizado MVC de plantillas en el servidor.
 
 La base inicial no incorpora arquitectura hexagonal completa ni microservicios. Se reservan interfaces para integraciones que realmente requieran sustitución, en especial emisión de comprobantes.
 
@@ -14,7 +14,7 @@ La base inicial no incorpora arquitectura hexagonal completa ni microservicios. 
 - Repositorios: consultas y escrituras. Reciben el contexto transaccional; no abren ni confirman transacciones independientes dentro de una venta.
 - PostgreSQL: fuente de verdad, claves foráneas, restricciones, bloqueos y persistencia.
 
-Los archivos controller/service/repository se agregarán con el primer caso de uso de cada módulo. No se han creado métodos vacíos que aparenten operaciones implementadas. Cada módulo contiene su guía de desarrollo.
+Los archivos controller/service/repository se agregarán con el primer caso de uso de cada módulo. No se han creado métodos vacíos que aparenten operaciones implementadas. Cada módulo contiene su guía de desarrollo. La estructura concreta está en backend/README.md; React constituye la Vista y el servidor conserva controller → service → repository/model.
 
 ## Módulos y trazabilidad
 
@@ -57,7 +57,7 @@ El SRS propone 18 entidades: ROL, USUARIO, CATEGORIA, PRODUCTO, LOTE, MOVIMIENTO
 
 Antes de implementar los casos de uso: confirmar unidades y conversiones; precios con/sin impuesto; matriz de permisos; ventanas de alertas; anulaciones y excepciones de pago. La migración inicial incluye fecha de ingreso de lote, fecha/motivo/referencia de movimientos e idempotencia de ventas y recepciones. Los supuestos de unidad y caducidad están en base-de-datos.md. Las sesiones y los límites de acceso se persisten mediante la migración 002_auth.sql; consultar login.md.
 
-Se eligió pg (node-postgres) con migraciones SQL versionadas. La migración inicial crea las 18 entidades y DatabaseService coordina conexiones y transacciones. Los supuestos iniciales y reglas pendientes se documentan en base-de-datos.md. Credenciales locales fuera de Git.
+Se usa Spring JDBC con migraciones SQL versionadas compatibles con schema_migrations. La migración inicial crea las 18 entidades. HikariCP administra conexiones y @Transactional coordina transacciones. Los supuestos iniciales y reglas pendientes se documentan en base-de-datos.md. Credenciales locales fuera de Git.
 
 ## Pruebas previstas
 
@@ -80,3 +80,7 @@ Las pruebas de negocio se implementarán junto a sus casos de uso. Ya existen pr
 4. Venta transaccional, FEFO e idempotencia.
 5. Comprobantes simulados y reintentos.
 6. Alertas, reportes, interfaz completa y aceptación integral.
+
+## Migración Java
+
+La implementación vigente se describe en backend/README.md. El backend TypeScript fue retirado; se conservaron contratos HTTP, SQL, hashes scrypt y sesiones. Las pruebas actuales son JUnit/MockMvc con PostgreSQL de Testcontainers. La descripción anterior de pruebas de restricciones corresponde a la etapa inicial; los casos comerciales se ampliarán al implementarse.

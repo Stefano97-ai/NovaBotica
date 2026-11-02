@@ -43,12 +43,13 @@ La base prepara soporte para FEFO, pero no implementa todavía el servicio de ve
 
 ## Verificación
 
-db:test usa PostgreSQL real: commit, rollback, stock negativo, stock vendible, idempotencia de venta, correspondencia de producto/lote, correlativos únicos y endpoint HTTP NestJS. Los fixtures se revierten; la prueba de commit elimina solo la categoría aleatoria que ella creó. Las secuencias pueden avanzar durante las pruebas.
+db:test ejecuta JUnit/MockMvc y Testcontainers con PostgreSQL temporal: autenticación, roles, transacciones commit/rollback, stock vendible, límites de vencimiento, aislamiento de ventas por rol y migraciones/checksums. El contenedor temporal se elimina al finalizar; no usa las cuentas locales. Las pruebas comerciales de idempotencia y correlativos deberán ampliarse con sus casos de uso.
 
 ## Respaldo
 
 Usar pg_dump en formato custom y pg_restore sobre una base separada, sin credenciales en el historial de comandos. Guardar respaldos fuera de Git. El ensayo de restauración de RNF-10 sigue pendiente; esta fase valida esquema y conexión.
 
-## Pendiente de dependencias
 
-La auditoría de npm del 01/11/2026 reportó 7 alertas: 2 altas en multer y su dependencia padre @nestjs/platform-express, 4 moderadas y 1 baja en la cadena de herramientas de Nest CLI. npm audit fix no las resolvió. Revisar actualizaciones compatibles o migración de versión mayor antes de desplegar; no se aplicó audit fix --force. No hay endpoints de carga de archivos implementados.
+## Migrador Java
+
+El migrador de Spring JDBC conserva schema_migrations y los checksums SHA-256 del ejecutor anterior. Se ejecuta al arrancar o mediante npm run db:migrate. No hay cambios a los SQL existentes. Las pruebas Java son aisladas del servidor local; los scripts Windows de administración de instancia están ahora en scripts/database.
