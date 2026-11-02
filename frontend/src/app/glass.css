@@ -1,0 +1,70 @@
+/* Glass surfaces share one treatment across login, home and working modules. */
+:root {
+  --glass-panel: rgba(255,255,255,.76);
+  --glass-rail: rgba(246,253,249,.68);
+  --glass-border: rgba(255,255,255,.86);
+  --glass-shadow: 0 18px 48px -28px rgba(24,69,46,.32);
+  --glass-field: rgba(255,255,255,.86);
+}
+:root[data-theme=dark] {
+  --glass-panel: rgba(24,43,37,.83);
+  --glass-rail: rgba(13,27,21,.78);
+  --glass-border: rgba(145,195,166,.23);
+  --glass-shadow: 0 18px 48px -28px rgba(0,0,0,.75);
+  --glass-field: rgba(9,23,17,.8);
+}
+.layout {
+  background: radial-gradient(ellipse at 82% 8%,rgba(137,199,164,.3),transparent 48%),radial-gradient(ellipse at 15% 85%,rgba(167,211,185,.3),transparent 48%),#edf5ef;
+  background-attachment: fixed;
+}
+[data-theme=dark] .layout {
+  background: radial-gradient(ellipse at 84% 0%,rgba(43,102,72,.3),transparent 50%),radial-gradient(ellipse at 4% 90%,rgba(25,64,45,.28),transparent 48%),#080e0b;
+  background-attachment: fixed;
+}
+/* Keep the sidebar's existing backdrop; tint only the module canvas. */
+.layout > #workspace-main {
+  max-width: none;
+}
+[data-theme=dark] .layout > #workspace-main {
+  background: linear-gradient(105.3deg, rgb(31, 31, 31) 21.8%, rgb(49, 49, 49) 100.2%);
+}
+.layout > aside,
+.login-main,
+.home-panel,
+.module-editor,
+.module-table-wrap,
+.module-report article {
+  background: var(--glass-panel);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
+  backdrop-filter: blur(20px) saturate(125%);
+}
+.layout > aside { background:var(--glass-rail);border-width:0 1px 0 0;box-shadow:none; }
+.login-main,[data-theme=dark] .login-main {background:var(--glass-panel);border-color:var(--glass-border);border-radius:20px;}
+.login-context {background:rgba(216,237,223,.48);}
+[data-theme=dark] .login-context {background:rgba(18,42,29,.48);}
+.login-form-region {background:transparent;}
+.login-page::before {background:rgba(237,247,240,.62);}
+[data-theme=dark] .login-page::before {background:rgba(3,12,7,.77);}
+.login-field input,[data-theme=dark] .login-field input,
+.module-page input,.module-page select {background:var(--glass-field);}
+.theme-toggle,.home-refresh,.layout .session-account button {background:var(--glass-panel);}
+.module-page select option {background:var(--surface);color:var(--ink);}
+.home-access>a:hover,.module-page tbody tr:hover {background:var(--hover);}
+.module-page table {background:transparent;}
+[data-slot=button] {box-sizing:border-box;}
+[data-slot=input] {box-sizing:border-box;}
+@supports not (backdrop-filter:blur(1px)) {
+  .layout > aside,.login-main,.home-panel,.module-editor,.module-table-wrap,.module-report article {background:var(--surface);}
+}
+@media (prefers-reduced-transparency:reduce) {
+  .layout > aside,.login-main,.home-panel,.module-editor,.module-table-wrap,.module-report article {background:var(--surface);backdrop-filter:none;}
+  .login-context {background:var(--login-panel);}
+}
+@media(max-width:700px) {
+  .layout > aside {border-width:0 0 1px;}
+  .login-main {border-radius:14px;}
+  .layout {background-attachment:scroll;}
+}
+.home-panel[data-slot=card] {display:block;}

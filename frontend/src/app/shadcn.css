@@ -1,0 +1,14 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@theme inline {
+ --color-background: var(--surface); --color-foreground: var(--ink);
+ --color-primary: var(--ink); --color-primary-foreground: var(--surface);
+ --color-secondary: var(--selected); --color-secondary-foreground: var(--ink);
+ --color-muted: var(--hover); --color-muted-foreground: var(--muted);
+ --color-accent: var(--hover); --color-accent-foreground: var(--ink);
+ --color-card: var(--surface); --color-card-foreground: var(--ink);
+ --color-border: var(--line); --color-input: var(--line); --color-ring: var(--accent);
+ --color-destructive: #b43e3e; --radius-md: 0.5rem; --radius-lg: 0.75rem;
+}

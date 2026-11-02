@@ -1,0 +1,70 @@
+/* White and soft sage by day; black and deep forest green by night.
+   Scoped to the authenticated workspace so the login keeps its own palette. */
+html { scrollbar-gutter: stable; }
+.theme-toggle { min-width: 142px; }
+.layout {
+  --ground: #edf5ef;
+  --sidebar: #f7fbf8;
+  --surface: #ffffff;
+  --ink: #202328;
+  --muted: #53645b;
+  --line: #a9bdb0;
+  --divider: #d2e2d7;
+  --hover: #e8f2eb;
+  --selected: #d7eadd;
+  --accent: #266044;
+  --brand: #27634c;
+  --focus: #266044;
+  background: var(--ground);
+  color: var(--ink);
+}
+
+[data-theme=dark] .layout {
+  --ground: #0c100e;
+  --sidebar: #111b16;
+  --surface: #182b25;
+  --ink: #f0f1f3;
+  --muted: #b4c8bd;
+  --line: #648174;
+  --divider: #365045;
+  --hover: #20382e;
+  --selected: #294b3c;
+  --accent: #97d5b3;
+  --brand: #92c6aa;
+  --focus: #97d5b3;
+}
+
+.layout > aside {
+  background: var(--sidebar);
+  border-color: var(--divider);
+}
+.layout .nova-brand { color: var(--ink); }
+.layout .nova-brand svg { color: var(--brand); }
+.layout nav a { color: var(--muted); }
+.layout nav a.active {
+  background: var(--selected);
+  color: var(--ink);
+  font-weight: 600;
+}
+.layout .session-account span { color: var(--muted); }
+.layout .session-account button,
+.layout .menu-toggle {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.layout .notice { background: var(--surface); border-color: var(--divider); }
+.layout .eyebrow { color: var(--muted); }
+.layout :focus-visible { outline-color: var(--focus); }
+.layout ::selection { background: var(--selected); color: var(--ink); }
+.layout button { transition: transform 160ms ease-out; }
+.layout button:active:not(:disabled) { transform: scale(.98); }
+@media (hover: hover) and (pointer: fine) {
+  .layout nav a:hover,
+  .layout .theme-toggle:hover,
+  .layout .session-account button:hover:not(:disabled) { background: var(--hover); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .layout button { transition: none; }
+  .layout button:active:not(:disabled) { transform: none; }
+}

@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS", "moduleResolution": "Node", "noEmit": false,
+    "outDir": "../.test-build", "rootDir": "../src", "types": []
+  },
+  "include": [
+    "../src/shared/domain/**/*.ts", "../src/shared/application/**/*.ts", "../src/shared/infrastructure/**/*.ts",
+    "../src/features/*/domain/**/*.ts", "../src/features/*/application/**/*.ts", "../src/features/*/infrastructure/**/*.ts",
+    "../src/app/routing/session-loaders.ts"
+  ]
+}
