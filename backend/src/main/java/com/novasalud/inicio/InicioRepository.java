@@ -1,5 +1,5 @@
-package com.novasalud.modules.inicio.repository;
-import com.novasalud.modules.inicio.dto.InicioResponse;
+package com.novasalud.inicio;
+import com.novasalud.inicio.dto.InicioResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

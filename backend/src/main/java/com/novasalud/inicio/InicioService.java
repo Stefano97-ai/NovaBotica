@@ -1,6 +1,5 @@
-package com.novasalud.modules.inicio.service;
-import com.novasalud.modules.inicio.dto.InicioResponse;
-import com.novasalud.modules.inicio.repository.InicioRepository;
+package com.novasalud.inicio;
+import com.novasalud.inicio.dto.InicioResponse;
 import com.novasalud.modules.auth.model.SessionUser;
 import org.springframework.stereotype.Service;
 @Service
