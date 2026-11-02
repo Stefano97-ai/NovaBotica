@@ -1,3 +1,4 @@
+import { InicioModule } from './modules/inicio/inicio.module';
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './shared/database/database.module';
 import { HealthController } from './modules/health/health.controller';
@@ -12,5 +13,5 @@ import { ClientesModule } from './modules/clientes/clientes.module';
 import { ComprobantesModule } from './modules/comprobantes/comprobantes.module';
 import { ReportesModule } from './modules/reportes/reportes.module';
 
-@Module({ imports: [DatabaseModule, AuthModule, UsuariosModule, CatalogoModule, InventarioModule, ComprasModule, ProveedoresModule, VentasModule, ClientesModule, ComprobantesModule, ReportesModule], controllers: [HealthController] })
+@Module({ imports: [InicioModule, DatabaseModule, AuthModule, UsuariosModule, CatalogoModule, InventarioModule, ComprasModule, ProveedoresModule, VentasModule, ClientesModule, ComprobantesModule, ReportesModule], controllers: [HealthController] })
 export class AppModule {}

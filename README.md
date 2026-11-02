@@ -86,3 +86,5 @@ docs/                         Decisiones y guía de continuidad
 ## Despliegue
 
 Aún no hay un despliegue de producción validado. Servir la SPA y `/api` bajo el mismo origen, configurar resolución de rutas a `index.html`, HTTPS, `NODE_ENV=production` y `APP_ORIGINS` con orígenes exactos. Separar permisos de migración y ejecución, preparar respaldos y revisar dependencias antes del despliegue. No usar el servidor de Vite como servidor productivo.
+
+Panel de inicio implementado: resumen real de inventario y ventas por rol. Consultar [pantalla de inicio](docs/inicio.md). Prueba adicional: `npm run inicio:test`.

@@ -50,3 +50,7 @@ No se verificaron flujos de ventas, FEFO, compras o PDF porque todavía no exist
 ## Entrega y datos
 
 El repositorio incluye código, migraciones, lockfile e imagen local. Excluye credenciales, cuentas/datos de la instancia local, registros, capturas y compilados. No trasladar `.local/postgres-data` entre equipos; generar una instancia o usar un respaldo aprobado con pg_dump/pg_restore. No modificar el checksum de migraciones aplicadas.
+
+## Avance posterior: inicio
+
+La pantalla de inicio ya muestra datos reales y alertas calculadas mediante GET /api/inicio. Ver [inicio.md](inicio.md). Los módulos de operación comercial continúan pendientes; no se registran ventas ni movimientos desde el panel.

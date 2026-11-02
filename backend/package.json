@@ -14,7 +14,8 @@
     "db:migrate": "node scripts/migrate.mjs",
     "db:test": "npm run build && node --test test/database.integration.test.cjs",
     "auth:admin": "npm run build && node scripts/create-admin.mjs",
-    "auth:test": "npm run build && node --test test/auth.integration.test.cjs"
+    "auth:test": "npm run build && node --test test/auth.integration.test.cjs",
+    "inicio:test": "npm run build && node --test test/inicio.integration.test.cjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

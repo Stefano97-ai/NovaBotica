@@ -21,6 +21,7 @@
     "db:migrate": "npm run db:migrate --workspace backend",
     "db:test": "npm run db:test --workspace backend",
     "auth:admin": "npm run auth:admin --workspace backend",
-    "auth:test": "npm run auth:test --workspace backend"
+    "auth:test": "npm run auth:test --workspace backend",
+    "inicio:test": "npm run inicio:test --workspace backend"
   }
 }
