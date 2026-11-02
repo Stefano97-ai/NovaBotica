@@ -1,0 +1,24 @@
+{
+  "name": "nova-salud",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev:web": "npm run dev --workspace frontend",
+    "dev:api": "npm run dev --workspace backend",
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "db:setup": "npm run db:setup --workspace backend",
+    "db:start": "npm run db:start --workspace backend",
+    "db:stop": "npm run db:stop --workspace backend",
+    "db:status": "npm run db:status --workspace backend",
+    "db:migrate": "npm run db:migrate --workspace backend",
+    "db:test": "npm run db:test --workspace backend"
+  }
+}
