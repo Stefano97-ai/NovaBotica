@@ -1,4 +1,4 @@
-package com.novasalud;
+package com.novasalud.integration;
 import com.novasalud.auth.PasswordService;
 import com.novasalud.inicio.InicioRepository;
 import com.novasalud.shared.database.DatabaseMigration;
