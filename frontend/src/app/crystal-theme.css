@@ -1,0 +1,130 @@
+/* Shared crystal palette: theme changes colors, never geometry. */
+:root,[data-theme='dark'] {
+ --bg-main:#171717;--bg-sidebar:rgba(24,24,24,.76);--bg-topbar:rgba(24,24,24,.83);
+ --bg-panel:rgba(34,34,34,.68);--border-color:rgba(210,210,210,.23);
+ --text-main:#f3f3f3;--text-muted:#bdbdbd;--primary-accent:#10b981;
+ --crystal-card:rgba(42,42,42,.66);--crystal-ink:#f3f3f3;--crystal-field:rgba(20,20,20,.7);
+ --crystal-shadow:0 16px 40px -24px rgba(0,0,0,.65);--crystal-selected:rgba(255,255,255,.12);
+}
+[data-theme='light'] {
+ --bg-main:#eeeeee;--bg-sidebar:rgba(250,250,250,.73);--bg-topbar:rgba(255,255,255,.8);
+ --bg-panel:rgba(255,255,255,.65);--border-color:rgba(120,120,120,.26);
+ --text-main:#262626;--text-muted:#5d5d5d;--primary-accent:#047857;
+ --crystal-card:rgba(255,255,255,.72);--crystal-ink:#262626;--crystal-field:rgba(255,255,255,.8);
+ --crystal-shadow:0 16px 40px -24px rgba(35,35,35,.28);--crystal-selected:rgba(80,80,80,.12);
+}
+html{scrollbar-gutter:stable}
+.layout {
+ background:radial-gradient(ellipse at 85% 8%,rgba(110,110,110,.32),transparent 55%),linear-gradient(110deg,#111111,#292929);
+ color:var(--text-main);
+}
+[data-theme='light'] .layout{background:radial-gradient(ellipse at 85% 8%,rgba(200,200,200,.32),transparent 55%),linear-gradient(110deg,#f4f4f4,#e4e4e4)}
+.layout .erp-topbar,.layout .erp-sidebar{background:var(--bg-sidebar);border:1px solid var(--border-color);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.layout #workspace-main{background:transparent;padding:24px;min-width:0}
+.layout .dash{gap:20px}
+.layout .dash-bar,.layout .dash-panel,.layout .dash-box,.layout .notice {
+ background:var(--bg-panel);border:1px solid var(--border-color);border-radius:18px;
+ backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:var(--crystal-shadow);
+}
+.layout .dash-bar{padding:16px 22px}
+.layout .dash-panel{padding:22px}
+.layout .dash-box{background:var(--crystal-card)}
+.layout .kpi-card{background:var(--crystal-card);border:1px solid var(--border-color);border-radius:16px;box-shadow:none;padding:20px;min-height:106px}
+.layout .dash-btn::before,.layout .dash-btn::after{display:none}
+.layout .kpi-card::before{display:block;background:var(--stripe)}
+.layout .kpi-title{color:var(--text-muted);font-size:11px;letter-spacing:.02em}
+.layout .kpi-value{color:var(--text-main);font-size:22px}
+.layout .kpi-subtext{color:var(--text-muted);font-size:11px}
+.layout .kpi-icon-box{width:44px;height:44px;border-radius:12px}
+.layout .card-slate{--stripe:#3d4756}
+.layout .card-amber{--stripe:#e8a317}
+.layout .card-dark{--stripe:#2f3846}
+.layout .dash-title,.layout .dash-box-title,.layout .topbar-brand,.layout .topbar-user-name,.layout .profile-title,.layout .nav-link,.layout .nav-link svg,.layout .top-item-row,.layout .expiring-title{color:var(--text-main)}
+.layout .dash-title{font-size:16px;text-transform:none}
+.layout .dash-btn{color:var(--text-main);border:1px solid var(--border-color);border-radius:9px;padding:10px 12px;text-transform:none;font-size:11px}
+.layout .dash-actions{gap:10px;flex-wrap:wrap}
+.layout .dash-panel-top,.layout .dash-box-title{border-color:var(--border-color)}
+.layout .dash-box-title{font-size:12px;text-transform:none}
+.layout .top-empty,.layout .expiring-meta,.layout .dash-box-title svg{color:var(--text-muted)}
+.layout .chart-text{fill:var(--text-muted)}
+.layout .chart-grid-line{stroke:var(--border-color)}
+.layout .nav-link.active{background:var(--crystal-selected)!important;color:var(--text-main)!important;box-shadow:none!important}
+.layout .nav-link:hover{background:var(--crystal-selected);color:var(--text-main)}
+.layout .profile-role-bar,.layout .tc-badge,.layout .calc-btn{background:var(--crystal-selected);color:var(--text-main);border-color:var(--border-color)}
+.layout .avatar-large,.layout .topbar-avatar-small{background:var(--crystal-selected);border-color:var(--border-color)}
+.layout .avatar-icon{fill:var(--text-muted);color:var(--text-muted)}
+.layout .period-btn,.layout .top-item-bar span{background:var(--primary-accent);color:#fff}
+.layout .eye-btn{background:var(--crystal-selected);color:var(--text-main);border:1px solid var(--border-color);height:30px;border-radius:8px}
+.layout .theme-orb{background:var(--crystal-selected);color:var(--text-main);box-shadow:none}
+.layout .theme-orb.is-active{background:var(--primary-accent);color:#fff;box-shadow:none}
+.layout .expiring-item{background:var(--crystal-card);border-color:var(--border-color)}
+.layout :focus-visible{outline:2px solid var(--primary-accent);outline-offset:3px}
+.layout .notice{padding:24px;margin-top:24px;line-height:1.7;color:var(--text-muted)}
+.layout .eyebrow{display:none}
+@supports not (backdrop-filter:blur(1px)){.layout .erp-topbar,.layout .erp-sidebar,.layout .dash-bar,.layout .dash-panel,.layout .dash-box{background:var(--bg-main)}}
+@media(prefers-reduced-motion:reduce){.layout * *{transition:none!important}}
+@media(max-width:700px){.layout #workspace-main{padding:16px}.layout .dash-panel{padding:16px}.layout .dash-bar{padding:14px}.layout .dash-actions{gap:8px}.layout .dash-btn{font-size:10px}}
+@media(max-width:900px){
+ .layout .erp-sidebar{display:none}
+ .layout.sidebar-mini .erp-sidebar{display:flex;width:220px}
+ .layout.sidebar-mini .profile-title,.layout.sidebar-mini .profile-role-bar span,.layout.sidebar-mini .nav-link span{display:block}
+ .layout.sidebar-mini .sidebar-profile{padding:16px}
+ .layout.sidebar-mini .avatar-large{width:64px;height:64px}
+ .layout.sidebar-mini .nav-link{justify-content:flex-start;padding:12px 16px}
+ .layout .theme-orb{display:flex;min-width:32px;min-height:32px}
+ .layout .topbar-brand,.layout.sidebar-mini .topbar-brand{width:110px;font-size:13px;padding-left:12px}
+ .layout .topbar-left{gap:8px;min-width:0}
+ .layout .topbar-right{gap:8px}
+ .layout .brand-badge,.layout .tc-badge,.layout .calc-btn,.layout .topbar-user-name{display:none}
+ .layout .erp-topbar{padding-right:10px}
+}
+.layout .nav-link.active svg{color:var(--primary-accent)}
+/* Home uses the two original login glass recipes, without its photograph. */
+.layout .dash {
+ --home-glass:rgba(22,22,22,.58);
+ --home-glass-deep:rgba(7,7,7,.76);
+ --home-glass-deep-edge:rgba(200,200,200,.21);
+ --home-glass-edge:rgba(255,255,255,.25);
+ --home-glass-blur:20px;
+ --home-glass-shadow:0 24px 60px rgba(0,0,0,.38),inset 0 1px 1px rgba(255,255,255,.35);
+ --home-glass-radius:26px;
+}
+[data-theme='light'] .layout .dash {
+ --home-glass:rgba(255,255,255,.26);
+ --home-glass-deep:rgba(120,120,120,.19);
+ --home-glass-deep-edge:rgba(255,255,255,.48);
+ --home-glass-edge:rgba(255,255,255,.55);
+ --home-glass-blur:14px;
+ --home-glass-shadow:0 12px 36px rgba(0,0,0,.14),inset 0 1px 1px rgba(255,255,255,.6);
+ --home-glass-radius:18px;
+}
+.layout .dash :is(.dash-bar,.dash-panel,.dash-box,.kpi-card) {
+ background:var(--home-glass);
+ border:1px solid var(--home-glass-edge);
+ border-radius:var(--home-glass-radius);
+ backdrop-filter:blur(var(--home-glass-blur));
+ -webkit-backdrop-filter:blur(var(--home-glass-blur));
+ box-shadow:var(--home-glass-shadow);
+}
+/* Alternate surface tones by nesting depth, never by card position. */
+.layout .dash :is(.dash-panel,.dash-box,.kpi-card) :is(.dash-panel,.dash-box,.kpi-card) {
+ background:var(--home-glass-deep);
+ border-color:var(--home-glass-deep-edge);
+}
+.layout .dash :is(.dash-panel,.dash-box,.kpi-card) :is(.dash-panel,.dash-box,.kpi-card) :is(.dash-panel,.dash-box,.kpi-card) {
+ background:var(--home-glass);
+ border-color:var(--home-glass-edge);
+}
+@supports not (backdrop-filter:blur(1px)) {
+ .layout .dash :is(.dash-bar,.dash-panel,.dash-box,.kpi-card){background:var(--bg-main)}
+}
+@media(prefers-reduced-transparency:reduce) {
+ .layout .dash :is(.dash-bar,.dash-panel,.dash-box,.kpi-card){background:var(--bg-main);backdrop-filter:none}
+}
+/* One continuous background prevents a separate tinted canvas behind the panels. */
+.layout:has(.dash){position:relative;isolation:isolate;background:transparent}
+.layout:has(.dash)::before,
+.layout:has(.dash)::after{content:'';position:fixed;pointer-events:none;z-index:-1}
+.layout:has(.dash)::before{inset:-48px;background:url('/images/pharmacy-background.png') center / cover no-repeat;filter:blur(28px) saturate(0)}
+.layout:has(.dash)::after{inset:0;background:rgba(8,8,8,.72)}
+[data-theme='light'] .layout:has(.dash)::after{background:rgba(247,247,247,.76)}

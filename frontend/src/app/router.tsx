@@ -1,3 +1,4 @@
+import { useScrolled } from '../shared/hooks/useScrolled';
 import { useEffect, useState } from 'react';
 import { createBrowserRouter, NavLink, Outlet, redirect, useLoaderData, useNavigate, useRevalidator, useRouteError } from 'react-router-dom';
 import type { LoaderFunctionArgs } from 'react-router-dom';
@@ -8,6 +9,8 @@ import {
   Sun,
   Moon,
   Calculator,
+  ChevronLeft,
+  ChevronRight,
   UserRound,
   User as UserIcon
 } from 'lucide-react';
@@ -87,11 +90,25 @@ function RouteError() {
 }
 
 function Layout() {
+  const scrolled = useScrolled();
   const user = useLoaderData() as User;
   const navigate = useNavigate();
   const revalidator = useRevalidator();
   const [busy, setBusy] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [narrow, setNarrow] = useState(() => window.matchMedia('(max-width: 900px)').matches);
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 900px)');
+    const update = () => { setNarrow(media.matches); };
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+  useEffect(() => {
+    if (!narrow || !collapsed) return;
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') { setCollapsed(false); document.querySelector<HTMLButtonElement>('.topbar-burger')?.focus(); } };
+    window.addEventListener('keydown', close);
+    return () => window.removeEventListener('keydown', close);
+  }, [narrow, collapsed]);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     try {
       const saved = localStorage.getItem('nova-theme');
@@ -157,11 +174,11 @@ function Layout() {
   return (
     <div className={`layout ${collapsed ? 'sidebar-mini' : ''}`}>
       {/* TOPBAR */}
-      <header className="erp-topbar">
+      <header className={`erp-topbar ${scrolled ? 'is-scrolled' : ''}`}>
         <div className="topbar-brand">{collapsed ? 'NS' : 'NOVA SALUD'}</div>
 
         <div className="topbar-left">
-          <button className="topbar-burger" title="Mostrar / ocultar menú" onClick={() => setCollapsed((v) => !v)}>
+          <button className="topbar-burger" aria-label="Mostrar u ocultar menú" aria-controls="workspace-sidebar" aria-expanded={narrow ? collapsed : !collapsed} title="Mostrar / ocultar menú" onClick={() => setCollapsed((v) => !v)}>
             <Menu size={20} />
           </button>
           <span className="brand-badge">PRUEBAS</span>
@@ -188,7 +205,7 @@ function Layout() {
         </div>
 
         <div className="topbar-right">
-          <button className="icon-btn" title="Alertas de inventario" onClick={() => navigate('/inventario')}>
+          <button className="icon-btn" aria-label="Alertas de inventario" title="Alertas de inventario" onClick={() => navigate('/inventario')}>
             <Bell size={17} />
             <span className="notification-badge">0</span>
           </button>
@@ -196,7 +213,7 @@ function Layout() {
             <span className="topbar-avatar-small"><UserRound size={14} /></span>
             <span className="topbar-user-name">{user.nombre}</span>
           </div>
-          <button className="icon-btn logout-icon" title="Cerrar sesión" onClick={logout} disabled={busy}>
+          <button className="icon-btn logout-icon" aria-label="Cerrar sesión" title="Cerrar sesión" onClick={logout} disabled={busy}>
             <LogOut size={17} />
           </button>
         </div>
@@ -204,7 +221,8 @@ function Layout() {
 
       {/* SIDEBAR + MAIN */}
       <div className="erp-container">
-        <aside className={`erp-sidebar ${collapsed ? 'is-collapsed' : ''}`}>
+        <aside id="workspace-sidebar" className={`erp-sidebar ${collapsed ? 'is-collapsed' : ''}`}>
+          <button className="sidebar-collapse" type="button" onClick={() => setCollapsed(value => !value)} aria-label={collapsed ? 'Desplegar menú' : 'Plegar menú'} aria-expanded={!collapsed} aria-controls="workspace-sidebar" title={collapsed ? 'Desplegar menú' : 'Plegar menú'}>{collapsed ? <ChevronRight size={16}/> : <ChevronLeft size={16}/>}</button>
           <div className="sidebar-profile">
             <div className="avatar-large">
               <UserRound className="avatar-icon" />
@@ -225,6 +243,8 @@ function Layout() {
                   to={entry.path}
                   end={entry.path === '/'}
                   className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                  onClick={() => { if (narrow) setCollapsed(false); }}
+                  aria-label={entry.label}
                   title={entry.label}
                 >
                   <Icon size={14} />

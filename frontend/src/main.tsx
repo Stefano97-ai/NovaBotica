@@ -7,6 +7,8 @@ import { router } from './app/router';
 import './app/styles.css';
 import './app/workspace-theme.css';
 import './app/glass.css';
+import './app/crystal-theme.css';
+import './app/floating-navigation.css';
 import '@fontsource/dm-sans/latin-400.css';
 import '@fontsource/dm-sans/latin-500.css';
 import '@fontsource/dm-sans/latin-600.css';
