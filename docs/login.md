@@ -40,4 +40,4 @@ Fondo local: `frontend/public/images/pharmacy-background.png`. Creado con la her
 
 Comprobados en navegador: cambio de tema, persistencia al recargar, escritorio 1366px y ausencia de desbordamiento a 390px y 320px. Compilación satisfactoria.
 
-Implementación Java: backend/src/main/java/com/novasalud/modules/auth. Las rutas y los formatos scrypt/sesión se conservan. La suite es JUnit/MockMvc con Testcontainers. Ver backend/README.md.
+Implementación Java: backend/src/main/java/com/novasalud/auth. Las rutas y los formatos scrypt/sesión se conservan. La suite es JUnit/MockMvc con Testcontainers. Ver backend/README.md.

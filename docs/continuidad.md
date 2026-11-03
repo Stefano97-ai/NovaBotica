@@ -2,7 +2,7 @@
 
 ## Entrega actual
 
-React permanece intacto. El backend ahora usa Java 21, Spring Boot 3.5.16, Spring MVC, Spring Security y Spring JDBC. Código funcional en backend/src/main/java/com/novasalud/modules/{auth,inicio,health}, dividido por controller, service, repository, dto/model según necesidad. Las demás funcionalidades tienen guías de implementación. Consultar backend/README.md.
+React permanece intacto. El backend ahora usa Java 21, Spring Boot 3.5.16, Spring MVC, Spring Security y Spring JDBC. Código funcional en backend/src/main/java/com/novasalud/{auth,inicio,health}, con Controller, Service y Repository en la raíz de cada módulo y dto/ como subcarpeta cuando se necesita. Las demás funcionalidades tienen guías de implementación. Consultar backend/README.md.
 
 No hay Flyway/JPA ni arquitectura hexagonal añadidos: el migrador JDBC preserva el historial SQL previo y los repositorios conservan consultas explícitas. Los SQL y las bases no se recrean; sesiones y contraseñas mantienen compatibilidad con Node. No modificar los bytes de migraciones aplicadas.
 

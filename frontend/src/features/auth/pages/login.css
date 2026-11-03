@@ -1,0 +1,372 @@
+/* Nova Salud - Login (Dark Crystal Glass with Luminous White Typography) */
+.lg-page {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  color: #fff;
+  font-family: "Poppins", system-ui, -apple-system, sans-serif;
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(10, 20, 16, 0.42) 0%, rgba(12, 24, 18, 0.28) 50%, rgba(10, 20, 16, 0.45) 100%),
+    url('/images/pharmacy-background.png') center / cover no-repeat fixed;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- LEFT COLUMN ---------- */
+.lg-left {
+  padding: 56px clamp(32px, 5.5vw, 84px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.lg-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.lg-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #10b981;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.lg-brand-name {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.lg-headline {
+  font-size: clamp(24px, 2.7vw, 34px);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: .01em;
+  max-width: 620px;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+}
+
+.lg-headline span {
+  color: #34d399;
+  text-shadow: 0 0 24px rgba(52, 211, 153, 0.6);
+}
+
+.lg-lead {
+  font-size: 13.5px;
+  line-height: 1.7;
+  max-width: 540px;
+  color: #f8fafc;
+  font-weight: 400;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Left info card - Translucent crystal glass (anterior) */
+.lg-info {
+  width: min(540px, 100%);
+  background: rgba(255, 255, 255, 0.26);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 18px;
+  padding: 22px 26px;
+  display: grid;
+  gap: 12px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+.lg-info p {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12.5px;
+  color: #0e2a1e;
+  font-weight: 600;
+  margin: 0;
+}
+
+.lg-info p svg {
+  color: #059669;
+  flex-shrink: 0;
+}
+
+/* Left support button - Crystal pill (anterior) */
+.lg-support {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  color: #0e2a1e;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all .2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+.lg-support svg {
+  color: #059669;
+}
+
+.lg-support:hover {
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.lg-help {
+  font-size: 12px;
+  max-width: 480px;
+  line-height: 1.6;
+  color: #0e2a1e;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- RIGHT COLUMN: DARK CRYSTAL GLASS FORM CARD ---------- */
+.lg-right {
+  display: grid;
+  place-items: center;
+  padding: 40px clamp(20px, 4vw, 56px);
+}
+
+.lg-card {
+  width: min(400px, 100%);
+  background: rgba(10, 24, 18, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 26px;
+  padding: 42px 36px 34px;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+.lg-card h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.lg-sub {
+  font-size: 12.5px;
+  color: #e2e8f0;
+  margin-bottom: 28px;
+  font-weight: 400;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* INPUT FIELDS: TRANSLUCENT GLASS WITH LUMINOUS WHITE TEXT */
+.lg-field {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.lg-field-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+
+.lg-field input {
+  appearance: none;
+  width: 100%;
+  height: 50px;
+  padding: 0 44px 0 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.lg-field input::placeholder {
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 400;
+}
+
+.lg-field input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.20);
+  border-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.25);
+}
+
+.lg-field input[aria-invalid=true] {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+}
+
+.lg-eye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.2s;
+}
+
+.lg-eye:hover {
+  color: #ffffff;
+}
+
+.lg-caps {
+  display: block;
+  min-height: 16px;
+  font-size: 11px;
+  color: #fbbf24;
+  margin: -8px 0 6px;
+  text-align: left;
+  font-weight: 500;
+}
+
+/* SUBMIT BUTTON: VIBRANT BOTANICAL EMERALD GRADIENT */
+.lg-submit {
+  width: 100%;
+  height: 50px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: #ffffff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.45);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.lg-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  box-shadow: 0 12px 34px rgba(16, 185, 129, 0.6);
+  transform: translateY(-1px);
+}
+
+.lg-submit:active:not(:disabled) {
+  transform: scale(.98);
+}
+
+.lg-submit:disabled {
+  cursor: wait;
+  opacity: .8;
+}
+
+.lg-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, .4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: lg-spin 700ms linear infinite;
+}
+
+@keyframes lg-spin {
+  to { transform: rotate(360deg); }
+}
+
+.lg-feedback {
+  min-height: 40px;
+  padding-top: 12px;
+}
+
+.lg-feedback p {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #fca5a5;
+  font-weight: 500;
+  outline-offset: 4px;
+}
+
+.lg-foot {
+  font-size: 11.5px;
+  color: #cbd5e1;
+  margin-top: 10px;
+  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.lg-page button:focus-visible,
+.lg-field input:focus-visible {
+  outline: 2px solid #34d399;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-submit, .lg-support { transition: none; }
+  .lg-spinner { animation: none; }
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 960px) {
+  .lg-page {
+    grid-template-columns: 1fr;
+  }
+  .lg-left {
+    padding: 36px 24px 8px;
+    gap: 18px;
+  }
+  .lg-lead,
+  .lg-info,
+  .lg-support {
+    display: none;
+  }
+  .lg-right {
+    background: none;
+    padding: 20px 16px 40px;
+  }
+}
