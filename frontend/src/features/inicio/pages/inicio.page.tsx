@@ -99,9 +99,9 @@ export default function Page() {
           <Menu size={14} /> Dashboard
         </h1>
         <div className="dash-actions">
-          <Link to="/ventas" className="dash-btn"><FaFileInvoice size={12} /> Emitir factura</Link>
-          <Link to="/ventas" className="dash-btn"><FaFileInvoiceDollar size={12} /> Emitir boleta</Link>
-          <Link to="/ventas" className="dash-btn"><FaFileLines size={12} /> Nota de venta</Link>
+          <Link to="/ventas?tipo=FACTURA" className="dash-btn"><FaFileInvoice size={12} /> Emitir factura</Link>
+          <Link to="/ventas?tipo=BOLETA" className="dash-btn"><FaFileInvoiceDollar size={12} /> Emitir boleta</Link>
+          <Link to="/ventas?tipo=NOTA_VENTA" className="dash-btn"><FaFileLines size={12} /> Nota de venta</Link>
         </div>
       </div>
 

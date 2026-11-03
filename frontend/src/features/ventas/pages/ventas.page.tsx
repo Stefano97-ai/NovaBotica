@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   FaHouse,
   FaCashRegister,
@@ -18,7 +18,7 @@ import {
   FaComputer,
   FaComputerMouse,
   FaHardDrive,
-  FaPills
+  FaCartShopping
 } from 'react-icons/fa6';
 import { X, CheckCircle2 } from 'lucide-react';
 import './ventas.css';
@@ -31,7 +31,8 @@ interface ProductItem {
   precio: number;
   stock: number;
   unidad: string;
-  iconType: 'avatar' | 'laptop' | 'computer' | 'mouse' | 'ssd' | 'pills';
+  iconType: 'avatar' | 'laptop' | 'computer' | 'mouse' | 'ssd';
+  hasAddButton?: boolean;
 }
 
 interface CartItem {
@@ -62,6 +63,7 @@ const INITIAL_DEMO_PRODUCTS: ProductItem[] = [
     stock: 20,
     unidad: 'UNIDAD',
     iconType: 'laptop',
+    hasAddButton: true,
   },
   {
     id: 3,
@@ -103,37 +105,39 @@ const INITIAL_DEMO_PRODUCTS: ProductItem[] = [
     unidad: 'UNIDAD',
     iconType: 'ssd',
   },
-  {
-    id: 7,
-    codigo: 'MED-007',
-    nombre: 'PARACETAMOL 500MG CAJA X 100 TABLETAS',
-    categoria: 'Medicamentos',
-    precio: 15.0,
-    stock: 120,
-    unidad: 'CAJA',
-    iconType: 'pills',
-  },
-  {
-    id: 8,
-    codigo: 'MED-008',
-    nombre: 'AMOXICILINA 500MG CAJA X 100 CAPSULAS',
-    categoria: 'Medicamentos',
-    precio: 28.5,
-    stock: 85,
-    unidad: 'CAJA',
-    iconType: 'pills',
-  },
 ];
 
 export default function VentasPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialType = searchParams.get('tipo');
+
+  // 1-second loading screen every time POS is opened
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Document Type: FACTURA | BOLETA | NOTA VENTA
-  const [docType, setDocType] = useState<'FACTURA' | 'BOLETA' | 'NOTA VENTA'>('BOLETA');
+  const [docType, setDocType] = useState<'FACTURA' | 'BOLETA' | 'NOTA VENTA'>(() => {
+    if (initialType === 'FACTURA') return 'FACTURA';
+    if (initialType === 'NOTA_VENTA') return 'NOTA VENTA';
+    return 'BOLETA';
+  });
 
   // Products and Categories
   const [products, setProducts] = useState<ProductItem[]>(INITIAL_DEMO_PRODUCTS);
-  const [categories, setCategories] = useState<string[]>(['Todas las categorías', 'Servicios', 'Equipos', 'Accesorios', 'Almacenamiento', 'Medicamentos']);
+  const [categories, setCategories] = useState<string[]>([
+    'Todas las categorías',
+    'Servicios',
+    'Equipos',
+    'Accesorios',
+    'Almacenamiento',
+  ]);
   const [selectedCategory, setSelectedCategory] = useState('Todas las categorías');
   const [searchQuery, setSearchQuery] = useState('');
   const [pageSize, setPageSize] = useState('20');
@@ -142,9 +146,9 @@ export default function VentasPage() {
   const [cardQuantities, setCardQuantities] = useState<Record<number, number>>({});
 
   // Client form
-  const [clientDocType, setClientDocType] = useState('SIN DOCUMENTO');
-  const [clientDocNumber, setClientDocNumber] = useState('00000000');
-  const [clientName, setClientName] = useState('DNI 00000000 CLIENTES VARIOS');
+  const [clientDocType, setClientDocType] = useState(() => (initialType === 'FACTURA' ? 'RUC' : 'SIN DOCUMENTO'));
+  const [clientDocNumber, setClientDocNumber] = useState(() => (initialType === 'FACTURA' ? '20601234567' : '00000000'));
+  const [clientName, setClientName] = useState(() => (initialType === 'FACTURA' ? 'CORPORACION NOVASALUD S.A.C.' : 'DNI 00000000 CLIENTES VARIOS'));
   const [clientDetails, setClientDetails] = useState('-');
   const [clientPhone, setClientPhone] = useState('');
   const [sendWhatsApp, setSendWhatsApp] = useState(false);
@@ -161,14 +165,14 @@ export default function VentasPage() {
 
   // Payments
   const [paymentMethod, setPaymentMethod] = useState('Efectivo');
-  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentAmount, setPaymentAmount] = useState('0.00');
   const [showVueltoModal, setShowVueltoModal] = useState(false);
   const [pagaCon, setPagaCon] = useState('');
 
   // Modals / Feedback
   const [successSale, setSuccessSale] = useState<{ id: string; total: number; docType: string } | null>(null);
 
-  // Load products and categories from backend if available
+  // Load backend products and categories if available
   useEffect(() => {
     async function loadBackendData() {
       try {
@@ -188,7 +192,15 @@ export default function VentasPage() {
         if (prodRes.ok) {
           const prodData = await prodRes.json();
           if (Array.isArray(prodData) && prodData.length > 0) {
-            const mapped: ProductItem[] = prodData.map((p: { id: number; codigo: string; nombre: string; categoriaNombre?: string; precioVenta: number; stockDisponible?: number; unidadBase?: string }) => ({
+            const mapped: ProductItem[] = prodData.map((p: {
+              id: number;
+              codigo: string;
+              nombre: string;
+              categoriaNombre?: string;
+              precioVenta: number;
+              stockDisponible?: number;
+              unidadBase?: string;
+            }) => ({
               id: p.id,
               codigo: p.codigo,
               nombre: p.nombre,
@@ -196,9 +208,13 @@ export default function VentasPage() {
               precio: Number(p.precioVenta) || 0,
               stock: Number(p.stockDisponible) || 0,
               unidad: p.unidadBase || 'UNIDAD',
-              iconType: p.nombre.toLowerCase().includes('laptop') ? 'laptop' : p.nombre.toLowerCase().includes('mouse') ? 'mouse' : 'pills',
+              iconType: p.nombre.toLowerCase().includes('laptop')
+                ? 'laptop'
+                : p.nombre.toLowerCase().includes('mouse')
+                ? 'mouse'
+                : 'computer',
             }));
-            setProducts(mapped);
+            setProducts((prev) => [...mapped, ...prev]);
           }
         }
       } catch {
@@ -280,16 +296,14 @@ export default function VentasPage() {
 
   const subtotalNeto = Math.max(0, subtotalBruto - discountMonto);
   const igv = subtotalNeto * 0.18;
-  const total = subtotalNeto; // In Peruvian retail / botica, prices already include IGV
+  const total = subtotalNeto;
 
   // Default payment amount to total
   useEffect(() => {
-    if (!paymentAmount || parseFloat(paymentAmount) === 0) {
-      setPaymentAmount(total > 0 ? total.toFixed(2) : '0.00');
-    }
+    setPaymentAmount(total > 0 ? total.toFixed(2) : '0.00');
   }, [total]);
 
-  // Document Type Change updates default Client info
+  // Document Type Change
   function handleDocTypeChange(type: 'FACTURA' | 'BOLETA' | 'NOTA VENTA') {
     setDocType(type);
     if (type === 'FACTURA') {
@@ -312,7 +326,9 @@ export default function VentasPage() {
     e.preventDefault();
     if (!barcodeInput.trim()) return;
     const found = products.find(
-      (p) => p.codigo.toLowerCase() === barcodeInput.trim().toLowerCase() || p.nombre.toLowerCase().includes(barcodeInput.trim().toLowerCase())
+      (p) =>
+        p.codigo.toLowerCase() === barcodeInput.trim().toLowerCase() ||
+        p.nombre.toLowerCase().includes(barcodeInput.trim().toLowerCase())
     );
     if (found) {
       addToCart(found, 1);
@@ -326,7 +342,11 @@ export default function VentasPage() {
   async function searchClient() {
     if (!clientDocNumber.trim()) return;
     try {
-      const res = await fetch(`/api/clientes/buscar?tipo=${encodeURIComponent(clientDocType)}&numero=${encodeURIComponent(clientDocNumber.trim())}`);
+      const res = await fetch(
+        `/api/clientes/buscar?tipo=${encodeURIComponent(clientDocType)}&numero=${encodeURIComponent(
+          clientDocNumber.trim()
+        )}`
+      );
       if (res.ok) {
         const data = await res.json();
         setClientName(data.nombre || clientName);
@@ -379,7 +399,6 @@ export default function VentasPage() {
           docType: docType,
         });
       } else {
-        // Fallback simulate sale success for smooth ERP demonstration
         setSuccessSale({
           id: String(Math.floor(1000 + Math.random() * 9000)),
           total: total,
@@ -387,7 +406,6 @@ export default function VentasPage() {
         });
       }
     } catch {
-      // Simulate success
       setSuccessSale({
         id: String(Math.floor(1000 + Math.random() * 9000)),
         total: total,
@@ -395,12 +413,11 @@ export default function VentasPage() {
       });
     }
 
-    // Reset cart
     setCart([]);
   }
 
   function clearCart() {
-    if (cart.length > 0 && !confirm('¿Estás seguro de vaciar el carrito?')) return;
+    if (cart.length > 0 && !confirm('¿Estás seguro de vaciar el comprobante?')) return;
     setCart([]);
     setDiscountValue('0');
   }
@@ -415,32 +432,39 @@ export default function VentasPage() {
       case 'avatar':
         return (
           <div className="pos-card-avatar">
-            <FaUserTie size={46} color="#1e293b" />
+            <FaUserTie size={50} color="#1e293b" />
           </div>
         );
       case 'laptop':
-        return <FaLaptop size={56} color="#3b82f6" />;
+        return <FaLaptop size={68} color="#2563eb" />;
       case 'computer':
-        return <FaComputer size={56} color="#64748b" />;
+        return <FaComputer size={68} color="#475569" />;
       case 'mouse':
-        return <FaComputerMouse size={52} color="#f59e0b" />;
+        return <FaComputerMouse size={64} color="#f59e0b" />;
       case 'ssd':
-        return <FaHardDrive size={52} color="#6b7280" />;
-      case 'pills':
       default:
-        return <FaPills size={52} color="#10b981" />;
+        return <FaHardDrive size={64} color="#6b7280" />;
     }
   }
 
+  if (loading) {
+    return (
+      <div className="pos-loading-screen" role="status" aria-live="polite">
+        <div className="pos-spinner" />
+        <span className="pos-loading-text">CARGANDO POS...</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="pos-wrapper">
+    <div className="pos-fullscreen-page">
       {/* ================= 1. POS TOPBAR ================= */}
       <header className="pos-topbar">
         <div className="pos-top-left">
-          <button className="pos-circle-btn" title="Ir a Inicio" onClick={() => navigate('/')}>
+          <button className="pos-home-btn" title="Volver al menú principal" onClick={() => navigate('/')}>
             <FaHouse size={16} />
           </button>
-          <button className="pos-circle-btn is-active" title="Punto de Venta activo">
+          <button className="pos-register-btn" title="Punto de Venta activo">
             <FaCashRegister size={16} />
           </button>
         </div>
@@ -471,7 +495,7 @@ export default function VentasPage() {
         </div>
 
         <div className="pos-top-right">
-          <button className="pos-circle-btn" title="Configuración de ventas">
+          <button className="pos-gear-btn" title="Configuración de ventas">
             <FaGear size={16} />
           </button>
         </div>
@@ -540,12 +564,32 @@ export default function VentasPage() {
                   )}
 
                   {/* Product visual */}
-                  <div className="pos-card-img-wrap" onClick={() => addToCart(p, qty)} style={{ cursor: 'pointer' }}>
+                  <div
+                    className="pos-card-img-wrap"
+                    onClick={() => addToCart(p, qty)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     {renderIcon(p.iconType)}
                   </div>
 
+                  {/* Violet "🛒 AGREGAR" pill button under image (as in reference) */}
+                  {p.hasAddButton && (
+                    <button
+                      type="button"
+                      className="pos-card-add-pill-btn"
+                      onClick={() => addToCart(p, qty)}
+                    >
+                      <FaCartShopping size={11} /> AGREGAR
+                    </button>
+                  )}
+
                   {/* Product Info */}
-                  <div className="pos-card-title" title={p.nombre} onClick={() => addToCart(p, qty)} style={{ cursor: 'pointer' }}>
+                  <div
+                    className="pos-card-title"
+                    title={p.nombre}
+                    onClick={() => addToCart(p, qty)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     {p.nombre}
                   </div>
 

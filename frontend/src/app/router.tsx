@@ -259,18 +259,30 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: '/ventas',
+    element: <Page3 />,
+    loader: async (args: LoaderFunctionArgs) => {
+      const result = await sessionLoader(args);
+      if (result instanceof Response) return result;
+      return ['ADMINISTRADOR', 'VENDEDOR'].includes(result.rol) ? null : redirect('/');
+    },
+    errorElement: <RouteError />,
+  },
+  {
     element: <Layout />,
     loader: sessionLoader,
     errorElement: <RouteError />,
-    children: entries.map((entry) => ({
-      path: entry.path,
-      element: entry.element,
-      loader: async (args: LoaderFunctionArgs) => {
-        const result = await sessionLoader(args);
-        if (result instanceof Response) return result;
-        return entry.roles.includes(result.rol) ? null : redirect('/');
-      },
-    })),
+    children: entries
+      .filter((entry) => entry.path !== '/ventas')
+      .map((entry) => ({
+        path: entry.path,
+        element: entry.element,
+        loader: async (args: LoaderFunctionArgs) => {
+          const result = await sessionLoader(args);
+          if (result instanceof Response) return result;
+          return entry.roles.includes(result.rol) ? null : redirect('/');
+        },
+      })),
   },
   { path: '*', loader: () => redirect('/') },
 ]);

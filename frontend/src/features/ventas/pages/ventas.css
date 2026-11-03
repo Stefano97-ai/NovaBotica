@@ -1,15 +1,19 @@
 /* =========================================================
-   NOVA SALUD - PUNTO DE VENTA (POS / VENTAS)
-   Diseño fiel a la referencia POS TECHMULTISERV
+   NOVA SALUD - FULLSCREEN PUNTO DE VENTA (POS / VENTAS)
+   Pantalla completa independiente idéntica a la referencia
    ========================================================= */
 
-.pos-wrapper {
+.pos-fullscreen-page {
+  min-height: 100vh;
+  width: 100%;
+  background: #f4f6fa;
+  color: #1e293b;
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  padding: 10px 16px 20px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 100%;
-  color: #1e293b;
-  font-family: inherit;
 }
 
 /* ================= 1. POS TOPBAR ================= */
@@ -17,7 +21,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -31,11 +34,11 @@
   gap: 10px;
 }
 
-.pos-circle-btn {
-  width: 36px;
-  height: 36px;
+.pos-home-btn {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: #1e293b;
+  background: #333842;
   color: #ffffff;
   border: none;
   display: inline-flex;
@@ -45,22 +48,29 @@
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
-.pos-circle-btn:hover {
-  background: #0f172a;
+.pos-home-btn:hover {
+  background: #1e293b;
   transform: scale(1.05);
 }
 
-.pos-circle-btn.is-active {
-  background: #1e1b4b;
-  border: 2px solid #5a52f3;
+.pos-register-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: #0d2540;
   color: #38bdf8;
+  border: 1px solid #1e40af;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 /* Selector central: FACTURA | BOLETA | NOTA VENTA */
 .doc-type-pillbox {
   display: inline-flex;
   align-items: center;
-  background: #232733;
+  background: #2a2c38;
   padding: 3px;
   border-radius: 8px;
   gap: 2px;
@@ -72,9 +82,9 @@
   border: none;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 6px 16px;
+  padding: 6px 18px;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
@@ -87,7 +97,7 @@
 .doc-pill-btn.is-active {
   background: #5a52f3;
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(90, 82, 243, 0.4);
+  box-shadow: 0 2px 8px rgba(90, 82, 243, 0.45);
 }
 
 .pos-top-right {
@@ -96,7 +106,25 @@
   gap: 10px;
 }
 
-/* ================= 2. MAIN LAYOUT: GRID + CHECKOUT ================= */
+.pos-gear-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #333842;
+  color: #ffffff;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.pos-gear-btn:hover {
+  transform: rotate(45deg);
+}
+
+/* ================= 2. MAIN LAYOUT: CATALOG + CHECKOUT ================= */
 .pos-body {
   display: grid;
   grid-template-columns: 1.35fr 1fr;
@@ -128,7 +156,7 @@
 }
 
 .pos-select {
-  height: 38px;
+  height: 40px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 0 28px 0 12px;
@@ -173,10 +201,10 @@
 
 .pos-search-input {
   width: 100%;
-  height: 38px;
+  height: 40px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  padding: 0 14px 0 36px;
+  padding: 0 14px 0 38px;
   font-size: 12.5px;
   color: #0f172a;
   outline: none;
@@ -206,15 +234,15 @@
   justify-content: space-between;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-  min-height: 250px;
+  min-height: 270px;
 }
 
 .pos-card:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
-/* Stock badge */
+/* Stock banner / tag */
 .pos-card-stock-top {
   position: absolute;
   top: 0;
@@ -235,9 +263,9 @@
 .pos-card-stock-tag {
   position: absolute;
   top: 8px;
-  right: 10px;
-  font-size: 10px;
-  font-weight: 700;
+  right: 12px;
+  font-size: 10.5px;
+  font-weight: 800;
   color: #0f172a;
   letter-spacing: 0.02em;
 }
@@ -247,15 +275,17 @@
   width: 100%;
   height: 105px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-top: 14px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  position: relative;
 }
 
 .pos-card-img {
-  max-width: 90px;
-  max-height: 90px;
+  max-width: 95px;
+  max-height: 85px;
   object-fit: contain;
 }
 
@@ -263,11 +293,37 @@
   width: 82px;
   height: 82px;
   border-radius: 50%;
-  background: #86efac;
+  background: #99e6b4;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #1e293b;
+}
+
+/* "🛒 AGREGAR" button below image (like in the Dell card) */
+.pos-card-add-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #2b1d8f;
+  background: linear-gradient(135deg, #2a1388 0%, #5a52f3 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 5px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-top: -6px;
+  margin-bottom: 6px;
+  box-shadow: 0 3px 8px rgba(90, 82, 243, 0.35);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  align-self: center;
+}
+
+.pos-card-add-pill-btn:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
 }
 
 /* Title and price */
@@ -281,14 +337,14 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .pos-card-price {
-  font-size: 16px;
+  font-size: 16.5px;
   font-weight: 800;
   color: #2563eb;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 /* Quantity controls in card */
@@ -371,16 +427,6 @@
 
 .pos-card-action-btn:hover {
   color: #475569;
-}
-
-/* Add to cart quick overlay or click */
-.pos-add-overlay-btn {
-  position: absolute;
-  inset: 0;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  z-index: 1;
 }
 
 /* ================= 4. RIGHT COLUMN: CHECKOUT PANEL ================= */
@@ -870,16 +916,21 @@
 }
 
 .pos-clear-btn {
-  background: #ef4444;
+  background: #ff5252;
 }
 
 /* ================= DARK MODE OVERRIDES ================= */
+[data-theme='dark'] .pos-fullscreen-page {
+  background: #121212;
+  color: #f1f1f1;
+}
+
 [data-theme='dark'] .pos-topbar,
 [data-theme='dark'] .pos-filter-bar,
 [data-theme='dark'] .pos-card,
 [data-theme='dark'] .pos-checkout-pane {
-  background: #1f1f1f;
-  border-color: #2e2e2e;
+  background: #1e1e1e;
+  border-color: #2c2c2c;
   color: #f1f1f1;
 }
 
@@ -949,3 +1000,46 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ================= POS LOADING SCREEN ================= */
+.pos-loading-screen {
+  position: fixed;
+  inset: 0;
+  background: #202452;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 9999;
+  user-select: none;
+}
+
+.pos-spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.12);
+  border-top-color: #b0c4de;
+  border-right-color: #8da4ef;
+  animation: pos-spin 0.85s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+}
+
+@keyframes pos-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.pos-loading-text {
+  color: #e0e7ff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-family: inherit;
+}
+
