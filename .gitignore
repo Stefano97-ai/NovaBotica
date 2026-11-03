@@ -7,3 +7,7 @@ coverage/
 *.log
 .local/
 target/
+.tools/
+.next/
+next-env.d.ts
+.vscode/

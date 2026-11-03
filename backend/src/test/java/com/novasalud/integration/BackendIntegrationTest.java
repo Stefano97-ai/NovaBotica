@@ -1,6 +1,6 @@
 package com.novasalud.integration;
 import com.novasalud.auth.PasswordService;
-import com.novasalud.inicio.InicioRepository;
+import com.novasalud.inicio.repository.InicioRepository;
 import com.novasalud.shared.database.DatabaseMigration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.sql.DataSource;
