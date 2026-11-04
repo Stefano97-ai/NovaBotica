@@ -220,6 +220,19 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.15s ease;
+  user-select: none;
+}
+
+.topbar-user:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.topbar-user:active {
+  background: rgba(0, 0, 0, 0.32);
 }
 
 .topbar-avatar-small {

@@ -205,9 +205,9 @@ function Layout() {
             <Bell size={17} />
             <span className="notification-badge">0</span>
           </button>
-          <div className="topbar-user">
+          <div className="topbar-user" title={`Usuario: ${user.nombre}`}>
             <span className="topbar-avatar-small"><UserRound size={14} /></span>
-            <span className="topbar-user-name">{user.nombre}</span>
+            <span className="topbar-user-name">{roleNames[user.rol] || 'Administrador'}</span>
           </div>
           <button className="icon-btn logout-icon" aria-label="Cerrar sesión" title="Cerrar sesión" onClick={logout} disabled={busy}>
             <LogOut size={17} />
