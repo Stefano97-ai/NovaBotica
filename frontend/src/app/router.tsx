@@ -1,4 +1,3 @@
-import { useScrolled } from '../shared/hooks/useScrolled';
 import { useEffect, useState } from 'react';
 import { createBrowserRouter, NavLink, Outlet, redirect, useLoaderData, useNavigate, useRevalidator, useRouteError } from 'react-router-dom';
 import type { LoaderFunctionArgs } from 'react-router-dom';
@@ -9,8 +8,6 @@ import {
   Sun,
   Moon,
   Calculator,
-  ChevronLeft,
-  ChevronRight,
   UserRound,
   User as UserIcon
 } from 'lucide-react';
@@ -90,7 +87,6 @@ function RouteError() {
 }
 
 function Layout() {
-  const scrolled = useScrolled();
   const user = useLoaderData() as User;
   const navigate = useNavigate();
   const revalidator = useRevalidator();
@@ -174,7 +170,7 @@ function Layout() {
   return (
     <div className={`layout ${collapsed ? 'sidebar-mini' : ''}`}>
       {/* TOPBAR */}
-      <header className={`erp-topbar ${scrolled ? 'is-scrolled' : ''}`}>
+      <header className="erp-topbar">
         <div className="topbar-brand">{collapsed ? 'NS' : 'NOVA SALUD'}</div>
 
         <div className="topbar-left">
@@ -222,7 +218,6 @@ function Layout() {
       {/* SIDEBAR + MAIN */}
       <div className="erp-container">
         <aside id="workspace-sidebar" className={`erp-sidebar ${collapsed ? 'is-collapsed' : ''}`}>
-          <button className="sidebar-collapse" type="button" onClick={() => setCollapsed(value => !value)} aria-label={collapsed ? 'Desplegar menú' : 'Plegar menú'} aria-expanded={!collapsed} aria-controls="workspace-sidebar" title={collapsed ? 'Desplegar menú' : 'Plegar menú'}>{collapsed ? <ChevronRight size={16}/> : <ChevronLeft size={16}/>}</button>
           <div className="sidebar-profile">
             <div className="avatar-large">
               <UserRound className="avatar-icon" />
