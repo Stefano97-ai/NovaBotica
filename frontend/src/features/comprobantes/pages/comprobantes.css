@@ -1,0 +1,319 @@
+/* =========================================================
+   NOVA SALUD - CONSULTAR COMPROBANTE
+   Diseño fiel a la captura de referencia
+   ========================================================= */
+
+.consult-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  color: #1e293b;
+  font-family: inherit;
+}
+
+/* Breadcrumb / Top label */
+.consult-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  width: fit-content;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.consult-breadcrumb svg {
+  color: #64748b;
+}
+
+/* Main Card Panel */
+.consult-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px 28px 28px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.consult-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+}
+
+/* Form Row: 3 inputs + 1 button */
+.consult-form {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
+
+.consult-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consult-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.consult-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.consult-input-icon {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.consult-select,
+.consult-input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px 0 36px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.consult-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 28px;
+  cursor: pointer;
+}
+
+.consult-select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+  font-size: 12px;
+}
+
+.consult-select:focus,
+.consult-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.consult-submit-btn {
+  height: 40px;
+  background: #1d68ed;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(29, 104, 237, 0.35);
+  transition: background 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.consult-submit-btn:hover {
+  background: #1557cf;
+  transform: translateY(-1px);
+}
+
+/* Results panel */
+.consult-result-card {
+  margin-top: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.consult-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+
+.consult-result-doc {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.consult-status-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.status-aceptado {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pendiente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-anulado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.consult-grid-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.consult-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.consult-info-label {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.consult-info-val {
+  font-size: 13px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.consult-actions-bar {
+  display: flex;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.consult-act-btn {
+  height: 34px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s ease;
+}
+
+.consult-act-print {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.consult-act-print:hover {
+  background: #0369a1;
+}
+
+.consult-act-download {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.consult-act-download:hover {
+  background: #f1f5f9;
+}
+
+/* Dark mode */
+[data-theme='dark'] .consult-breadcrumb,
+[data-theme='dark'] .consult-card {
+  background: #1e1e1e;
+  border-color: #2e2e2e;
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .consult-title,
+[data-theme='dark'] .consult-result-doc,
+[data-theme='dark'] .consult-info-val {
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .consult-select,
+[data-theme='dark'] .consult-input {
+  background: #141414;
+  border-color: #333333;
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .consult-result-card {
+  background: #161616;
+  border-color: #2a2a2a;
+}
+
+@media (max-width: 900px) {
+  .consult-form {
+    grid-template-columns: 1fr 1fr;
+  }
+  .consult-submit-btn {
+    grid-column: span 2;
+  }
+  .consult-grid-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 550px) {
+  .consult-form {
+    grid-template-columns: 1fr;
+  }
+  .consult-submit-btn {
+    grid-column: span 1;
+  }
+  .consult-grid-info {
+    grid-template-columns: 1fr;
+  }
+}
