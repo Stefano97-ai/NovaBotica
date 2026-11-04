@@ -56,7 +56,7 @@ body {
 /* ================= TOPBAR ================= */
 .erp-topbar {
   height: 52px;
-  background: var(--bg-topbar);
+  background: linear-gradient(135deg, #227c59 0%, #16563d 100%);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -64,6 +64,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 3px 14px rgba(22, 86, 61, 0.25);
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
@@ -401,9 +402,9 @@ body {
 }
 
 .nav-link.active {
-  background: linear-gradient(135deg, #2a1388 0%, #5a52f3 100%) !important;
+  background: linear-gradient(135deg, #227c59 0%, #16563d 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 15px rgba(103, 93, 248, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(22, 86, 61, 0.4) !important;
   border-left: none !important;
   font-weight: 600;
 }
@@ -423,44 +424,43 @@ body {
 }
 
 [data-theme='light'] .erp-topbar {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(215, 226, 218, 0.8);
+  background: linear-gradient(135deg, #227c59 0%, #16563d 100%);
+  border-bottom: 1px solid rgba(22, 86, 61, 0.4);
+  box-shadow: 0 3px 14px rgba(22, 86, 61, 0.2);
 }
 
 [data-theme='light'] .topbar-brand {
-  color: #1b382b;
+  color: #ffffff;
 }
 
 [data-theme='light'] .topbar-burger {
-  color: #2e4438;
+  color: #ffffff;
 }
 
 [data-theme='light'] .topbar-burger:hover {
-  color: #1b382b;
+  color: #d1fae5;
 }
 
 [data-theme='light'] .calc-btn {
-  background: rgba(225, 243, 235, 0.7);
-  border: 1px solid #a3d9c1;
-  color: #1b6348;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
 }
 
 [data-theme='light'] .icon-btn {
-  color: #55675d;
+  color: #d1fae5;
 }
 
 [data-theme='light'] .icon-btn:hover {
-  color: #1b382b;
+  color: #ffffff;
 }
 
 [data-theme='light'] .topbar-user-name {
-  color: #1b382b;
+  color: #ffffff;
 }
 
 [data-theme='light'] .topbar-avatar-small {
-  background: #1f5947;
+  background: #124732;
   border-color: #fff;
   color: #fff;
 }
@@ -508,8 +508,9 @@ body {
 }
 
 [data-theme='light'] .nav-link.active {
-  background: linear-gradient(135deg, #2a1388 0%, #5a52f3 100%) !important;
+  background: linear-gradient(135deg, #227c59 0%, #16563d 100%) !important;
   color: #ffffff !important;
+  box-shadow: 0 4px 15px rgba(22, 86, 61, 0.35) !important;
 }
 
 [data-theme='light'] .nav-link.active svg {
