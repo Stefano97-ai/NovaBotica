@@ -6,8 +6,13 @@
 .pos-fullscreen-page {
   min-height: 100vh;
   width: 100%;
-  background: #f4f6fa;
-  color: #1e293b;
+  background: 
+    radial-gradient(circle at 12% 18%, #dce9df 0%, transparent 45%),
+    radial-gradient(circle at 88% 82%, #f5efe6 0%, transparent 50%),
+    linear-gradient(135deg, #e3eee6 0%, #f7f4ed 100%);
+  background-attachment: fixed;
+  background-color: #e8eee8;
+  color: #1e2422;
   font-family: 'Poppins', system-ui, -apple-system, sans-serif;
   padding: 10px 16px 20px;
   box-sizing: border-box;

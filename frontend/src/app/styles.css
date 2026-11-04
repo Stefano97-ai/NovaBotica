@@ -22,20 +22,25 @@
 }
 
 [data-theme='light'] {
-  --bg-main: #eef2f6;
-  --bg-sidebar: #ffffff;
-  --bg-topbar: #ffffff;
-  --bg-panel: #ffffff;
-  --border-color: #e2e8f0;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --primary-accent: #5b3fe0;
+  --bg-main: #e8eee8;
+  --bg-gradient: radial-gradient(circle at 12% 18%, #dce9df 0%, transparent 45%),
+                 radial-gradient(circle at 88% 82%, #f5efe6 0%, transparent 50%),
+                 linear-gradient(135deg, #e3eee6 0%, #f7f4ed 100%);
+  --bg-sidebar: rgba(255, 255, 255, 0.85);
+  --bg-topbar: rgba(255, 255, 255, 0.88);
+  --bg-panel: rgba(255, 255, 255, 0.92);
+  --border-color: rgba(215, 226, 218, 0.75);
+  --text-main: #1e2422;
+  --text-muted: #66726b;
+  --primary-accent: #1f5947;
   font-family: "Poppins", system-ui, -apple-system, sans-serif;
   color-scheme: light;
 }
 
 body {
   background-color: var(--bg-main);
+  background-image: var(--bg-gradient, none);
+  background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
@@ -374,13 +379,20 @@ body {
 
 .nav-link svg {
   flex-shrink: 0;
-  width: 15px;
-  height: 15px;
-  color: #e4e4e4;
+  width: 17px;
+  height: 17px;
+  color: #3b82f6;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.nav-link:hover svg {
+  color: #60a5fa;
+  transform: scale(1.08);
 }
 
 .nav-link.active svg {
-  color: #fff;
+  color: #ffffff !important;
+  transform: none;
 }
 
 .nav-link:hover {
@@ -406,84 +418,102 @@ body {
 }
 
 /* ================= LIGHT MODE OVERRIDES ================= */
+[data-theme='light'] #workspace-main {
+  background: transparent;
+}
+
 [data-theme='light'] .erp-topbar {
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(215, 226, 218, 0.8);
 }
 
 [data-theme='light'] .topbar-brand {
-  color: #0f172a;
+  color: #1b382b;
 }
 
 [data-theme='light'] .topbar-burger {
-  color: #334155;
+  color: #2e4438;
 }
 
 [data-theme='light'] .topbar-burger:hover {
-  color: #0f172a;
+  color: #1b382b;
 }
 
 [data-theme='light'] .calc-btn {
-  background: #e0f2fe;
-  border: 1px solid #7dd3fc;
-  color: #0284c7;
+  background: rgba(225, 243, 235, 0.7);
+  border: 1px solid #a3d9c1;
+  color: #1b6348;
 }
 
 [data-theme='light'] .icon-btn {
-  color: #64748b;
+  color: #55675d;
 }
 
 [data-theme='light'] .icon-btn:hover {
-  color: #0f172a;
+  color: #1b382b;
 }
 
 [data-theme='light'] .topbar-user-name {
-  color: #0f172a;
+  color: #1b382b;
 }
 
 [data-theme='light'] .topbar-avatar-small {
-  border-color: #cbd5e1;
+  background: #1f5947;
+  border-color: #fff;
+  color: #fff;
 }
 
 [data-theme='light'] .erp-sidebar {
-  background: #ffffff;
-  border-right: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(215, 226, 218, 0.8);
 }
 
 [data-theme='light'] .avatar-large {
-  border-color: #cbd5e1;
+  background: #1f5947;
+  border-color: #fff;
 }
 
 [data-theme='light'] .profile-title {
-  color: #0f172a;
+  color: #1b382b;
 }
 
 [data-theme='light'] .profile-role-bar {
-  background: #f1f5f9;
-  color: #334155;
-  border-top: 1px solid #e2e8f0;
-  border-bottom: 1px solid #e2e8f0;
+  background: rgba(220, 238, 228, 0.5);
+  color: #1b5e43;
+  border: 1px solid rgba(210, 228, 218, 0.7);
+  border-radius: 8px;
+  margin: 0 14px 10px;
 }
 
 [data-theme='light'] .nav-link {
-  color: #475569;
+  color: #1e293b;
+  font-weight: 500;
 }
 
 [data-theme='light'] .nav-link svg {
-  color: #64748b;
+  color: #0b2685;
 }
 
 [data-theme='light'] .nav-link:hover {
   background: #f1f5f9;
-  color: #0f172a;
+  color: #0b1e59;
 }
 
 [data-theme='light'] .nav-link:hover svg {
-  color: #0f172a;
+  color: #1d4ed8;
+}
+
+[data-theme='light'] .nav-link.active {
+  background: linear-gradient(135deg, #2a1388 0%, #5a52f3 100%) !important;
+  color: #ffffff !important;
 }
 
 [data-theme='light'] .nav-link.active svg {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 [data-theme='light'] .orb-sun.is-active {

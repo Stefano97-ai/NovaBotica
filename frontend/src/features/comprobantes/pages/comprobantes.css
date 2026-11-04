@@ -36,11 +36,11 @@
 
 /* Main Card Panel */
 .consult-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(215, 226, 218, 0.85);
+  border-radius: 20px;
   padding: 24px 28px 28px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 16px 36px -12px rgba(45, 65, 55, 0.08);
 }
 
 .consult-title {

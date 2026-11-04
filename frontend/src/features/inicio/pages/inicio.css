@@ -387,54 +387,74 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
+[data-theme='light'] .dash-bar {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(215, 226, 218, 0.75);
+  box-shadow: 0 8px 24px -8px rgba(35, 55, 45, 0.05);
+  border-radius: 14px;
+}
+
 [data-theme='light'] .dash-title {
-  color: #0f172a;
+  color: #1a2f26;
 }
 
 [data-theme='light'] .dash-btn {
-  color: #334155;
+  color: #2e4438;
 }
 
 [data-theme='light'] .dash-btn:hover {
-  color: #5b3fe0;
+  color: #1f5947;
 }
 
 [data-theme='light'] .dash-btn::after {
-  background: #94a3b8;
+  background: #1f5947;
 }
 
 [data-theme='light'] .dash-btn::before {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.88);
 }
 
 [data-theme='light'] .dash-panel {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 36px -12px rgba(45, 65, 55, 0.08), 0 2px 6px rgba(0, 0, 0, 0.02);
+  border-radius: 20px;
 }
 
 [data-theme='light'] .dash-panel-top {
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(215, 226, 218, 0.7);
 }
 
 [data-theme='light'] .kpi-card {
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  background: #ffffff;
+  border: 1px solid rgba(215, 226, 218, 0.75);
+  box-shadow: 0 10px 28px -10px rgba(40, 60, 50, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+  border-radius: 20px;
+}
+
+[data-theme='light'] .period-btn {
+  background: #1f5947;
+  color: #fff;
 }
 
 [data-theme='light'] .dash-box {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(215, 226, 218, 0.75);
+  box-shadow: 0 10px 28px -10px rgba(40, 60, 50, 0.08);
+  border-radius: 20px;
 }
 
 [data-theme='light'] .dash-box-title {
-  color: #0f172a;
-  border-bottom: 1px solid #e2e8f0;
+  color: #1a2f26;
+  border-bottom: 1px solid rgba(215, 226, 218, 0.7);
 }
 
 [data-theme='light'] .dash-box-title svg {
-  color: #64748b;
+  color: #55675d;
 }
 
 [data-theme='light'] .chart-grid-line {
