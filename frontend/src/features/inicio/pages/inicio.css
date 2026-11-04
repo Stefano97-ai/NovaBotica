@@ -162,13 +162,24 @@
 }
 
 .kpi-icon-box {
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  color: #ffffff;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.45),
+    0 8px 18px -4px var(--glow, rgba(0, 0, 0, 0.2));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover .kpi-icon-box {
+  transform: scale(1.08);
 }
 
 .kpi-info {
@@ -194,25 +205,59 @@
 }
 
 .kpi-subtext {
-  font-size: 8px;
+  font-size: 8.5px;
   color: #8a97a3;
 }
 
-.card-blue    { --stripe: #4a8cff; }
-.card-slate   { --stripe: #7b8794; }
-.card-amber   { --stripe: #f5a623; }
-.card-dark    { --stripe: #3a4452; }
-.card-emerald { --stripe: #22b573; }
-.card-orange  { --stripe: #f07c1b; }
-.card-rose    { --stripe: #ef4b5b; }
+.card-blue    { --stripe: #2563eb; }
+.card-slate   { --stripe: #4f46e5; }
+.card-amber   { --stripe: #f59e0b; }
+.card-dark    { --stripe: #334155; }
+.card-emerald { --stripe: #10b981; }
+.card-orange  { --stripe: #f97316; }
+.card-rose    { --stripe: #f43f5e; }
 
-.icon-box-blue    { background: #e4eeff; color: #4a8cff; }
-.icon-box-slate   { background: #eef1f6; color: #3d4756; }
-.icon-box-amber   { background: #fff3d6; color: #e8a317; }
-.icon-box-dark    { background: #e9ecf1; color: #2f3846; }
-.icon-box-emerald { background: #dcf7ea; color: #22b573; }
-.icon-box-orange  { background: #ffe9d6; color: #f07c1b; }
-.icon-box-rose    { background: #ffe2e5; color: #ef4b5b; }
+/* 1. Ventas netas: Azul Zafiro */
+.icon-box-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  --glow: rgba(37, 99, 235, 0.5);
+}
+
+/* 2. Facturas: Indigo Real */
+.icon-box-slate {
+  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+  --glow: rgba(79, 70, 229, 0.45);
+}
+
+/* 3. Boletas: Ámbar Dorado */
+.icon-box-amber {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  --glow: rgba(245, 158, 11, 0.5);
+}
+
+/* 4. Notas de venta: Titanio Grafito */
+.icon-box-dark {
+  background: linear-gradient(135deg, #64748b 0%, #334155 100%);
+  --glow: rgba(51, 65, 85, 0.45);
+}
+
+/* 5. Productos activos: Verde Esmeralda Botánico (Vessa) */
+.icon-box-emerald {
+  background: linear-gradient(135deg, #227c59 0%, #16563d 100%);
+  --glow: rgba(22, 86, 61, 0.5);
+}
+
+/* 6. Stock por reponer: Naranja Coral */
+.icon-box-orange {
+  background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+  --glow: rgba(234, 88, 12, 0.5);
+}
+
+/* 7. Próximos a vencer: Rosa Rubí */
+.icon-box-rose {
+  background: linear-gradient(135deg, #fb7185 0%, #e11d48 100%);
+  --glow: rgba(225, 29, 72, 0.5);
+}
 
 /* ---- Bottom panels ---- */
 .dash-bottom {

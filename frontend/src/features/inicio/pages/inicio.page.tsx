@@ -7,16 +7,19 @@ import {
   Menu,
   BarChart3,
   PieChart,
-  RefreshCw
+  RefreshCw,
+  Wallet,
+  FileText,
+  Receipt,
+  ClipboardList,
+  Boxes,
+  AlertTriangle,
+  Clock
 } from 'lucide-react';
 import {
-  FaWallet,
   FaFileLines,
   FaFileInvoice,
-  FaFileInvoiceDollar,
-  FaBoxOpen,
-  FaTriangleExclamation,
-  FaClock
+  FaFileInvoiceDollar
 } from 'react-icons/fa6';
 import type { User } from '../../auth/api/auth';
 import './inicio.css';
@@ -123,7 +126,7 @@ export default function Page() {
 
         <div className="kpi-grid">
           <div className="kpi-card card-blue">
-            <div className="kpi-icon-box icon-box-blue"><FaWallet size={22} /></div>
+            <div className="kpi-icon-box icon-box-blue"><Wallet size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
               <span className="kpi-title">Ventas netas</span>
               <span className="kpi-value">{formattedSales}</span>
@@ -132,7 +135,7 @@ export default function Page() {
           </div>
 
           <div className="kpi-card card-slate">
-            <div className="kpi-icon-box icon-box-slate"><FaFileInvoice size={22} /></div>
+            <div className="kpi-icon-box icon-box-slate"><FileText size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
               <span className="kpi-title">Facturas</span>
               <span className="kpi-value">S/ 0.00</span>
@@ -141,7 +144,7 @@ export default function Page() {
           </div>
 
           <div className="kpi-card card-amber">
-            <div className="kpi-icon-box icon-box-amber"><FaFileInvoiceDollar size={22} /></div>
+            <div className="kpi-icon-box icon-box-amber"><Receipt size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
               <span className="kpi-title">Boletas</span>
               <span className="kpi-value">{formattedSales}</span>
@@ -150,7 +153,7 @@ export default function Page() {
           </div>
 
           <div className="kpi-card card-dark">
-            <div className="kpi-icon-box icon-box-dark"><FaFileLines size={22} /></div>
+            <div className="kpi-icon-box icon-box-dark"><ClipboardList size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
               <span className="kpi-title">Notas de venta</span>
               <span className="kpi-value">S/ 0.00</span>
@@ -159,7 +162,7 @@ export default function Page() {
           </div>
 
           <div className="kpi-card card-emerald">
-            <div className="kpi-icon-box icon-box-emerald"><FaBoxOpen size={22} /></div>
+            <div className="kpi-icon-box icon-box-emerald"><Boxes size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
               <span className="kpi-title">Productos activos</span>
               <span className="kpi-value">{data?.products ?? 0}</span>
@@ -168,7 +171,7 @@ export default function Page() {
           </div>
 
           <div className="kpi-card card-orange">
-            <div className="kpi-icon-box icon-box-orange"><FaTriangleExclamation size={22} /></div>
+            <div className="kpi-icon-box icon-box-orange"><AlertTriangle size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
               <span className="kpi-title">Stock por reponer</span>
               <span className="kpi-value">{data?.lowStock ?? 0}</span>
@@ -177,7 +180,7 @@ export default function Page() {
           </div>
 
           <div className="kpi-card card-rose">
-            <div className="kpi-icon-box icon-box-rose"><FaClock size={22} /></div>
+            <div className="kpi-icon-box icon-box-rose"><Clock size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
               <span className="kpi-title">Próximos a vencer</span>
               <span className="kpi-value">{data?.expiringCount ?? 0}</span>
@@ -211,7 +214,7 @@ export default function Page() {
 
         {data && (data.expiring.length > 0 || data.lowStock > 0) && (
           <div className="dash-box" style={{ marginTop: 14 }}>
-            <h2 className="dash-box-title alerts-title"><FaTriangleExclamation size={13} /> Atención al inventario</h2>
+            <h2 className="dash-box-title alerts-title"><AlertTriangle size={13} /> Atención al inventario</h2>
             <div className="expiring-list">
               {data.expiring.slice(0, 5).map((lot) => (
                 <div key={lot.id} className="expiring-item">
