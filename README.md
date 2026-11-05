@@ -61,6 +61,7 @@ Las pruebas Java crean PostgreSQL temporal mediante Testcontainers (Docker debe 
 - [Continuidad y próximos entregables](docs/continuidad.md)
 - [Arquitectura y reglas previstas](docs/arquitectura.md)
 - [Base de datos](docs/base-de-datos.md)
+- [Carga de datos de demostración local y en Railway](docs/datos-demostracion.md) (`npm run db:seed`)
 - [Autenticación](docs/login.md)
 - [Inicio](docs/inicio.md)
 - [Docker](docs/docker.md)

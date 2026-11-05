@@ -14,6 +14,7 @@
     "build": "npm run build --workspace frontend && mvn -f backend/pom.xml package -DskipTests",
     "typecheck": "npm run typecheck --workspace frontend && mvn -f backend/pom.xml compile",
     "db:setup": "node scripts/database/local-db.mjs setup",
+    "db:seed": "node scripts/database/load-demo.mjs",
     "db:start": "node scripts/database/local-db.mjs start",
     "db:stop": "node scripts/database/local-db.mjs stop",
     "db:status": "node scripts/database/local-db.mjs status",

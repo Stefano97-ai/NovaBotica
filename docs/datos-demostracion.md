@@ -1,4 +1,19 @@
-# Datos locales de demostración
+# Datos de demostración locales y en Railway
+
+## Carga completa desde el repositorio
+
+Los registros de PostgreSQL no se transfieren al subir código a GitHub ni al desplegar en Railway. El repositorio contiene una carga reproducible, sin contraseñas, sesiones ni copias de usuarios. Para cargar el catálogo, operaciones y series opcionales en la base de destino:
+
+1. Instalar las dependencias con `npm ci` y tener aplicadas las migraciones actuales de la aplicación.
+2. Disponer de un administrador y un vendedor activos. El script utiliza sus identificadores y no crea ni cambia credenciales.
+3. Guardar un respaldo de la base de destino.
+4. Configurar `DATABASE_URL` en el entorno del comando con la conexión PostgreSQL de destino y ejecutar `npm run db:seed`.
+
+En Railway, ejecutar el comando desde una máquina con acceso a su conexión pública PostgreSQL o desde un entorno que alcance su conexión privada. Usar la variable real del servicio PostgreSQL, sin guardarla en archivos versionados. El comando requiere Node.js y las dependencias del repositorio, no la imagen Java de producción.
+
+El comando ejecuta `seed-demo.sql` y `seed-demo-series.sql` en una única transacción. Si falla una validación, revierte toda la carga. Muestra al terminar las cantidades de productos, lotes, ventas y series de demostración. No borra registros ni duplica el conjunto existente. Si ya existe DEMO-NS, conserva sus fechas y operaciones: volver a ejecutarlo no reinicia las existencias ni copia cambios posteriores hechos en otra base.
+
+## Contenido y ejecución con PostgreSQL local
 
 Carga opcional: `scripts/database/seed-demo.sql`. No forma parte de las migraciones ni se ejecuta al iniciar la aplicación. Los precios, clientes, empresas, identificadores y operaciones son ficticios; sirven para probar módulos y gráficos, no constituyen información comercial ni tributaria real.
 

@@ -205,7 +205,8 @@ BEGIN
     AND c.total<>(SELECT sum(d.cantidad*d.costo_unitario) FROM detalle_compra d WHERE d.compra_id=c.id)) THEN
     RAISE EXCEPTION 'Los totales de compras no coinciden con sus detalles';
   END IF;
-  IF EXISTS (SELECT 1 FROM detalle_compra d JOIN producto p ON p.id=d.producto_id WHERE p.codigo LIKE 'DEMO-NS-%'
+  IF EXISTS (SELECT 1 FROM detalle_compra d JOIN producto p ON p.id=d.producto_id
+    JOIN compra c ON c.id=d.compra_id WHERE p.codigo LIKE 'DEMO-NS-%' AND c.estado='RECIBIDA'
     AND d.cantidad<>(SELECT COALESCE(sum(r.cantidad_recibida),0) FROM recepcion_lote r WHERE r.detalle_compra_id=d.id)) THEN
     RAISE EXCEPTION 'Las cantidades compradas y recibidas no coinciden';
   END IF;
