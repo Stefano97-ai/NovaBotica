@@ -123,80 +123,126 @@ export default function ComprobantesPage() {
     setResultado(null);
 
     try {
-      const res = await fetch(`/api/comprobantes?serie=${encodeURIComponent(serieTrimmed)}&correlativo=${corrNum}`);
-      if (res.ok) {
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : [data];
-        // Match by correlativo OR by ventaId OR by comprobante id
-        const match =
-          list.find(
-            (c: any) =>
-              c && (
-                Number(c.correlativo) === corrNum ||
-                Number(c.ventaId) === corrNum ||
-                Number(c.id) === corrNum
-              )
-          ) || (list.length === 1 ? list[0] : null);
+      // 1. Intentar con la serie seleccionada
+      let res = await fetch(`/api/comprobantes?serie=${encodeURIComponent(serieTrimmed)}&correlativo=${corrNum}`);
+      let data = res.ok ? await res.json() : [];
+      let list = Array.isArray(data) ? data : [data];
+      let match =
+        list.find(
+          (c: any) =>
+            c && (
+              Number(c.correlativo) === corrNum ||
+              Number(c.ventaId) === corrNum ||
+              Number(c.id) === corrNum
+            )
+        ) || (list.length === 1 ? list[0] : null);
 
-        if (match) {
-          // Parse datosDocumento as fallback if fields are nested
-          let parsedDoc: any = {};
-          try {
-            if (typeof match.datosDocumento === 'string') {
-              parsedDoc = JSON.parse(match.datosDocumento);
-            } else if (match.datosDocumento && typeof match.datosDocumento === 'object') {
-              parsedDoc = match.datosDocumento;
-            }
-          } catch {
-            parsedDoc = {};
-          }
-
-          const rawNumDoc =
-            match.clienteNumeroDoc ||
-            parsedDoc.cliente?.numeroDocumento ||
-            parsedDoc.cliente?.numero ||
-            '';
-          const rawTipoDoc =
-            match.clienteTipoDoc ||
-            parsedDoc.cliente?.tipoDocumento ||
-            (tipoComprobante === 'FACTURA' ? 'RUC' : 'DNI');
-          const clienteNombre =
-            match.clienteNombre ||
-            parsedDoc.cliente?.nombre ||
-            'CLIENTES VARIOS';
-
-          let clienteDoc = '';
-          if (rawNumDoc && rawNumDoc !== '00000000' && rawNumDoc !== '-') {
-            clienteDoc = `${rawTipoDoc} ${rawNumDoc}`;
-          } else if (rawNumDoc === '00000000' || clienteNombre.toUpperCase().includes('VARIOS')) {
-            clienteDoc = 'DNI 00000000';
-          } else {
-            clienteDoc = '-';
-          }
-
-          const totalVal =
-            typeof match.total === 'number'
-              ? match.total
-              : typeof parsedDoc.total === 'number'
-              ? parsedDoc.total
-              : 0;
-
-          setResultado({
-            id: match.id,
-            ventaId: match.ventaId,
-            tipo: match.tipoNombre || tipoComprobante,
-            serie: match.serie || serieTrimmed,
-            correlativo: match.correlativo || corrNum,
-            estado: match.estado || 'ACEPTADO POR SUNAT',
-            clienteNombre,
-            clienteDoc,
-            fecha: match.creadoEn ? new Date(match.creadoEn).toLocaleString('es-PE') : new Date().toLocaleString('es-PE'),
-            total: totalVal,
-          });
-          setSinResultados(false);
-          setBuscando(false);
-          return;
+      // 2. Si no coincide con esa serie (p. ej. eligió FACTURA pero era BOLETA o viceversa), buscar sin filtro de serie
+      if (!match) {
+        res = await fetch(`/api/comprobantes?correlativo=${corrNum}`);
+        if (res.ok) {
+          data = await res.json();
+          list = Array.isArray(data) ? data : [data];
+          match =
+            list.find(
+              (c: any) =>
+                c && (
+                  Number(c.correlativo) === corrNum ||
+                  Number(c.ventaId) === corrNum ||
+                  Number(c.id) === corrNum
+                )
+            ) || (list.length === 1 ? list[0] : null);
         }
+      }
+
+      // 3. Si aún no hay match, consultar la lista completa y filtrar del lado cliente
+      if (!match) {
+        res = await fetch('/api/comprobantes');
+        if (res.ok) {
+          data = await res.json();
+          if (Array.isArray(data)) {
+            match = data.find(
+              (c: any) =>
+                c && (
+                  Number(c.correlativo) === corrNum ||
+                  Number(c.ventaId) === corrNum ||
+                  Number(c.id) === corrNum
+                )
+            );
+          }
+        }
+      }
+
+      if (match) {
+        // Sincronizar automáticamente el tipo y serie con el comprobante encontrado
+        if (match.tipoCodigo === 'FACTURA') {
+          setTipoComprobante('FACTURA');
+          setSerie(match.serie || 'F001');
+        } else if (match.tipoCodigo === 'BOLETA') {
+          setTipoComprobante('BOLETA');
+          setSerie(match.serie || 'B001');
+        } else {
+          setTipoComprobante('NOTA DE VENTA');
+          setSerie(match.serie || 'NV001');
+        }
+
+        // Parse datosDocumento as fallback if fields are nested
+        let parsedDoc: any = {};
+        try {
+          if (typeof match.datosDocumento === 'string') {
+            parsedDoc = JSON.parse(match.datosDocumento);
+          } else if (match.datosDocumento && typeof match.datosDocumento === 'object') {
+            parsedDoc = match.datosDocumento;
+          }
+        } catch {
+          parsedDoc = {};
+        }
+
+        const rawNumDoc =
+          match.clienteNumeroDoc ||
+          parsedDoc.cliente?.numeroDocumento ||
+          parsedDoc.cliente?.numero ||
+          '';
+        const rawTipoDoc =
+          match.clienteTipoDoc ||
+          parsedDoc.cliente?.tipoDocumento ||
+          (match.tipoCodigo === 'FACTURA' ? 'RUC' : 'DNI');
+        const clienteNombre =
+          match.clienteNombre ||
+          parsedDoc.cliente?.nombre ||
+          'CLIENTES VARIOS';
+
+        let clienteDoc = '';
+        if (rawNumDoc && rawNumDoc !== '00000000' && rawNumDoc !== '-') {
+          clienteDoc = `${rawTipoDoc} ${rawNumDoc}`;
+        } else if (rawNumDoc === '00000000' || clienteNombre.toUpperCase().includes('VARIOS')) {
+          clienteDoc = 'DNI 00000000';
+        } else {
+          clienteDoc = '-';
+        }
+
+        const totalVal =
+          typeof match.total === 'number'
+            ? match.total
+            : typeof parsedDoc.total === 'number'
+            ? parsedDoc.total
+            : 0;
+
+        setResultado({
+          id: match.id,
+          ventaId: match.ventaId,
+          tipo: match.tipoNombre || (match.tipoCodigo === 'FACTURA' ? 'FACTURA' : 'BOLETA'),
+          serie: match.serie || serieTrimmed,
+          correlativo: match.correlativo || corrNum,
+          estado: match.estado || 'ACEPTADO POR SUNAT',
+          clienteNombre,
+          clienteDoc,
+          fecha: match.creadoEn ? new Date(match.creadoEn).toLocaleString('es-PE') : new Date().toLocaleString('es-PE'),
+          total: totalVal,
+        });
+        setSinResultados(false);
+        setBuscando(false);
+        return;
       }
       setSinResultados(true);
       setResultado(null);

@@ -54,12 +54,15 @@ public class ComprobanteService {
                         return false;
                     }
                 }
-                // Si se especifica serie, validar coincidencia salvo que haya coincidido directamente por ID de venta
+                // Si se especifica serie y no coincidió directamente por ID de venta o comprobante, validar serie
                 if (serie != null && !serie.isBlank()) {
-                    if (c.getSerieComprobante() != null && c.getSerieComprobante().getSerie() != null) {
+                    boolean matchIdDirecto = correlativo != null && (
+                        (c.getVenta() != null && c.getVenta().getId() != null && c.getVenta().getId().equals(correlativo)) ||
+                        (c.getId() != null && c.getId().equals(correlativo))
+                    );
+                    if (!matchIdDirecto && c.getSerieComprobante() != null && c.getSerieComprobante().getSerie() != null) {
                         boolean matchSerie = c.getSerieComprobante().getSerie().equalsIgnoreCase(serie.trim());
-                        boolean matchVentaId = correlativo != null && c.getVenta() != null && c.getVenta().getId() != null && c.getVenta().getId().equals(correlativo);
-                        if (!matchSerie && !matchVentaId) {
+                        if (!matchSerie) {
                             return false;
                         }
                     }
