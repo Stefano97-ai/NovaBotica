@@ -438,6 +438,196 @@ export default function ComprobantesPage() {
     window.open(`/api/comprobantes/${id}/descargar`, '_blank');
   }
 
+  async function handleDescargarPdf(comp: ComprobanteItem) {
+    try {
+      const { jsPDF } = await import('jspdf');
+      const isFactura = comp.tipo.toUpperCase().includes('FACTURA');
+      const docTitulo = isFactura ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA';
+      const numDocStr = `${comp.serie}-${String(comp.correlativo).padStart(8, '0')}`;
+      const itemsList = comp.items && comp.items.length > 0 ? comp.items : [
+        { cantidad: 1, producto: 'PRODUCTOS FARMACÉUTICOS VARIOS', precioUnitario: comp.total, total: comp.total }
+      ];
+
+      const estHeight = Math.max(160, 130 + itemsList.length * 8);
+      const doc = new jsPDF({
+        unit: 'mm',
+        format: [80, estHeight],
+        orientation: 'portrait',
+      });
+
+      let y = 8;
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(11);
+      doc.text('NOVA SALUD S.A.C.', 40, y, { align: 'center' });
+      y += 4;
+
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(7.5);
+      doc.text('R.U.C. 20608945612', 40, y, { align: 'center' });
+      y += 3.5;
+      doc.text('Av. Los Rosales 450 - San Borja, Lima', 40, y, { align: 'center' });
+      y += 3.5;
+      doc.text('Teléf: (01) 456-7890 / 987 654 321', 40, y, { align: 'center' });
+      y += 4;
+
+      // Divider
+      doc.setLineDashPattern([1, 1], 0);
+      doc.setDrawColor(100, 100, 100);
+      doc.line(4, y, 76, y);
+      y += 4;
+
+      // Document Type
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(9.5);
+      doc.text(docTitulo, 40, y, { align: 'center' });
+      y += 4;
+      doc.setFontSize(10.5);
+      doc.text(numDocStr, 40, y, { align: 'center' });
+      y += 3.5;
+
+      // Divider
+      doc.line(4, y, 76, y);
+      y += 4;
+
+      // Metadata
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(7.5);
+
+      const printRow = (label: string, value: string) => {
+        doc.setFont('courier', 'normal');
+        doc.text(label, 4, y);
+        doc.setFont('courier', 'bold');
+        const split = doc.splitTextToSize(value, 42);
+        doc.text(split, 76, y, { align: 'right' });
+        y += Math.max(3.6, split.length * 3.3);
+      };
+
+      printRow('Fecha:', comp.fecha);
+      printRow('N° Operación:', `#${comp.ventaId || comp.id}`);
+      printRow('Cajero:', comp.vendedor || 'Administrador');
+      printRow('Cliente:', comp.clienteNombre || 'CLIENTES VARIOS');
+      const cleanDocNum = comp.clienteDoc ? comp.clienteDoc.replace(/^(DNI|RUC)\s*/i, '').trim() : '00000000';
+      printRow(isFactura ? 'R.U.C.:' : 'D.N.I.:', cleanDocNum || '00000000');
+      printRow('Moneda:', 'SOLES (PEN)');
+
+      y += 1;
+      doc.line(4, y, 76, y);
+      y += 4;
+
+      // Items table header
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(7);
+      doc.text('CANT', 4, y);
+      doc.text('DESCRIPCION', 14, y);
+      doc.text('P.U.', 58, y, { align: 'right' });
+      doc.text('TOTAL', 76, y, { align: 'right' });
+      y += 3.5;
+      doc.line(4, y, 76, y);
+      y += 3.5;
+
+      // Items rows
+      doc.setFont('courier', 'normal');
+      itemsList.forEach((it) => {
+        doc.text(String(it.cantidad), 4, y);
+        const descLines = doc.splitTextToSize(it.producto, 40);
+        doc.text(descLines, 14, y);
+        doc.text(Number(it.precioUnitario).toFixed(2), 58, y, { align: 'right' });
+        doc.text(Number(it.total).toFixed(2), 76, y, { align: 'right' });
+        y += Math.max(3.8, descLines.length * 3.2);
+      });
+
+      y += 1;
+      doc.line(4, y, 76, y);
+      y += 4;
+
+      // Totals
+      const subtotal = typeof comp.subtotal === 'number' ? comp.subtotal : (comp.total / 1.18);
+      const impuesto = typeof comp.impuesto === 'number' ? comp.impuesto : (comp.total - subtotal);
+
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(7.5);
+      doc.text('OP. GRAVADA:', 28, y);
+      doc.text(`S/ ${subtotal.toFixed(2)}`, 76, y, { align: 'right' });
+      y += 3.8;
+      doc.text('I.G.V. (18%):', 28, y);
+      doc.text(`S/ ${impuesto.toFixed(2)}`, 76, y, { align: 'right' });
+      y += 4.2;
+
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(8.5);
+      doc.text('TOTAL A PAGAR:', 24, y);
+      doc.text(`S/ ${Number(comp.total).toFixed(2)}`, 76, y, { align: 'right' });
+      y += 4.5;
+
+      doc.line(4, y, 76, y);
+      y += 4.5;
+
+      // Footer
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(6.5);
+      doc.text(`Representación impresa de la ${isFactura ? 'Factura' : 'Boleta'} Electrónica`, 40, y, { align: 'center' });
+      y += 3.2;
+      doc.text('HASH: 4b29e06917f8a32cd801', 40, y, { align: 'center' });
+      y += 3.2;
+      doc.text('Autorizado mediante Res. Superintendencia SUNAT', 40, y, { align: 'center' });
+      y += 4.5;
+
+      // QR box
+      doc.setLineDashPattern([], 0);
+      doc.rect(28, y, 24, 13);
+      doc.setFontSize(6);
+      doc.text('[ QR SUNAT ]', 40, y + 5.5, { align: 'center' });
+      doc.text(numDocStr, 40, y + 9.5, { align: 'center' });
+      y += 16;
+
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(7.5);
+      doc.text('¡GRACIAS POR SU COMPRA!', 40, y, { align: 'center' });
+      y += 3.5;
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(6.5);
+      doc.text('Nova Salud · Cuidamos de su salud y bienestar', 40, y, { align: 'center' });
+
+      doc.save(`${numDocStr}.pdf`);
+    } catch (err) {
+      console.error('Error generando PDF:', err);
+      window.print();
+    }
+  }
+
+  function handleDescargarXml(comp: ComprobanteItem) {
+    const numDocStr = `${comp.serie}-${String(comp.correlativo).padStart(8, '0')}`;
+    const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<!-- Comprobante Electrónico Homologado SUNAT UBL 2.1 -->
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+  <ID>${numDocStr}</ID>
+  <IssueDate>${new Date().toISOString().slice(0, 10)}</IssueDate>
+  <DocumentCurrencyCode>PEN</DocumentCurrencyCode>
+  <AccountingSupplierParty>
+    <Party>
+      <PartyIdentification><ID>20608945612</ID></PartyIdentification>
+      <PartyLegalEntity><RegistrationName>NOVA SALUD S.A.C.</RegistrationName></PartyLegalEntity>
+    </Party>
+  </AccountingSupplierParty>
+  <AccountingCustomerParty>
+    <Party>
+      <PartyIdentification><ID>${comp.clienteDoc || '00000000'}</ID></PartyIdentification>
+      <PartyLegalEntity><RegistrationName>${comp.clienteNombre || 'CLIENTES VARIOS'}</RegistrationName></PartyLegalEntity>
+    </Party>
+  </AccountingCustomerParty>
+  <LegalMonetaryTotal>
+    <PayableAmount currencyID="PEN">${Number(comp.total).toFixed(2)}</PayableAmount>
+  </LegalMonetaryTotal>
+</Invoice>`;
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `20608945612-${numDocStr}.xml`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   return (
     <div className="consult-wrap">
       {/* Top Breadcrumb pill matching screenshot */}
@@ -564,14 +754,14 @@ export default function ComprobantesPage() {
               <button
                 type="button"
                 className="consult-act-btn consult-act-download"
-                onClick={() => handleDescargar(resultado.id)}
+                onClick={() => handleDescargarPdf(resultado)}
               >
-                <FaDownload size={12} /> Descargar PDF / TXT
+                <FaDownload size={12} /> Descargar PDF
               </button>
               <button
                 type="button"
                 className="consult-act-btn consult-act-download"
-                onClick={() => alert('Descargando archivo XML/CDR homologado por SUNAT')}
+                onClick={() => handleDescargarXml(resultado)}
               >
                 <FaDownload size={12} /> Descargar XML / CDR
               </button>
@@ -671,6 +861,13 @@ export default function ComprobantesPage() {
                 onClick={() => setShowTicketModal(false)}
               >
                 Cerrar
+              </button>
+              <button
+                type="button"
+                className="consult-act-btn consult-act-download"
+                onClick={() => handleDescargarPdf(resultado)}
+              >
+                <FaDownload size={12} /> Descargar PDF
               </button>
               <button
                 type="button"

@@ -518,16 +518,30 @@
    ESTILOS DE IMPRESIÓN (PRINT MEDIA)
    ========================================================= */
 @media print {
-  html, body {
-    background: #ffffff !important;
-    color: #000000 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: auto !important;
+  @page {
+    size: auto;
+    margin: 5mm;
   }
 
+  html, body, #root, .layout, .erp-container, #workspace-main, .consult-wrap {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform: none !important;
+  }
+
+  /* Ocultar elementos de navegación y búsqueda */
   .erp-topbar,
   .erp-sidebar,
   .sidebar-backdrop,
@@ -535,31 +549,42 @@
   .consult-card,
   .consult-recents-wrap,
   .ticket-screen-preview-modal,
-  #workspace-main > *:not(.ticket-print-only) {
+  .toast,
+  .notifications {
     display: none !important;
   }
 
+  /* Mostrar exclusivamente el ticket formal */
   .ticket-print-only {
     display: block !important;
+    visibility: visible !important;
     position: static !important;
     margin: 0 auto !important;
-    width: 78mm !important;
-    max-width: 78mm !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
     padding: 2mm !important;
     background: #ffffff !important;
     color: #000000 !important;
   }
 
   .ticket-paper {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
     max-width: 100% !important;
+    margin: 0 auto !important;
     padding: 0 !important;
-    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
     border: none !important;
+    box-shadow: none !important;
   }
 
-  @page {
-    size: 80mm auto;
-    margin: 2mm;
+  .ticket-paper * {
+    visibility: visible !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 
