@@ -6,8 +6,9 @@ Sistema de gestión de botica con **React + TypeScript** en la vista y **Java 21
 
 - Autenticación real, sesiones revocables y roles; contraseñas scrypt compatibles con las cuentas anteriores.
 - Inicio con resumen real de inventario/ventas, acceso según rol y alertas calculadas.
+- Centro de alertas persistentes: campana con contador por usuario, prioridades, historial y destinatarios por rol. [Funcionamiento y configuración](docs/alertas.md).
 - React conserva diseño, modo claro/oscuro y navegación.
-- Esquema de negocio y migraciones; no hay todavía CRUD comercial, ventas transaccionales, FEFO operativo ni PDF.
+- Catálogo, compras y recepciones; ventas transaccionales con FEFO, pagos fraccionados, series opcionales y comprobantes simulados. [Ventas y series](docs/ventas-pagos-series.md).
 - Backend TypeScript reemplazado por Java. Ver [backend](backend/README.md) y [continuidad](docs/continuidad.md).
 
 ## Ejecutar con Docker

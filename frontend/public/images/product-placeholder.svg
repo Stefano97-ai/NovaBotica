@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="140" viewBox="0 0 240 140">
+  <rect width="240" height="140" rx="16" fill="#f1f5f4"/>
+  <rect x="1" y="1" width="238" height="138" rx="15" fill="none" stroke="#dbe5e1"/>
+  <text x="120" y="72" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="1" fill="#245c48">NOVA SALUD</text>
+</svg>

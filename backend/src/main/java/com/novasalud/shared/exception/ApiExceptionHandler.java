@@ -14,6 +14,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<?> handleUploadSize(Exception error) {
+        return ResponseEntity.badRequest().body(Map.of("statusCode",400,"message","La imagen debe pesar como máximo 2 MB."));
+    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> handleResponseStatus(ResponseStatusException error) {

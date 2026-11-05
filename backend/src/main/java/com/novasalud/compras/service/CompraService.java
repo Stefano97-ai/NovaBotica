@@ -13,6 +13,8 @@ import com.novasalud.compras.repository.DetalleCompraRepository;
 import com.novasalud.compras.repository.RecepcionLoteRepository;
 import com.novasalud.inventario.model.Lote;
 import com.novasalud.inventario.model.Movimiento;
+import com.novasalud.inventario.service.SerieUnidadService;
+import com.novasalud.inventario.dto.CrearSerieDto;
 import com.novasalud.inventario.repository.LoteRepository;
 import com.novasalud.inventario.repository.MovimientoRepository;
 import com.novasalud.proveedores.model.Proveedor;
@@ -25,11 +27,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.HashSet;
 import org.springframework.stereotype.Service;
+import com.novasalud.shared.events.InventoryEvents;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CompraService {
+
+    private final InventoryEvents inventoryEvents;
 
     private final CompraRepository compraRepository;
     private final DetalleCompraRepository detalleCompraRepository;
@@ -39,6 +45,7 @@ public class CompraService {
     private final UsuarioRepository usuarioRepository;
     private final LoteRepository loteRepository;
     private final MovimientoRepository movimientoRepository;
+    private final SerieUnidadService seriesService;
 
     public CompraService(
         CompraRepository compraRepository,
@@ -48,8 +55,12 @@ public class CompraService {
         ProductoRepository productoRepository,
         UsuarioRepository usuarioRepository,
         LoteRepository loteRepository,
-        MovimientoRepository movimientoRepository
+        MovimientoRepository movimientoRepository,
+        InventoryEvents inventoryEvents,
+        SerieUnidadService seriesService
     ) {
+        this.inventoryEvents = inventoryEvents;
+        this.seriesService = seriesService;
         this.compraRepository = compraRepository;
         this.detalleCompraRepository = detalleCompraRepository;
         this.recepcionLoteRepository = recepcionLoteRepository;
@@ -65,6 +76,50 @@ public class CompraService {
         return compraRepository.findAllByOrderByFechaDesc().stream()
             .map(this::toDto)
             .toList();
+    }
+
+    @Transactional
+    public CompraResponseDto registrar(RegistroCompraDto dto, Long usuarioId) {
+        // Use the same lock order as sales to serialize stock and serial changes.
+        var products = productoRepository.lockForSale(dto.items().stream().map(RegistroCompraDto.Linea::productoId).distinct().sorted().toList());
+        var seen = new HashSet<String>();
+        var productIds = new HashSet<Long>();
+        for (var item : dto.items()) {
+            if (!productIds.add(item.productoId())) throw new BusinessException("Agrega cada producto una sola vez a la compra.");
+            var product = products.stream().filter(p -> p.getId().equals(item.productoId())).findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
+            if (!product.isActivo()) throw new BusinessException("No se puede comprar un producto inactivo.");
+            loteRepository.findByProductoIdAndNumeroLote(item.productoId(), item.numeroLote().trim().toUpperCase()).ifPresent(lot -> {
+                if (!lot.isDisponible() || !lot.getFechaVencimiento().equals(item.fechaVencimiento()))
+                    throw new BusinessException("El lote existente no está disponible o tiene otra fecha de vencimiento.");
+            });
+            var serials = item.series() == null ? List.<String>of() : item.series();
+            if (product.isRequiereSerie() && serials.size() != item.cantidad())
+                throw new BusinessException("Registra una serie por cada unidad de '" + product.getNombre() + "'.");
+            if (!product.isRequiereSerie() && !serials.isEmpty())
+                throw new BusinessException("El producto no está configurado para usar series únicas.");
+            for (String serial : serials) {
+                if (serial == null || serial.isBlank() || serial.trim().length() > 160 || !seen.add(serial.trim()))
+                    throw new BusinessException("Las series deben ser válidas y distintas en toda la compra.");
+            }
+        }
+        var created = crear(new CreateCompraDto(dto.proveedorId(), dto.items().stream()
+            .map(i -> new ItemCompraDto(i.productoId(), i.cantidad(), i.costoUnitario())).toList()), usuarioId);
+        var receipts = new ArrayList<RecepcionCompraDto>();
+        for (var item : dto.items()) {
+            var detail = created.detalles().stream().filter(d -> d.productoId().equals(item.productoId())).findFirst().orElseThrow();
+            receipts.add(new RecepcionCompraDto(detail.id(), item.numeroLote(), item.fechaVencimiento(), item.cantidad()));
+        }
+        var received = recepcionarMercaderia(created.id(), receipts, usuarioId);
+        // JDBC serial registration must see the stock and receipt rows flushed by JPA.
+        compraRepository.flush();
+        for (var item : dto.items()) {
+            var detail = received.detalles().stream().filter(d -> d.productoId().equals(item.productoId())).findFirst().orElseThrow();
+            var lot = loteRepository.findByProductoIdAndNumeroLote(item.productoId(), item.numeroLote().trim().toUpperCase()).orElseThrow();
+            for (String serial : item.series() == null ? List.<String>of() : item.series())
+                seriesService.registrar(item.productoId(), new CrearSerieDto(lot.getId(), detail.id(), serial.trim(), null));
+        }
+        return received;
     }
 
     @Transactional(readOnly = true)
@@ -108,6 +163,7 @@ public class CompraService {
         compra.setTotal(total);
         compra.setDetalles(detalles);
 
+        inventoryEvents.changed();
         return toDto(compraRepository.save(compra));
     }
 
@@ -201,6 +257,7 @@ public class CompraService {
             compra.setEstado("PENDIENTE");
         }
 
+        inventoryEvents.changed();
         return toDto(compraRepository.save(compra));
     }
 
@@ -214,6 +271,7 @@ public class CompraService {
         }
 
         compra.setEstado("ANULADA");
+        inventoryEvents.changed();
         return toDto(compraRepository.save(compra));
     }
 

@@ -1,7 +1,7 @@
 import type { Role } from './user';
 const all: readonly Role[] = ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'];
 export const routeAccess = {
-  '/': all, '/productos': all, '/inventario': all,
+  '/': all, '/alertas': all, '/productos': all, '/inventario': all,
   '/ventas': ['ADMINISTRADOR', 'VENDEDOR'],
   '/compras': ['ADMINISTRADOR', 'ALMACENERO'],
   '/proveedores': ['ADMINISTRADOR'],

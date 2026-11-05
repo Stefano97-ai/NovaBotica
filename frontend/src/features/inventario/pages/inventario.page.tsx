@@ -26,6 +26,9 @@ import {
   LayoutGrid
 } from 'lucide-react';
 import './inventario.css';
+import { editProduct, changeProductStatus, type ProductRecord } from '../../productos/infrastructure/product-api';
+import { KardexPage } from '../presentation/pages/kardex.page';
+import { kardexSource } from '../infrastructure/kardex-api';
 
 /* ================= TYPES ================= */
 export interface MovimientoItem {
@@ -56,6 +59,8 @@ export interface ProductoItem {
   stockDisponible: number;
   stockMinimo: number;
   activo: boolean;
+  requiereSerie?: boolean;
+  imagenUrl?: string | null;
 }
 
 export interface CategoriaItem {
@@ -64,149 +69,6 @@ export interface CategoriaItem {
 }
 
 /* ================= INITIAL DEMO PRODUCTS ================= */
-const INITIAL_PRODUCTOS: ProductoItem[] = [
-  {
-    id: 1,
-    codigo: 'MED-001',
-    nombre: 'Paracetamol 500mg Tabletas - Genfar',
-    categoriaId: 1,
-    categoriaNombre: 'Analgésicos',
-    unidadBase: 'TABLETA',
-    precioCompra: 0.25,
-    precioVenta: 0.80,
-    stockDisponible: 95,
-    stockMinimo: 20,
-    activo: true
-  },
-  {
-    id: 2,
-    codigo: 'MED-002',
-    nombre: 'Amoxicilina 500mg Cápsulas - Medifarma',
-    categoriaId: 2,
-    categoriaNombre: 'Antibióticos',
-    unidadBase: 'CÁPSULA',
-    precioCompra: 0.60,
-    precioVenta: 1.50,
-    stockDisponible: 19,
-    stockMinimo: 25,
-    activo: true
-  },
-  {
-    id: 3,
-    codigo: 'MED-003',
-    nombre: 'Ibuprofeno 400mg Tabletas - Farmaindustria',
-    categoriaId: 1,
-    categoriaNombre: 'Analgésicos',
-    unidadBase: 'TABLETA',
-    precioCompra: 0.35,
-    precioVenta: 1.00,
-    stockDisponible: 48,
-    stockMinimo: 15,
-    activo: true
-  },
-  {
-    id: 4,
-    codigo: 'MED-004',
-    nombre: 'Azitromicina 500mg Caja x 3 - Lab Portugal',
-    categoriaId: 2,
-    categoriaNombre: 'Antibióticos',
-    unidadBase: 'CAJA',
-    precioCompra: 8.50,
-    precioVenta: 18.00,
-    stockDisponible: 24,
-    stockMinimo: 10,
-    activo: true
-  },
-  {
-    id: 5,
-    codigo: 'MED-005',
-    nombre: 'Alcohol Medicinal 70° 1 Litro - Alkofarma',
-    categoriaId: 3,
-    categoriaNombre: 'Antisépticos',
-    unidadBase: 'FRASCO',
-    precioCompra: 6.00,
-    precioVenta: 12.00,
-    stockDisponible: 45,
-    stockMinimo: 12,
-    activo: true
-  },
-  {
-    id: 6,
-    codigo: 'MED-006',
-    nombre: 'Panadol Antigripal Tableta x 24 - GSK',
-    categoriaId: 1,
-    categoriaNombre: 'Analgésicos',
-    unidadBase: 'CAJA',
-    precioCompra: 14.00,
-    precioVenta: 26.00,
-    stockDisponible: 30,
-    stockMinimo: 8,
-    activo: true
-  },
-  {
-    id: 7,
-    codigo: 'MED-007',
-    nombre: 'Suero Fisiológico 0.9% 500ml - Braun',
-    categoriaId: 4,
-    categoriaNombre: 'Material Médico',
-    unidadBase: 'FRASCO',
-    precioCompra: 3.50,
-    precioVenta: 7.50,
-    stockDisponible: 82,
-    stockMinimo: 20,
-    activo: true
-  },
-  {
-    id: 8,
-    codigo: 'MED-008',
-    nombre: 'Bismutol Suspensión 150ml - Bagó',
-    categoriaId: 5,
-    categoriaNombre: 'Gastrointestinal',
-    unidadBase: 'FRASCO',
-    precioCompra: 12.00,
-    precioVenta: 22.50,
-    stockDisponible: 16,
-    stockMinimo: 10,
-    activo: true
-  },
-  {
-    id: 9,
-    codigo: 'MED-009',
-    nombre: 'Mascarillas Quirúrgicas 3 pliegues Caja x 50',
-    categoriaId: 4,
-    categoriaNombre: 'Material Médico',
-    unidadBase: 'CAJA',
-    precioCompra: 5.00,
-    precioVenta: 12.00,
-    stockDisponible: 4,
-    stockMinimo: 10,
-    activo: true
-  },
-  {
-    id: 10,
-    codigo: 'MED-010',
-    nombre: 'Omeprazol 20mg Cápsulas - Farmaindustria',
-    categoriaId: 5,
-    categoriaNombre: 'Gastrointestinal',
-    unidadBase: 'CÁPSULA',
-    precioCompra: 0.40,
-    precioVenta: 1.20,
-    stockDisponible: 120,
-    stockMinimo: 30,
-    activo: true
-  }
-];
-
-const INITIAL_CATEGORIAS: CategoriaItem[] = [
-  { id: 1, nombre: 'Analgésicos' },
-  { id: 2, nombre: 'Antibióticos' },
-  { id: 3, nombre: 'Antisépticos' },
-  { id: 4, nombre: 'Material Médico' },
-  { id: 5, nombre: 'Gastrointestinal' },
-  { id: 6, nombre: 'Equipos' }
-];
-
-/* ================= INITIAL DEMO MOVEMENTS ================= */
 const INITIAL_MOVIMIENTOS: MovimientoItem[] = [
   {
     id: 1,
@@ -381,23 +243,21 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
   /* =========================================================================
      ESTADOS SUBMÓDULO 2: KARDEX (Screenshot 3)
      ========================================================================= */
-  const [kardexFechaInicio, setKardexFechaInicio] = useState('2026-11-05');
-  const [kardexFechaFin, setKardexFechaFin] = useState('2026-11-05');
-  const [kardexPageSize, setKardexPageSize] = useState(10);
-  const [kardexSucursal, setKardexSucursal] = useState('ALL');
-  const [kardexProductoId, setKardexProductoId] = useState<string>('ALL');
-  const [kardexCurrentPage, setKardexCurrentPage] = useState(1);
-
   /* =========================================================================
      ESTADOS SUBMÓDULO 3: ADMINISTRAR PRODUCTOS
      ========================================================================= */
-  const [productos, setProductos] = useState<ProductoItem[]>(INITIAL_PRODUCTOS);
-  const [categorias, setCategorias] = useState<CategoriaItem[]>(INITIAL_CATEGORIAS);
-  const [prodSearch, setProdSearch] = useState('');
+  const [productos, setProductos] = useState<ProductoItem[]>([]);
+  const [categorias, setCategorias] = useState<CategoriaItem[]>([]);
+  const [prodSearch, setProdSearch] = useState(() => searchParams.get('buscar') ?? '');
   const [prodCategoria, setProdCategoria] = useState('ALL');
   const [prodEstado, setProdEstado] = useState<'TODOS' | 'ACTIVOS' | 'INACTIVOS'>('TODOS');
   const [prodPageSize, setProdPageSize] = useState(10);
   const [prodCurrentPage, setProdCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const query = searchParams.get('buscar');
+    if (query !== null) { setProdSearch(query); setProdCategoria('ALL'); setProdEstado('TODOS'); setProdCurrentPage(1); }
+  }, [searchParams]);
 
   // Modal Crear / Editar Producto
   const [modalProductOpen, setModalProductOpen] = useState(false);
@@ -406,21 +266,30 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
   const [formNombre, setFormNombre] = useState('');
   const [formCategoriaId, setFormCategoriaId] = useState<number>(1);
   const [formUnidadBase, setFormUnidadBase] = useState('TABLETA');
-  const [formPrecioCompra, setFormPrecioCompra] = useState('0.50');
   const [formPrecioVenta, setFormPrecioVenta] = useState('1.50');
   const [formStockMinimo, setFormStockMinimo] = useState('15');
   const [formStockInicial, setFormStockInicial] = useState('50');
 
+  const [productError,setProductError]=useState('');
+  const [productBusy,setProductBusy]=useState(false);
+  const [canEditProducts,setCanEditProducts]=useState(false);
+  const [formRequiereSerie,setFormRequiereSerie]=useState(false);
+  const [formImage,setFormImage]=useState<File|null>(null);
+  const [imagePreview,setImagePreview]=useState('');
+  useEffect(()=>{if(!formImage){setImagePreview('');return;}const url=URL.createObjectURL(formImage);setImagePreview(url);return()=>URL.revokeObjectURL(url);},[formImage]);
+  function mapProduct(p:ProductRecord):ProductoItem {return {...p,precioCompra:0,precioVenta:Number(p.precioVenta),stockDisponible:Number(p.stockDisponible),stockMinimo:Number(p.stockMinimo)};}
   // Cargar datos del backend
   useEffect(() => {
     async function loadBackendData() {
       try {
-        const [prodRes, catRes, movRes] = await Promise.all([
+        const [prodRes, catRes, movRes, meRes] = await Promise.all([
           fetch('/api/productos'),
           fetch('/api/categorias'),
-          fetch('/api/inventario/movimientos')
+          fetch('/api/inventario/movimientos'),
+          fetch('/api/auth/me')
         ]);
 
+        if(meRes.ok){const session=await meRes.json();setCanEditProducts(session.user?.rol==='ADMINISTRADOR');}
         if (catRes.ok) {
           const catData = await catRes.json();
           if (Array.isArray(catData) && catData.length > 0) {
@@ -428,28 +297,9 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
           }
         }
 
-        if (prodRes.ok) {
-          const prodData = await prodRes.json();
-          if (Array.isArray(prodData) && prodData.length > 0) {
-            const mapped: ProductoItem[] = prodData.map((p: any) => ({
-              id: p.id,
-              codigo: p.codigo || `PRD-${p.id}`,
-              nombre: p.nombre,
-              categoriaId: p.categoriaId || 1,
-              categoriaNombre: p.categoriaNombre || 'General',
-              unidadBase: p.unidadBase || 'UNIDAD',
-              precioCompra: Number(p.precioCompra) || 0.50,
-              precioVenta: Number(p.precioVenta) || 1.50,
-              stockDisponible: Number(p.stockDisponible) || 0,
-              stockMinimo: Number(p.stockMinimo) || 10,
-              activo: p.activo !== false
-            }));
-            const backendIds = new Set(mapped.map((m) => m.id));
-            const remainingDemos = INITIAL_PRODUCTOS.filter((d) => !backendIds.has(d.id));
-            setProductos([...mapped, ...remainingDemos]);
-          }
-        }
-
+        if (!prodRes.ok) throw new Error('No se pudo cargar el catálogo real.');
+        const prodData:ProductRecord[]=await prodRes.json();
+        setProductos(prodData.map(mapProduct));
         if (movRes.ok) {
           const movData = await movRes.json();
           if (Array.isArray(movData) && movData.length > 0) {
@@ -468,7 +318,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
           }
         }
       } catch {
-        // Fallback demo local
+        setProductError('No pudimos cargar los productos reales. Recarga la página para reintentar.');
       }
     }
     loadBackendData();
@@ -503,48 +353,6 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
   /* =========================================================================
      CÁLCULO MATEMÁTICO: TARJETA KARDEX (Screenshot 3)
      ========================================================================= */
-  const kardexCalculated = useMemo(() => {
-    let list = movimientos.filter((m) => {
-      const matchSucursal =
-        kardexSucursal === 'ALL' ||
-        (kardexSucursal === 'PRINCIPAL' && m.sede.includes('PRINCIPAL')) ||
-        (kardexSucursal === 'SUCURSAL_2' && m.sede.includes('SUCURSAL 2'));
-
-      const matchProducto =
-        kardexProductoId === 'ALL' ||
-        String(m.productoId) === kardexProductoId ||
-        m.producto.toLowerCase().includes(kardexProductoId.toLowerCase());
-
-      return matchSucursal && matchProducto;
-    });
-
-    let balance = 100;
-    return list.map((item) => {
-      const isEntrada = item.tipoMovimiento === 'COMPRA' || (item.tipoMovimiento === 'AJUSTE' && item.movimiento.includes('Ingreso'));
-      const isSalida = item.tipoMovimiento === 'VENTA' || item.tipoMovimiento === 'TRANSFERENCIA' || (item.tipoMovimiento === 'AJUSTE' && !item.movimiento.includes('Ingreso'));
-
-      const entrada = isEntrada ? item.cantidad : 0;
-      const salida = isSalida ? item.cantidad : 0;
-      const invInicial = balance;
-      const invFinal = invInicial + entrada - salida;
-      balance = invFinal;
-
-      return {
-        ...item,
-        invInicial,
-        entrada,
-        salida,
-        invFinal
-      };
-    });
-  }, [movimientos, kardexSucursal, kardexProductoId]);
-
-  const kardexTotalPages = Math.ceil(kardexCalculated.length / kardexPageSize) || 1;
-  const kardexPaginated = useMemo(() => {
-    const start = (kardexCurrentPage - 1) * kardexPageSize;
-    return kardexCalculated.slice(start, start + kardexPageSize);
-  }, [kardexCalculated, kardexCurrentPage, kardexPageSize]);
-
   /* =========================================================================
      FILTRADO: ADMINISTRAR PRODUCTOS
      ========================================================================= */
@@ -617,86 +425,36 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
     showNotif(`Transferencia de ${transCantidad} unidades enviada exitosamente.`);
   }
 
-  async function handleSaveProduct(e: React.FormEvent) {
-    e.preventDefault();
-    if (!formNombre.trim()) return;
-
-    const catObj = categorias.find((c) => c.id === Number(formCategoriaId));
-    const catName = catObj ? catObj.nombre : 'General';
-
-    if (editingProduct) {
-      const updated: ProductoItem = {
-        ...editingProduct,
-        codigo: formCodigo.trim(),
-        nombre: formNombre.trim(),
-        categoriaId: Number(formCategoriaId),
-        categoriaNombre: catName,
-        unidadBase: formUnidadBase,
-        precioCompra: parseFloat(formPrecioCompra) || 0,
-        precioVenta: parseFloat(formPrecioVenta) || 0,
-        stockMinimo: parseInt(formStockMinimo) || 0,
-        stockDisponible: parseInt(formStockInicial) || editingProduct.stockDisponible
-      };
-
-      setProductos((prev) => prev.map((p) => (p.id === editingProduct.id ? updated : p)));
-      setModalProductOpen(false);
-      showNotif(`Producto "${updated.nombre}" actualizado.`);
-    } else {
-      const nuevo: ProductoItem = {
-        id: Date.now(),
-        codigo: formCodigo.trim() || `PRD-${Date.now().toString().slice(-4)}`,
-        nombre: formNombre.trim(),
-        categoriaId: Number(formCategoriaId),
-        categoriaNombre: catName,
-        unidadBase: formUnidadBase,
-        precioCompra: parseFloat(formPrecioCompra) || 0,
-        precioVenta: parseFloat(formPrecioVenta) || 0,
-        stockDisponible: parseInt(formStockInicial) || 0,
-        stockMinimo: parseInt(formStockMinimo) || 0,
-        activo: true
-      };
-
-      setProductos((prev) => [nuevo, ...prev]);
-      setModalProductOpen(false);
-      showNotif(`Producto "${nuevo.nombre}" creado exitosamente.`);
-    }
+  async function handleSaveProduct(e:React.FormEvent) {
+    e.preventDefault();if(!editingProduct||productBusy||!canEditProducts)return;
+    setProductBusy(true);setProductError('');
+    try {
+      const updated=await editProduct(editingProduct.id,{categoriaId:Number(formCategoriaId),nombre:formNombre.trim(),unidadBase:formUnidadBase,
+        precioVenta:Number(formPrecioVenta),stockMinimo:Number(formStockMinimo),activo:editingProduct.activo,requiereSerie:formRequiereSerie},formImage);
+      setProductos(old=>old.map(p=>p.id===updated.id?mapProduct(updated):p));setModalProductOpen(false);setFormImage(null);
+      showNotif(`Producto "${updated.nombre}" actualizado correctamente.`);
+    }catch(reason){setProductError(reason instanceof Error?reason.message:'No se pudo actualizar el producto.');}finally{setProductBusy(false);}
   }
-
-  function openCreateProductModal() {
-    setEditingProduct(null);
-    setFormCodigo(`MED-${String(productos.length + 1).padStart(3, '0')}`);
-    setFormNombre('');
-    setFormCategoriaId(categorias[0]?.id || 1);
-    setFormUnidadBase('TABLETA');
-    setFormPrecioCompra('0.50');
-    setFormPrecioVenta('1.50');
-    setFormStockMinimo('15');
-    setFormStockInicial('50');
-    setModalProductOpen(true);
-  }
-
   function openEditProductModal(p: ProductoItem) {
+    setProductError('');setFormImage(null);setFormRequiereSerie(Boolean(p.requiereSerie));
     setEditingProduct(p);
     setFormCodigo(p.codigo);
     setFormNombre(p.nombre);
     setFormCategoriaId(p.categoriaId);
     setFormUnidadBase(p.unidadBase);
-    setFormPrecioCompra(p.precioCompra.toFixed(2));
     setFormPrecioVenta(p.precioVenta.toFixed(2));
     setFormStockMinimo(String(p.stockMinimo));
     setFormStockInicial(String(p.stockDisponible));
     setModalProductOpen(true);
   }
 
-  function toggleProductStatus(p: ProductoItem) {
-    const nextStatus = !p.activo;
-    setProductos((prev) => prev.map((item) => (item.id === p.id ? { ...item, activo: nextStatus } : item)));
-    showNotif(`Producto "${p.nombre}" marcado como ${nextStatus ? 'ACTIVO' : 'INACTIVO'}.`);
+  async function toggleProductStatus(p:ProductoItem) {
+    if(productBusy||!canEditProducts)return;setProductBusy(true);setProductError('');
+    try{const updated=await changeProductStatus(p.id,!p.activo);setProductos(old=>old.map(item=>item.id===updated.id?mapProduct(updated):item));showNotif(`Producto "${updated.nombre}" ${updated.activo?'activado':'desactivado'}.`);}
+    catch(reason){setProductError(reason instanceof Error?reason.message:'No se pudo cambiar el estado.');}finally{setProductBusy(false);}
   }
-
   function verKardexDeProducto(p: ProductoItem) {
-    setKardexProductoId(String(p.id));
-    navigate('/inventario/kardex');
+    navigate('/inventario/kardex?productoId=' + p.id);
     showNotif(`Visualizando Tarjeta Kardex de: ${p.nombre}`);
   }
 
@@ -719,6 +477,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
         </div>
       )}
 
+      {productError && <p className="inv-product-error" role="alert">{productError}</p>}
       {/* ================= NOTIFICACIÓN FLASH ================= */}
       {notif && (
         <div
@@ -977,237 +736,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
       {/* =========================================================================
          VISTA 2: ADMINISTRACIÓN DE KARDEX (SCREENSHOT 3)
          ========================================================================= */}
-      {activeView === 'kardex' && (
-        <div className="inv-card">
-          <div className="inv-header-row">
-            <h2 className="inv-title">ADMINISTRACIÓN DE KARDEX</h2>
-          </div>
-
-          {/* Filtros idénticos a Screenshot 3 */}
-          <div className="inv-filters-grid">
-            {/* Fila 1: Dos fechas */}
-            <div className="inv-date-row">
-              <div className="inv-date-box" title="Fecha inicio">
-                <Calendar size={15} color="#475569" />
-                <input
-                  type="date"
-                  value={kardexFechaInicio}
-                  onChange={(e) => setKardexFechaInicio(e.target.value)}
-                  aria-label="Fecha inicio"
-                />
-              </div>
-              <div className="inv-date-box" title="Fecha fin">
-                <Calendar size={15} color="#475569" />
-                <input
-                  type="date"
-                  value={kardexFechaFin}
-                  onChange={(e) => setKardexFechaFin(e.target.value)}
-                  aria-label="Fecha fin"
-                />
-              </div>
-            </div>
-
-            {/* Fila 2: [10 v]  [SUCURSAL v]  [BUSCAR EL PRODUCTO v] */}
-            <div className="inv-kardex-row-2">
-              <select
-                className="inv-select-limit"
-                value={kardexPageSize}
-                onChange={(e) => {
-                  setKardexPageSize(Number(e.target.value));
-                  setKardexCurrentPage(1);
-                }}
-                title="Registros por página"
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-
-              <select
-                className="inv-select-sucursal"
-                value={kardexSucursal}
-                onChange={(e) => {
-                  setKardexSucursal(e.target.value);
-                  setKardexCurrentPage(1);
-                }}
-                title="Filtrar por sucursal"
-              >
-                <option value="ALL">SUCURSAL</option>
-                <option value="PRINCIPAL">SEDE PRINCIPAL - SAN MIGUEL</option>
-                <option value="SUCURSAL_2">SUCURSAL 2 - JESÚS MARÍA</option>
-              </select>
-
-              <select
-                className="inv-select-producto"
-                value={kardexProductoId}
-                onChange={(e) => {
-                  setKardexProductoId(e.target.value);
-                  setKardexCurrentPage(1);
-                }}
-                title="Buscar producto"
-              >
-                <option value="ALL">BUSCAR EL PRODUCTO</option>
-                {productos.map((prod) => (
-                  <option key={prod.id} value={prod.id}>
-                    {prod.nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Barra de herramientas flotante centrada: [PDF] [EXCEL] [CONFIG] */}
-          <div className="inv-export-toolbar">
-            <button
-              type="button"
-              className="btn-export btn-export-pdf"
-              onClick={() => window.print()}
-              title="Exportar a PDF / Imprimir Kardex"
-            >
-              <FileText size={15} />
-            </button>
-            <button
-              type="button"
-              className="btn-export btn-export-excel"
-              onClick={() => {
-                const csv = 'data:text/csv;charset=utf-8,\uFEFF' +
-                  ['FECHA,MOVIMIENTO,INV. INICIAL,ENTRADA,SALIDA,INV. FINAL', ...kardexCalculated.map((m) => `"${m.fecha}","${m.movimiento}",${m.invInicial},${m.entrada},${m.salida},${m.invFinal}`)].join('\n');
-                const link = document.createElement('a');
-                link.href = encodeURI(csv);
-                link.download = `kardex_${Date.now()}.csv`;
-                link.click();
-              }}
-              title="Descargar Tarjeta Kardex en Excel (.CSV)"
-            >
-              <FileSpreadsheet size={15} />
-            </button>
-            <button
-              type="button"
-              className="btn-export btn-export-config"
-              onClick={() => {
-                setKardexProductoId('ALL');
-                setKardexSucursal('ALL');
-                showNotif('Filtros de Kardex restaurados.');
-              }}
-              title="Restablecer filtros"
-            >
-              <Settings size={15} />
-            </button>
-          </div>
-
-          {/* TABLA TARJETA KARDEX (Screenshot 3) */}
-          <div className="kardex-table-wrap">
-            <table className="kardex-table">
-              <thead>
-                <tr>
-                  <th colSpan={6} className="kardex-banner-th">
-                    TARJETA KARDEX
-                  </th>
-                </tr>
-                <tr>
-                  <th colSpan={2} className="kardex-split-blue">
-                    FECHA Y DOCUMENTO / DESCRIPCIÓN MVTO.
-                  </th>
-                  <th colSpan={4} className="kardex-split-green">
-                    UNIDADES
-                  </th>
-                </tr>
-                <tr className="kardex-cols-row">
-                  <th style={{ width: 140 }} className="kardex-td-center">FECHA</th>
-                  <th>MOVIMIENTO</th>
-                  <th style={{ width: 120 }} className="kardex-td-center">INV. INICIAL</th>
-                  <th style={{ width: 110 }} className="kardex-td-center">ENTRADA</th>
-                  <th style={{ width: 110 }} className="kardex-td-center">SALIDA</th>
-                  <th style={{ width: 120 }} className="kardex-td-center">INV. FINAL</th>
-                </tr>
-              </thead>
-              <tbody>
-                {kardexPaginated.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: '30px 14px', color: '#64748b' }}>
-                      No se encontraron registros en el Kardex para los filtros seleccionados.
-                    </td>
-                  </tr>
-                ) : (
-                  kardexPaginated.map((row) => (
-                    <tr key={row.id}>
-                      <td className="kardex-td-center" style={{ color: '#475569', fontWeight: 600 }}>
-                        {row.fecha}
-                      </td>
-                      <td>
-                        <div style={{ fontWeight: 700, color: '#1e293b' }}>{row.movimiento}</div>
-                        <div style={{ fontSize: 10.5, color: '#64748b' }}>
-                          {row.producto} · Lote: {row.lote}
-                        </div>
-                      </td>
-                      <td className="kardex-td-center" style={{ fontWeight: 700, color: '#475569' }}>
-                        {row.invInicial}
-                      </td>
-                      <td className="kardex-td-center">
-                        {row.entrada && row.entrada > 0 ? (
-                          <span className="kardex-num-entrada">+{row.entrada}</span>
-                        ) : (
-                          <span style={{ color: '#94a3b8' }}>-</span>
-                        )}
-                      </td>
-                      <td className="kardex-td-center">
-                        {row.salida && row.salida > 0 ? (
-                          <span className="kardex-num-salida">-{row.salida}</span>
-                        ) : (
-                          <span style={{ color: '#94a3b8' }}>-</span>
-                        )}
-                      </td>
-                      <td className="kardex-td-center">
-                        <span className="kardex-num-final">{row.invFinal}</span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Paginación */}
-          <div className="inv-pagination">
-            <span>
-              Mostrando {kardexCalculated.length === 0 ? 0 : (kardexCurrentPage - 1) * kardexPageSize + 1} a{' '}
-              {Math.min(kardexCurrentPage * kardexPageSize, kardexCalculated.length)} de {kardexCalculated.length} registros
-            </span>
-            <div className="inv-page-btns">
-              <button
-                type="button"
-                className="inv-btn-nav"
-                disabled={kardexCurrentPage === 1}
-                onClick={() => setKardexCurrentPage((p) => Math.max(1, p - 1))}
-              >
-                ‹
-              </button>
-              {Array.from({ length: Math.min(5, kardexTotalPages) }).map((_, i) => {
-                const p = i + 1;
-                return (
-                  <button
-                    key={p}
-                    type="button"
-                    className={`inv-btn-nav ${kardexCurrentPage === p ? 'active' : ''}`}
-                    onClick={() => setKardexCurrentPage(p)}
-                  >
-                    {p}
-                  </button>
-                );
-              })}
-              <button
-                type="button"
-                className="inv-btn-nav"
-                disabled={kardexCurrentPage >= kardexTotalPages}
-                onClick={() => setKardexCurrentPage((p) => Math.min(kardexTotalPages, p + 1))}
-              >
-                ›
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {activeView === 'kardex' && <KardexPage key={searchParams.get('productoId') ?? ''} initialProductId={searchParams.get('productoId') ?? ''} source={kardexSource} />}
 
       {/* =========================================================================
          VISTA 3: ADMINISTRACIÓN DE PRODUCTOS
@@ -1221,14 +750,6 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                 Catálogo general de medicamentos, materiales, precios de venta y control de existencias
               </span>
             </div>
-            <button
-              type="button"
-              className="btn-new-product"
-              onClick={openCreateProductModal}
-              title="Registrar nuevo producto en catálogo"
-            >
-              <Plus size={14} /> NUEVO PRODUCTO
-            </button>
           </div>
 
           {/* KPI Ribbon de Productos - 3D Realistic Badges */}
@@ -1404,7 +925,8 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                             className={`prod-status-toggle ${
                               p.activo ? 'prod-status-active' : 'prod-status-inactive'
                             }`}
-                            onClick={() => toggleProductStatus(p)}
+                            disabled={!canEditProducts||productBusy}
+                              onClick={() => void toggleProductStatus(p)}
                             title="Alternar estado Activo / Inactivo"
                           >
                             <span
@@ -1423,6 +945,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                             <button
                               type="button"
                               className="btn-prod-action edit"
+                              disabled={!canEditProducts||productBusy}
                               onClick={() => openEditProductModal(p)}
                               title="Editar producto"
                               aria-label="Editar producto"
@@ -1441,7 +964,8 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                             <button
                               type="button"
                               className={`btn-prod-action power ${p.activo ? 'is-active' : 'is-inactive'}`}
-                              onClick={() => toggleProductStatus(p)}
+                              disabled={!canEditProducts||productBusy}
+                              onClick={() => void toggleProductStatus(p)}
                               title={p.activo ? 'Desactivar producto' : 'Activar producto'}
                               aria-label={p.activo ? 'Desactivar producto' : 'Activar producto'}
                             >
@@ -1670,7 +1194,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
 
       {/* ================= MODAL CREAR / EDITAR PRODUCTO ================= */}
       {modalProductOpen && (
-        <div className="inv-modal-overlay" onClick={() => setModalProductOpen(false)}>
+        <div className="inv-modal-overlay" onClick={() => {if(!productBusy)setModalProductOpen(false);}}>
           <div className="inv-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 540 }}>
             <div className="inv-modal-header">
               <h3 className="inv-modal-title">
@@ -1679,6 +1203,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
               <button
                 type="button"
                 className="inv-modal-close"
+                disabled={productBusy}
                 onClick={() => setModalProductOpen(false)}
                 title="Cerrar modal"
               >
@@ -1687,6 +1212,17 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
             </div>
 
             <form onSubmit={handleSaveProduct} className="inv-modal-form">
+              <fieldset className="inv-product-fields" disabled={productBusy}>
+              {productError&&<p className="inv-product-error" role="alert">{productError}</p>}
+              <div className="inv-product-image-field">
+                <img src={imagePreview||editingProduct?.imagenUrl||'/images/product-placeholder.svg'} alt="Vista previa del producto" width={120} height={90}/>
+                <label htmlFor="edit-product-image">Imagen del producto (PNG o JPEG, máximo 2 MB)</label>
+                <input id="edit-product-image" type="file" accept="image/png,image/jpeg" onChange={e=>{
+                  const file=e.target.files?.[0]??null;
+                  if(file&&(!['image/png','image/jpeg'].includes(file.type)||file.size>2*1024*1024)){setProductError('Selecciona una imagen PNG o JPEG de hasta 2 MB.');e.target.value='';setFormImage(null);return;}
+                  setProductError('');setFormImage(file);
+                }}/>
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 12 }}>
                 <div className="inv-form-group">
                   <label>Código de Barras / SKU *</label>
@@ -1694,7 +1230,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                     type="text"
                     required
                     value={formCodigo}
-                    onChange={(e) => setFormCodigo(e.target.value)}
+                    readOnly
                     placeholder="Ej. MED-015"
                   />
                 </div>
@@ -1766,15 +1302,18 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                 </div>
 
                 <div className="inv-form-group">
-                  <label>Stock Inicial / Disponible</label>
+                  <label>Stock disponible (solo consulta)</label>
                   <input
                     type="number"
                     min="0"
                     value={formStockInicial}
-                    onChange={(e) => setFormStockInicial(e.target.value)}
+                    readOnly
                   />
                 </div>
               </div>
+
+              <p className="inv-product-help">Las existencias se actualizan desde Compras y Ajustes de inventario, conservando sus movimientos.</p>
+              <label className="inv-product-series"><input type="checkbox" checked={formRequiereSerie} onChange={e=>setFormRequiereSerie(e.target.checked)}/>Este producto tiene serie única por unidad</label>
 
               <div className="inv-modal-footer">
                 <button
@@ -1785,9 +1324,10 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                   Cancelar
                 </button>
                 <button type="submit" className="inv-btn-submit">
-                  {editingProduct ? 'Actualizar Producto' : 'Guardar Producto'}
+                  {productBusy ? 'Guardando…' : 'Actualizar Producto'}
                 </button>
               </div>
+              </fieldset>
             </form>
           </div>
         </div>

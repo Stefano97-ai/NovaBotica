@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createBrowserRouter, NavLink, Outlet, redirect, useLoaderData, useLocation, useNavigate, useRevalidator, useRouteError } from 'react-router-dom';
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import {
@@ -34,6 +34,10 @@ import Page5 from '../features/proveedores/pages/proveedores.page';
 import Page6 from '../features/comprobantes/pages/comprobantes.page';
 import Page7 from '../features/reportes/pages/reportes.page';
 import Page8 from '../features/usuarios/pages/usuarios.page';
+import AlertasPage from '../features/alertas/presentation/pages/alertas.page';
+import { AlertBell } from '../features/alertas/presentation/components/alert-bell';
+import { AlertsProvider } from '../features/alertas/presentation/alerts-context';
+import { alertsRepository } from '../features/alertas/infrastructure/http-alerts-repository';
 
 interface NavSubItem {
   path: string;
@@ -53,6 +57,7 @@ interface NavEntry {
 
 const entries: NavEntry[] = [
   { path: '/', label: 'Inicio', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: LayoutDashboard, element: <Page0 /> },
+  { path: '/alertas', label: 'Alertas', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: Bell, element: <AlertasPage /> },
   { path: '/ventas', label: 'Ventas', roles: ['ADMINISTRADOR', 'VENDEDOR'], icon: ShoppingCart, element: <Page3 /> },
   { path: '/comprobantes', label: 'Comprobantes', roles: ['ADMINISTRADOR', 'VENDEDOR'], icon: Receipt, element: <Page6 /> },
   {
@@ -115,6 +120,7 @@ function Layout() {
   const user = useLoaderData() as User;
   const navigate = useNavigate();
   const location = useLocation();
+  const alertsUnauthorized = useCallback(() => navigate('/login', { replace: true }), [navigate]);
   const revalidator = useRevalidator();
   const [busy, setBusy] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -197,6 +203,7 @@ function Layout() {
   const allowedEntries = entries.filter((entry) => entry.roles.includes(user.rol));
 
   return (
+    <AlertsProvider key={user.id + ':' + user.rol} source={alertsRepository} refreshKey={location.key} onUnauthorized={alertsUnauthorized}>
     <div className={`layout ${collapsed ? 'sidebar-mini' : ''}`}>
       {/* TOPBAR */}
       <header className="erp-topbar">
@@ -227,10 +234,7 @@ function Layout() {
         </div>
 
         <div className="topbar-right">
-          <button className="icon-btn" aria-label="Alertas de inventario" title="Alertas de inventario" onClick={() => navigate('/inventario/kardex')}>
-            <Bell size={17} />
-            <span className="notification-badge">0</span>
-          </button>
+          <AlertBell />
           <div className="topbar-user" title={`Usuario: ${user.nombre}`}>
             <span className="topbar-avatar-small"><UserRound size={14} /></span>
             <span className="topbar-user-name">{roleNames[user.rol] || 'Administrador'}</span>
@@ -322,6 +326,7 @@ function Layout() {
         </main>
       </div>
     </div>
+    </AlertsProvider>
   );
 }
 

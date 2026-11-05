@@ -17,9 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReportesController {
 
     private final ReportesService reportesService;
+    private final com.novasalud.reportes.service.ReporteDetalleService detalleService;
 
-    public ReportesController(ReportesService reportesService) {
+    public ReportesController(ReportesService reportesService, com.novasalud.reportes.service.ReporteDetalleService detalleService) {
         this.reportesService = reportesService;
+        this.detalleService = detalleService;
+    }
+
+    @GetMapping("/detalle")
+    public java.util.Map<String,Object> detalle(@RequestParam String tipo,
+        @RequestParam(required=false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate desde,
+        @RequestParam(required=false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate hasta) {
+        return detalleService.detalle(tipo,desde,hasta);
     }
 
     @GetMapping("/ventas")

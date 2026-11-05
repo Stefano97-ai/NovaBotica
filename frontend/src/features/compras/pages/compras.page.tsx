@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Truck,
@@ -16,123 +16,35 @@ import {
   X,
   Package,
   Receipt,
+  ListChecks,
   ClipboardList
 } from 'lucide-react';
+import { purchaseError, type PurchaseItem as ItemCompra, type PurchaseProduct, type PurchaseSupplier, type PurchaseCategory } from '../domain/purchase';
+import { loadPurchaseCatalog, createPurchaseProduct, registerPurchase } from '../infrastructure/purchases-api';
+import { PurchaseSerials } from '../presentation/components/purchase-serials';
 import './compras.css';
-
-interface ItemCompra {
-  id: string;
-  codigo: string;
-  descripcion: string;
-  unidadMedida: string;
-  cantidad: number;
-  precioUnitario: number;
-  lote: string;
-  vencimiento: string;
-}
-
-interface ProveedorPreset {
-  ruc: string;
-  razonSocial: string;
-  direccion: string;
-  ubigeo: string;
-  celular: string;
-}
-
-const PROVEEDORES_FRECUENTES: ProveedorPreset[] = [
-  {
-    ruc: '20100018625',
-    razonSocial: 'LABORATORIOS MEDIFARMA S.A.',
-    direccion: 'Jr. Ecuador 787, Lima - Lima',
-    ubigeo: '150101',
-    celular: '984512345'
-  },
-  {
-    ruc: '20100085497',
-    razonSocial: 'LABORATORIOS BAGO DEL PERU S.A.',
-    direccion: 'Av. Jorge Chávez 154, Miraflores - Lima',
-    ubigeo: '150122',
-    celular: '992341256'
-  },
-  {
-    ruc: '20100109931',
-    razonSocial: 'FARMAINDUSTRIA S.A.',
-    direccion: 'Calle Andrés Reyes 437, San Isidro - Lima',
-    ubigeo: '150131',
-    celular: '981245789'
-  },
-  {
-    ruc: '20492817361',
-    razonSocial: 'ALKOFARMA S.A.C.',
-    direccion: 'Av. Elmer Faucett 1850, Callao',
-    ubigeo: '070101',
-    celular: '976543210'
-  },
-  {
-    ruc: '20518392011',
-    razonSocial: 'DROGUERIA INTRALAB S.A.C.',
-    direccion: 'Av. Colonial 2340, Cercado de Lima',
-    ubigeo: '150101',
-    celular: '945678123'
-  }
-];
-
-const CATALOGO_MEDICAMENTOS = [
-  { codigo: 'MED-001', nombre: 'Paracetamol 500mg Tabletas - Genfar', unidad: 'Caja x 100', costoDefecto: 8.50 },
-  { codigo: 'MED-002', nombre: 'Amoxicilina 500mg Cápsulas - Medifarma', unidad: 'Caja x 50', costoDefecto: 14.20 },
-  { codigo: 'MED-003', nombre: 'Ibuprofeno 400mg Tabletas - Farmaindustria', unidad: 'Caja x 100', costoDefecto: 11.00 },
-  { codigo: 'MED-004', nombre: 'Azitromicina 500mg Caja x 3 - Lab Portugal', unidad: 'Caja x 3', costoDefecto: 6.80 },
-  { codigo: 'MED-005', nombre: 'Alcohol Medicinal 70° 1 Litro - Alkofarma', unidad: 'Frasco 1L', costoDefecto: 7.50 },
-  { codigo: 'MED-006', nombre: 'Panadol Antigripal Tableta x 24 - GSK', unidad: 'Caja x 24', costoDefecto: 18.00 },
-  { codigo: 'MED-007', nombre: 'Suero Fisiológico 0.9% 500ml - Braun', unidad: 'Frasco 500ml', costoDefecto: 4.20 },
-  { codigo: 'MED-008', nombre: 'Bismutol Suspensión 150ml - Bagó', unidad: 'Frasco 150ml', costoDefecto: 16.50 },
-  { codigo: 'MED-009', nombre: 'Mascarillas Quirúrgicas 3 pliegues Caja x 50', unidad: 'Caja x 50', costoDefecto: 5.00 },
-  { codigo: 'MED-010', nombre: 'Omeprazol 20mg Cápsulas - Farmaindustria', unidad: 'Caja x 30', costoDefecto: 9.50 }
-];
 
 export default function ComprasPage() {
   // Comprobante
   const [tipoComprobante, setTipoComprobante] = useState('Factura');
   const [moneda, setMoneda] = useState('PEN');
-  const [fechaEmision, setFechaEmision] = useState('2026-11-04');
+  const [fechaEmision, setFechaEmision] = useState(new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' }));
   const [serie, setSerie] = useState('F001');
   const [correlativo, setCorrelativo] = useState('000452');
 
   // Proveedor
   const [tipoDoc, setTipoDoc] = useState('R.U.C.');
-  const [numDoc, setNumDoc] = useState('20100018625');
-  const [razonSocial, setRazonSocial] = useState('LABORATORIOS MEDIFARMA S.A.');
-  const [direccion, setDireccion] = useState('Jr. Ecuador 787, Lima - Lima');
+  const [numDoc, setNumDoc] = useState('');
+  const [razonSocial, setRazonSocial] = useState('');
+  const [direccion, setDireccion] = useState('');
   const [ubigeo, setUbigeo] = useState('150101');
-  const [celular, setCelular] = useState('984512345');
+  const [celular, setCelular] = useState('');
   const [condicionPago, setCondicionPago] = useState('Contado');
 
   // Productos en el detalle
-  const [items, setItems] = useState<ItemCompra[]>([
-    {
-      id: 'item-1',
-      codigo: 'MED-001',
-      descripcion: 'Paracetamol 500mg Tabletas - Genfar',
-      unidadMedida: 'Caja x 100',
-      cantidad: 20,
-      precioUnitario: 8.50,
-      lote: 'L-PAR26-01',
-      vencimiento: '2028-10-31'
-    },
-    {
-      id: 'item-2',
-      codigo: 'MED-002',
-      descripcion: 'Amoxicilina 500mg Cápsulas - Medifarma',
-      unidadMedida: 'Caja x 50',
-      cantidad: 15,
-      precioUnitario: 14.20,
-      lote: 'L-AMX26-05',
-      vencimiento: '2028-08-30'
-    }
-  ]);
+  const [items, setItems] = useState<ItemCompra[]>([]);
 
   // Condiciones comerciales
-  const [descuentoGlobal, setDescuentoGlobal] = useState<number>(0);
   const [metodoPago, setMetodoPago] = useState('En efectivo');
   const [observaciones, setObservaciones] = useState('');
 
@@ -153,31 +65,45 @@ export default function ComprasPage() {
     setTimeout(() => setNotif(null), 3500);
   }
 
-  // Buscar RUC proveedor
-  function handleBuscarProveedor() {
-    const found = PROVEEDORES_FRECUENTES.find((p) => p.ruc === numDoc.trim());
-    if (found) {
-      setRazonSocial(found.razonSocial);
-      setDireccion(found.direccion);
-      setUbigeo(found.ubigeo);
-      setCelular(found.celular);
-      showNotif(`Proveedor "${found.razonSocial}" autocompletado.`);
-    } else {
-      setRazonSocial('DROGUERIA Y LABORATORIOS ASOCIADOS S.A.C.');
-      setDireccion('Av. Los Frutales 450, Ate - Lima');
-      setUbigeo('150103');
-      setCelular('987654321');
-      showNotif('Datos del proveedor recuperados de SUNAT.');
-    }
-  }
+  const [catalog, setCatalog] = useState<PurchaseProduct[]>([]);
+  const [suppliers, setSuppliers] = useState<PurchaseSupplier[]>([]);
+  const [categories, setCategories] = useState<PurchaseCategory[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogVersion, setCatalogVersion] = useState(0);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [creatingProduct, setCreatingProduct] = useState(false);
+  const [productError, setProductError] = useState('');
+  const [nuevoRequiereSerie, setNuevoRequiereSerie] = useState(false);
+  const [nuevoCategoria, setNuevoCategoria] = useState('');
+  const [nuevoPrecio, setNuevoPrecio] = useState(0);
+  const [serialItemId, setSerialItemId] = useState<string | null>(null);
+  const serialItem = items.find(i => i.id === serialItemId);
+  useEffect(() => {
+    const controller = new AbortController(); let active = true;
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    setCatalogLoading(true); setError('');
+    loadPurchaseCatalog(controller.signal).then(data => {
+      if (!active) return;
+      setCatalog(data.products); setSuppliers(data.suppliers); setCategories(data.categories);
+      setNuevoCategoria(old => old || String(data.categories[0]?.id ?? ''));
+    }).catch(reason => { if (active) setError(reason instanceof Error ? reason.message : 'No se pudo cargar el catálogo.'); })
+      .finally(() => { clearTimeout(timeout); if (active) setCatalogLoading(false); });
+    return () => { active = false; clearTimeout(timeout); controller.abort(); };
+  }, [catalogVersion]);
 
+  function handleBuscarProveedor() {
+    const found = suppliers.find(p => p.ruc === numDoc.trim());
+    if (!found) { setError('No existe un proveedor activo con ese RUC. Regístralo en Proveedores antes de guardar la compra.'); return; }
+    setError(''); setRazonSocial(found.razonSocial); setDireccion(found.direccion || ''); setCelular(found.telefono || '');
+    showNotif(`Proveedor "${found.razonSocial}" seleccionado.`);
+  }
   // Cálculos de Totales
   const totales = useMemo(() => {
     const subtotal = items.reduce((acc, it) => acc + it.cantidad * it.precioUnitario, 0);
     const opGravadas = subtotal;
     const igv = Math.round(opGravadas * 0.18 * 100) / 100;
-    const desc = Number(descuentoGlobal) || 0;
-    const total = Math.max(0, subtotal + igv - desc);
+    const total = subtotal + igv;
 
     return {
       subtotal: subtotal.toFixed(2),
@@ -185,41 +111,40 @@ export default function ComprasPage() {
       opExoneradas: '0.00',
       opInafectas: '0.00',
       opGratuitas: '0.00',
-      descuento: desc.toFixed(2),
       icbper: '0.00',
       igv: igv.toFixed(2),
       total: total.toFixed(2)
     };
-  }, [items, descuentoGlobal]);
+  }, [items]);
 
   // Actualizar item de la tabla
-  function updateItem(id: string, field: keyof ItemCompra, value: any) {
-    setItems((prev) =>
-      prev.map((it) => (it.id === id ? { ...it, [field]: value } : it))
-    );
+  function updateItem<K extends keyof ItemCompra>(id: string, field: K, value: ItemCompra[K]) {
+    setItems(prev => prev.map(it => it.id === id ? { ...it, [field]: value } : it));
   }
-
   // Eliminar item
   function removeItem(id: string) {
     setItems((prev) => prev.filter((it) => it.id !== id));
   }
 
   // Agregar item desde catálogo
-  function addItemFromCatalog(med: (typeof CATALOGO_MEDICAMENTOS)[0]) {
+  function addItemFromCatalog(med: PurchaseProduct) {
     const existing = items.find((it) => it.codigo === med.codigo);
     if (existing) {
       updateItem(existing.id, 'cantidad', existing.cantidad + 1);
       showNotif(`Cantidad aumentada para ${med.nombre}`);
     } else {
       const newItem: ItemCompra = {
-        id: 'item-' + Date.now(),
+        id: crypto.randomUUID(),
+        productoId: med.id,
+        requiereSerie: med.requiereSerie,
+        series: [],
         codigo: med.codigo,
         descripcion: med.nombre,
         unidadMedida: med.unidad,
         cantidad: 10,
         precioUnitario: med.costoDefecto,
-        lote: 'L-' + med.codigo.slice(4) + '26-01',
-        vencimiento: '2028-12-31'
+        lote: '',
+        vencimiento: ''
       };
       setItems((prev) => [...prev, newItem]);
       showNotif(`"${med.nombre}" agregado a la compra.`);
@@ -227,68 +152,39 @@ export default function ComprasPage() {
     setModalPickerOpen(false);
   }
 
-  // Guardar nuevo producto rápido
-  function handleCrearNuevoProducto(e: React.FormEvent) {
+  async function handleCrearNuevoProducto(e: React.FormEvent) {
     e.preventDefault();
-    if (!nuevoNombre.trim()) return;
-    const newItem: ItemCompra = {
-      id: 'item-' + Date.now(),
-      codigo: nuevoCodigo || 'MED-' + Math.floor(100 + Math.random() * 900),
-      descripcion: nuevoNombre,
-      unidadMedida: nuevoUnidad,
-      cantidad: 10,
-      precioUnitario: Number(nuevoCosto) || 5.0,
-      lote: 'L-NUEVO26-01',
-      vencimiento: '2028-12-31'
-    };
-    setItems((prev) => [...prev, newItem]);
-    setModalNuevoProdOpen(false);
-    setNuevoNombre('');
-    setNuevoCodigo('');
-    showNotif(`Nuevo producto "${nuevoNombre}" creado y agregado a la compra.`);
-  }
-
-  // Guardar Compra Completa
-  async function handleGuardarCompra() {
-    if (items.length === 0) {
-      alert('Debes agregar al menos un producto a la compra.');
-      return;
-    }
-
+    if (creatingProduct) return;
+    setCreatingProduct(true); setProductError('');
     try {
-      await fetch('/api/compras', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          proveedorId: 1,
-          tipoComprobante,
-          serie,
-          correlativo,
-          items: items.map((it) => ({
-            productoId: 1,
-            cantidad: it.cantidad,
-            costoUnitario: it.precioUnitario,
-            lote: it.lote,
-            vencimiento: it.vencimiento
-          }))
-        })
-      });
-    } catch {
-      // Ignorar fallback
-    }
-
-    showNotif(`¡Compra ${serie}-${correlativo} registrada exitosamente! Stock y lotes actualizados.`);
-    // Incrementar correlativo
-    const num = parseInt(correlativo, 10) || 452;
-    setCorrelativo(String(num + 1).padStart(6, '0'));
-    setItems([]);
+      const product = await createPurchaseProduct({ categoriaId: Number(nuevoCategoria), codigo: nuevoCodigo.trim(), nombre: nuevoNombre.trim(),
+        unidadBase: nuevoUnidad, precioVenta: nuevoPrecio, requiereSerie: nuevoRequiereSerie });
+      setCatalog(old => [...old, product]);
+      addItemFromCatalog({ ...product, costoDefecto: nuevoCosto });
+      setModalNuevoProdOpen(false); setNuevoNombre(''); setNuevoCodigo(''); setNuevoRequiereSerie(false);
+      showNotif(`Producto "${product.nombre}" creado y agregado. Completa el lote, vencimiento y las series si corresponde.`);
+    } catch (reason) { setProductError(reason instanceof Error ? reason.message : 'No se pudo crear el producto.'); }
+    finally { setCreatingProduct(false); }
   }
 
+  async function handleGuardarCompra() {
+    if (saving) return;
+    const invalid = purchaseError(items);
+    if (invalid) { setError(invalid); return; }
+    const supplier = suppliers.find(p => p.ruc === numDoc.trim());
+    if (!supplier) { setError('Selecciona un proveedor activo registrado con el RUC indicado.'); return; }
+    setSaving(true); setError('');
+    try {
+      const purchase = await registerPurchase(supplier.id, items);
+      showNotif(`Compra #${purchase.id} recibida. Stock, lotes y series registrados correctamente.`);
+      setItems([]); setCorrelativo(String((parseInt(correlativo, 10) || 0) + 1).padStart(6, '0'));
+    } catch (reason) { setError(reason instanceof Error ? reason.message : 'No se pudo guardar la compra. Se conserva el formulario.'); }
+    finally { setSaving(false); }
+  }
   // Limpiar todo
   function handleLimpiar() {
     if (confirm('¿Deseas limpiar todos los campos del comprobante de compra?')) {
       setItems([]);
-      setDescuentoGlobal(0);
       setObservaciones('');
       showNotif('Formulario de compra restablecido.');
     }
@@ -296,12 +192,12 @@ export default function ComprasPage() {
 
   // Filtro de catálogo
   const catalogoFiltrado = useMemo(() => {
-    return CATALOGO_MEDICAMENTOS.filter(
+    return catalog.filter(
       (m) =>
         m.nombre.toLowerCase().includes(searchCatalog.toLowerCase()) ||
         m.codigo.toLowerCase().includes(searchCatalog.toLowerCase())
     );
-  }, [searchCatalog]);
+  }, [searchCatalog, catalog]);
 
   return (
     <div className="compras-page">
@@ -320,6 +216,9 @@ export default function ComprasPage() {
         </div>
       </div>
 
+      {error && <div className="purchase-error" role="alert">{error} <button type="button" onClick={() => setCatalogVersion(v => v + 1)}>Actualizar catálogo</button></div>}
+      {catalogLoading && <p role="status">Cargando productos, categorías y proveedores…</p>}
+      <fieldset className="purchase-fields" disabled={saving}>
       {/* Notificación Flash */}
       {notif && (
         <div style={{
@@ -426,6 +325,8 @@ export default function ComprasPage() {
               <input
                 type="text"
                 placeholder="Ingrese número de documento..."
+                list="purchase-suppliers"
+                aria-label="RUC del proveedor"
                 value={numDoc}
                 onChange={(e) => setNumDoc(e.target.value)}
                 maxLength={11}
@@ -434,11 +335,12 @@ export default function ComprasPage() {
                 type="button"
                 className="btn-search-doc"
                 onClick={handleBuscarProveedor}
-                title="Consultar RUC en SUNAT"
+                title="Buscar proveedor registrado"
               >
                 <Search size={15} />
               </button>
             </div>
+            <datalist id="purchase-suppliers">{suppliers.map(supplier => <option key={supplier.id} value={supplier.ruc}>{supplier.razonSocial}</option>)}</datalist>
 
             <input
               type="text"
@@ -497,12 +399,13 @@ export default function ComprasPage() {
             className="btn-add-prods"
             onClick={() => setModalPickerOpen(true)}
           >
-            <ShoppingCart size={14} /> Agregar Productos o Servicios
+            <ShoppingCart size={14} /> Agregar Productos
           </button>
           <button
             type="button"
             className="btn-new-prod"
-            onClick={() => setModalNuevoProdOpen(true)}
+            disabled={catalogLoading}
+            onClick={() => { setProductError(''); setModalNuevoProdOpen(true); }}
           >
             Nuevo Producto o Servicio <PlusSquare size={14} />
           </button>
@@ -523,7 +426,7 @@ export default function ComprasPage() {
                 <th style={{ width: 95, textAlign: 'right' }}>TOTAL</th>
                 <th style={{ width: 110 }}>LOTE</th>
                 <th style={{ width: 120 }}>VENCE</th>
-                <th style={{ width: 40, textAlign: 'center' }}></th>
+                <th style={{ width: 140, textAlign: 'center' }}>ACCIONES</th>
               </tr>
             </thead>
             <tbody>
@@ -544,10 +447,13 @@ export default function ComprasPage() {
                         <input
                           type="number"
                           min={1}
+                          max={10000}
+                          step={1}
+                          aria-label={`Cantidad de ${it.descripcion}`}
                           className="cell-input-number"
                           value={it.cantidad}
                           onChange={(e) =>
-                            updateItem(it.id, 'cantidad', Math.max(1, Number(e.target.value)))
+                            updateItem(it.id, 'cantidad', Math.max(1, Math.min(10000, Math.trunc(Number(e.target.value)) || 1)))
                           }
                         />
                       </td>
@@ -592,6 +498,9 @@ export default function ComprasPage() {
                         />
                       </td>
                       <td style={{ textAlign: 'center' }}>
+                        {it.requiereSerie && <button type="button" className="purchase-series-btn" onClick={() => setSerialItemId(it.id)} aria-label={`Registrar series de ${it.descripcion}`}>
+                          <ListChecks size={15} /> Series {it.series.length}/{it.cantidad}
+                        </button>}
                         <button
                           type="button"
                           className="btn-del-item"
@@ -613,21 +522,6 @@ export default function ComprasPage() {
         <div className="compras-bottom-grid">
           {/* Left Column */}
           <div className="compras-left-col">
-            <div className="form-field-block">
-              <label>Descuento</label>
-              <div className="input-with-icon" style={{ width: 220 }}>
-                <span style={{ fontSize: 13 }}>💵</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  min={0}
-                  value={descuentoGlobal}
-                  onChange={(e) => setDescuentoGlobal(Number(e.target.value))}
-                  placeholder="0.00"
-                />
-              </div>
-            </div>
-
             <div className="form-field-block">
               <label>Método de Pago:</label>
               <div className="input-with-icon" style={{ width: 300 }}>
@@ -689,11 +583,6 @@ export default function ComprasPage() {
             </div>
 
             <div className="summary-line">
-              <span className="summary-line-label">Descuento (-)</span>
-              <span className="summary-line-value">{totales.descuento}</span>
-            </div>
-
-            <div className="summary-line">
               <span className="summary-line-label">ICBPER</span>
               <span className="summary-line-value">{totales.icbper}</span>
             </div>
@@ -715,6 +604,8 @@ export default function ComprasPage() {
           <button
             type="button"
             className="btn-save-purchase"
+            disabled={saving || catalogLoading}
+            aria-label="Guardar y recibir compra"
             onClick={handleGuardarCompra}
             title="Guardar y procesar compra"
           >
@@ -730,6 +621,11 @@ export default function ComprasPage() {
           </button>
         </div>
       </div>
+      </fieldset>
+
+      {serialItem && <PurchaseSerials key={serialItem.id} name={serialItem.descripcion} quantity={serialItem.cantidad} initial={serialItem.series}
+        otherSeries={items.filter(i => i.id !== serialItem.id).flatMap(i => i.series)}
+        onClose={() => setSerialItemId(null)} onSave={series => { updateItem(serialItem.id, 'series', series); setSerialItemId(null); }} />}
 
       {/* ================= MODAL PICKER DE PRODUCTOS ================= */}
       {modalPickerOpen && (
@@ -770,6 +666,7 @@ export default function ComprasPage() {
                     </div>
                     <div style={{ fontSize: 11, color: '#64748b' }}>
                       Código: {med.codigo} · {med.unidad}
+                      {med.requiereSerie && ' · Serie única por unidad'}
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
@@ -789,15 +686,16 @@ export default function ComprasPage() {
 
       {/* ================= MODAL NUEVO PRODUCTO RÁPIDO ================= */}
       {modalNuevoProdOpen && (
-        <div className="compras-modal-backdrop" onClick={() => setModalNuevoProdOpen(false)}>
-          <div className="compras-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="compras-modal-backdrop" onClick={() => { if (!creatingProduct) setModalNuevoProdOpen(false); }}>
+          <div className="compras-modal" role="dialog" aria-modal="true" aria-labelledby="new-purchase-product-title" onClick={(e) => e.stopPropagation()}>
             <div className="compras-modal-header">
-              <h3 className="compras-modal-title">
+              <h3 className="compras-modal-title" id="new-purchase-product-title">
                 <Package size={16} /> Nuevo Producto o Medicamento
               </h3>
               <button
                 type="button"
                 className="inv-modal-close"
+                disabled={creatingProduct}
                 onClick={() => setModalNuevoProdOpen(false)}
               >
                 <X size={18} />
@@ -805,12 +703,17 @@ export default function ComprasPage() {
             </div>
 
             <form onSubmit={handleCrearNuevoProducto}>
+              <fieldset className="purchase-fields" disabled={creatingProduct}>
+              {productError && <p className="purchase-error" role="alert">{productError}</p>}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div className="form-field-block">
-                  <label>Nombre del Medicamento / Producto</label>
+                  <label htmlFor="purchase-new-name">Nombre del Medicamento / Producto</label>
                   <input
+                    id="purchase-new-name"
                     type="text"
                     required
+                    minLength={2}
+                    maxLength={180}
                     className="standard-input"
                     placeholder="Ej. Clorfenamina 4mg Tabletas"
                     value={nuevoNombre}
@@ -820,18 +723,23 @@ export default function ComprasPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="form-field-block">
-                    <label>Código Interno</label>
+                    <label htmlFor="purchase-new-code">Código Interno</label>
                     <input
+                      id="purchase-new-code"
                       type="text"
                       className="standard-input"
                       placeholder="Ej. MED-015"
+                      required
+                      minLength={2}
+                      maxLength={60}
                       value={nuevoCodigo}
                       onChange={(e) => setNuevoCodigo(e.target.value)}
                     />
                   </div>
                   <div className="form-field-block">
-                    <label>Unidad de Medida</label>
+                    <label htmlFor="purchase-new-unit">Unidad de Medida</label>
                     <select
+                      id="purchase-new-unit"
                       className="standard-input"
                       value={nuevoUnidad}
                       onChange={(e) => setNuevoUnidad(e.target.value)}
@@ -848,8 +756,22 @@ export default function ComprasPage() {
                 </div>
 
                 <div className="form-field-block">
-                  <label>Costo de Compra Estimado (S/)</label>
+                  <label htmlFor="purchase-product-category">Categoría</label>
+                  <select id="purchase-product-category" required className="standard-input" value={nuevoCategoria} onChange={e => setNuevoCategoria(e.target.value)}>
+                    <option value="">Selecciona una categoría</option>
+                    {categories.map(category => <option key={category.id} value={category.id}>{category.nombre}</option>)}
+                  </select>
+                </div>
+                <div className="form-field-block">
+                  <label htmlFor="purchase-product-price">Precio de venta (S/)</label>
+                  <input id="purchase-product-price" type="number" min={0} step="0.01" required className="standard-input" value={nuevoPrecio} onChange={e => setNuevoPrecio(Number(e.target.value))} />
+                </div>
+                <label className="purchase-series-toggle"><input type="checkbox" checked={nuevoRequiereSerie} onChange={e => setNuevoRequiereSerie(e.target.checked)} />Este producto tiene serie única por unidad</label>
+                <p className="purchase-series-help">Si lo activas, registra una serie distinta por cada unidad antes de guardar la compra.</p>
+                <div className="form-field-block">
+                  <label htmlFor="purchase-new-cost">Costo de Compra Estimado (S/)</label>
                   <input
+                    id="purchase-new-cost"
                     type="number"
                     step="0.01"
                     min={0}
@@ -870,9 +792,10 @@ export default function ComprasPage() {
                   Cancelar
                 </button>
                 <button type="submit" className="inv-btn-submit">
-                  Guardar y Agregar
+                  {creatingProduct ? 'Creando producto…' : 'Guardar y Agregar'}
                 </button>
               </div>
+              </fieldset>
             </form>
           </div>
         </div>

@@ -16,10 +16,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import com.novasalud.shared.events.InventoryEvents;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class InventarioService {
+
+    private final InventoryEvents inventoryEvents;
 
     private final LoteRepository loteRepository;
     private final MovimientoRepository movimientoRepository;
@@ -30,8 +33,10 @@ public class InventarioService {
         LoteRepository loteRepository,
         MovimientoRepository movimientoRepository,
         ProductoRepository productoRepository,
-        UsuarioRepository usuarioRepository
+        UsuarioRepository usuarioRepository,
+        InventoryEvents inventoryEvents
     ) {
+        this.inventoryEvents = inventoryEvents;
         this.loteRepository = loteRepository;
         this.movimientoRepository = movimientoRepository;
         this.productoRepository = productoRepository;
@@ -87,6 +92,7 @@ public class InventarioService {
             movimientoRepository.save(mov);
         }
 
+        inventoryEvents.changed();
         return toLoteDto(guardado);
     }
 
@@ -114,6 +120,7 @@ public class InventarioService {
         mov.setMotivo(dto.motivo().trim());
         mov.setReferencia(dto.referencia().trim());
         movimientoRepository.save(mov);
+        inventoryEvents.changed();
     }
 
     @Transactional(readOnly = true)

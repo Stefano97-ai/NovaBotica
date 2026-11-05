@@ -37,6 +37,11 @@ public class Producto {
     @Column(name = "requiere_serie", nullable = false)
     private boolean requiereSerie;
 
+    @Column(name = "imagen_version")
+    private java.util.UUID imagenVersion;
+    public java.util.UUID getImagenVersion() { return imagenVersion; }
+    public void setImagenVersion(java.util.UUID value) { imagenVersion=value; }
+
     public boolean isRequiereSerie() { return requiereSerie; }
     public void setRequiereSerie(boolean value) { requiereSerie = value; }
 

@@ -15,5 +15,6 @@ public record ProductoDto(
     Long stockDisponible,
     boolean activo,
     Instant creadoEn,
-    boolean requiereSerie
+    boolean requiereSerie,
+    String imagenUrl
 ) {}

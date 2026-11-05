@@ -3,6 +3,7 @@ package com.novasalud.compras.controller;
 import com.novasalud.auth.SessionUser;
 import com.novasalud.compras.dto.CompraResponseDto;
 import com.novasalud.compras.dto.CreateCompraDto;
+import com.novasalud.compras.dto.RegistroCompraDto;
 import com.novasalud.compras.dto.RecepcionCompraDto;
 import com.novasalud.compras.service.CompraService;
 import jakarta.validation.Valid;
@@ -51,6 +52,14 @@ public class CompraController {
     ) {
         Long usuarioId = Long.parseLong(user.id());
         return ResponseEntity.ok(compraService.recepcionarMercaderia(id, recepciones, usuarioId));
+    }
+
+    @PostMapping("/registro")
+    public ResponseEntity<CompraResponseDto> registrar(
+        @Valid @RequestBody RegistroCompraDto dto,
+        @AuthenticationPrincipal SessionUser user
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(compraService.registrar(dto, Long.parseLong(user.id())));
     }
 
     @PostMapping("/{id}/anular")

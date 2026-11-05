@@ -30,10 +30,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import com.novasalud.shared.events.InventoryEvents;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class VentaService {
+
+    private final InventoryEvents inventoryEvents;
 
     private final VentaRepository ventaRepository;
     private final DetalleVentaRepository detalleVentaRepository;
@@ -62,8 +65,10 @@ public class VentaService {
         FefoService fefoService,
         ComprobanteService comprobanteService,
         SerieUnidadService series,
-        EntityManager entityManager
+        EntityManager entityManager,
+        InventoryEvents inventoryEvents
     ) {
+        this.inventoryEvents = inventoryEvents;
         this.ventaRepository = ventaRepository;
         this.detalleVentaRepository = detalleVentaRepository;
         this.detalleVentaLoteRepository = detalleVentaLoteRepository;
@@ -250,6 +255,7 @@ public class VentaService {
         // 5. Emitir comprobante simulado (RF-25 a RF-28)
         comprobanteService.emitirComprobanteSimulado(ventaGuardada, dto.tipoComprobante());
 
+        inventoryEvents.changed();
         return toDto(ventaGuardada);
     }
 
@@ -304,6 +310,7 @@ public class VentaService {
             // actualizar estado a ANULADO
         } catch (Exception ignored) {}
 
+        inventoryEvents.changed();
         return toDto(ventaRepository.save(venta));
     }
 

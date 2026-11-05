@@ -1,2 +1,4 @@
 docker/*.sh text eol=lf
 backend/database/migrations/004_ventas_series_documentos.sql text eol=lf
+backend/database/migrations/005_alertas.sql text eol=lf
+backend/database/migrations/006_producto_imagen.sql text eol=lf

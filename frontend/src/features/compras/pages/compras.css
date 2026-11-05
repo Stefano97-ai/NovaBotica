@@ -127,6 +127,30 @@
 }
 
 /* ================= 2. MAIN CARD PANEL ================= */
+.purchase-fields { border: 0; padding: 0; margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.purchase-fields:disabled { opacity: .75; }
+.purchase-error { padding: 12px 16px; border: 1px solid #e5b1b9; border-radius: 8px; color: #9f1239; background: #fff1f2; font-size: 12px; line-height: 1.6; }
+.purchase-error button { font: inherit; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; }
+.purchase-series-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 34px; padding: 5px 8px; margin-right: 6px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; color: #4338ca; font: inherit; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.purchase-series-toggle { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+.purchase-series-toggle input { width: 17px; height: 17px; accent-color: #4f46e5; }
+.purchase-series-help { margin: -6px 0 0; color: #64748b; font-size: 12px; line-height: 1.6; }
+.purchase-serial-dialog { width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 40px); overflow-y: auto; box-sizing: border-box; padding: 24px; border: 1px solid #dce3ed; border-radius: 16px; background: #fff; color: #1e293b; box-shadow: 0 20px 60px #0004; }
+.purchase-serial-dialog::backdrop { background: #0007; backdrop-filter: blur(4px); }
+.purchase-serial-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.purchase-serial-heading h2 { font-size: 16px; margin: 0; }
+.purchase-serial-heading button { border: 0; background: transparent; color: inherit; min-width: 32px; min-height: 32px; cursor: pointer; }
+.purchase-serial-dialog p, .purchase-serial-dialog label { font-size: 12px; line-height: 1.7; }
+.purchase-serial-dialog textarea { width: 100%; box-sizing: border-box; resize: vertical; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font: inherit; font-size: 13px; line-height: 1.7; background: #f8fafc; color: inherit; }
+.purchase-serial-footer { display: flex; justify-content: flex-end; gap: 10px; }
+.purchase-serial-footer button { padding: 9px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: inherit; cursor: pointer; font: inherit; font-size: 12px; }
+.purchase-serial-footer button:last-child { background: #4338ca; color: #fff; border-color: #4338ca; }
+.purchase-serial-dialog :focus-visible, .compras-page .purchase-series-btn:focus-visible { outline: 2px solid #6366f1; outline-offset: 3px; }
+[data-theme='dark'] .purchase-serial-dialog { background: #1f1f1f; color: #f1f1f1; border-color: #444; }
+[data-theme='dark'] .purchase-serial-dialog textarea, [data-theme='dark'] .purchase-serial-footer button:first-child, [data-theme='dark'] .purchase-series-btn { background: #171717; border-color: #444; color: #c7d2fe; }
+[data-theme='dark'] .purchase-error { color: #fecdd3; background: #401b27; border-color: #a04b60; }
+[data-theme='dark'] .purchase-series-help { color: #b8c0cc; }
+
 .compras-card {
   background: #ffffff;
   border: 1px solid rgba(215, 226, 218, 0.8);

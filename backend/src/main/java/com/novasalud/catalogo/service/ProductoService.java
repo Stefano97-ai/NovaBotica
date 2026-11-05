@@ -13,10 +13,13 @@ import com.novasalud.shared.exception.ResourceNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import com.novasalud.shared.events.InventoryEvents;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductoService {
+
+    private final InventoryEvents inventoryEvents;
 
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
@@ -25,8 +28,10 @@ public class ProductoService {
     public ProductoService(
         ProductoRepository productoRepository,
         CategoriaRepository categoriaRepository,
-        LoteRepository loteRepository
+        LoteRepository loteRepository,
+        InventoryEvents inventoryEvents
     ) {
+        this.inventoryEvents = inventoryEvents;
         this.productoRepository = productoRepository;
         this.categoriaRepository = categoriaRepository;
         this.loteRepository = loteRepository;
@@ -73,6 +78,7 @@ public class ProductoService {
         producto.setActivo(true);
         producto.setRequiereSerie(Boolean.TRUE.equals(dto.requiereSerie()));
 
+        inventoryEvents.changed();
         return toDto(productoRepository.save(producto));
     }
 
@@ -98,6 +104,7 @@ public class ProductoService {
         }
         if (dto.requiereSerie() != null) producto.setRequiereSerie(dto.requiereSerie());
 
+        inventoryEvents.changed();
         return toDto(productoRepository.save(producto));
     }
 
@@ -106,6 +113,7 @@ public class ProductoService {
         Producto producto = productoRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con ID: " + id));
         producto.setActivo(activo);
+        inventoryEvents.changed();
         return toDto(productoRepository.save(producto));
     }
 
@@ -123,7 +131,8 @@ public class ProductoService {
             stock == null ? 0L : stock,
             p.isActivo(),
             p.getCreadoEn(),
-            p.isRequiereSerie()
+            p.isRequiereSerie(),
+            p.getImagenVersion()==null?null:"/api/productos/"+p.getId()+"/imagen?v="+p.getImagenVersion()
         );
     }
 }
