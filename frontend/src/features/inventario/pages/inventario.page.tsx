@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Boxes,
   ArrowLeftRight,
@@ -21,7 +21,9 @@ import {
   Package,
   Layers,
   TrendingDown,
-  Barcode
+  Barcode,
+  SlidersHorizontal,
+  LayoutGrid
 } from 'lucide-react';
 import './inventario.css';
 
@@ -204,157 +206,142 @@ const INITIAL_CATEGORIAS: CategoriaItem[] = [
   { id: 6, nombre: 'Equipos' }
 ];
 
-/* ================= INITIAL DEMO KARDEX MOVEMENTS ================= */
+/* ================= INITIAL DEMO MOVEMENTS ================= */
 const INITIAL_MOVIMIENTOS: MovimientoItem[] = [
   {
     id: 1,
     productoId: 1,
-    producto: 'Paracetamol 500mg Tabletas - Genfar',
-    movimiento: 'Venta F001-65 - Cliente Juan Perez',
+    producto: 'Unidad de Estado Solido Kingston 240gb A400',
+    movimiento: 'Venta F001-65',
     tipoMovimiento: 'VENTA',
-    fecha: '05/11/2026',
+    fecha: '03/11/2026 11:57:31',
     cantidad: 2,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-PAR24-01'
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-SSD24-01'
   },
   {
     id: 2,
     productoId: 2,
-    producto: 'Amoxicilina 500mg Cápsulas - Medifarma',
-    movimiento: 'Venta F001-65 - Cliente Juan Perez',
+    producto: 'Laptop Lenovo i8 zz',
+    movimiento: 'Venta F001-65',
     tipoMovimiento: 'VENTA',
-    fecha: '05/11/2026',
+    fecha: '03/11/2026 11:57:31',
     cantidad: 1,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-AMX24-02'
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-LEN24-02'
   },
   {
     id: 3,
     productoId: 3,
-    producto: 'Ibuprofeno 400mg Tabletas - Farmaindustria',
-    movimiento: 'Venta B001-94 - Venta Mostrador',
+    producto: 'Computadora Dell Vostro Sff 3710 Core I7-12700 8gb Ddr4 compatible con nissan sentra 2020-2024',
+    movimiento: 'Venta B001-94',
     tipoMovimiento: 'VENTA',
-    fecha: '04/11/2026',
+    fecha: '02/11/2026 23:09:31',
     cantidad: 2,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-IBU24-05'
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-DEL24-05'
   },
   {
     id: 4,
     productoId: 4,
-    producto: 'Azitromicina 500mg Caja x 3 - Lab Portugal',
-    movimiento: 'Venta F001-64 - Clínica San Gabriel',
+    producto: 'LAPTOP DELL INSPIRON 15 3000',
+    movimiento: 'Venta F001-64',
     tipoMovimiento: 'VENTA',
-    fecha: '04/11/2026',
+    fecha: '02/11/2026 19:10:19',
     cantidad: 1,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-AZI24-08'
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-INS24-08'
   },
   {
     id: 5,
-    productoId: 5,
-    producto: 'Alcohol Medicinal 70° 1 Litro - Alkofarma',
-    movimiento: 'Venta F001-63 - Consultorio Dental',
+    productoId: 1,
+    producto: 'Unidad de Estado Solido Kingston 240gb A400',
+    movimiento: 'Venta F001-63',
     tipoMovimiento: 'VENTA',
-    fecha: '03/11/2026',
+    fecha: '02/11/2026 19:08:27',
     cantidad: 1,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-ALC24-11'
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-SSD24-01'
   },
   {
     id: 6,
-    productoId: 6,
-    producto: 'Panadol Antigripal Tableta x 24 - GSK',
-    movimiento: 'Venta F001-63 - Consultorio Dental',
+    productoId: 4,
+    producto: 'LAPTOP DELL INSPIRON 15 3000',
+    movimiento: 'Venta F001-63',
     tipoMovimiento: 'VENTA',
-    fecha: '03/11/2026',
+    fecha: '02/11/2026 19:08:27',
     cantidad: 1,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-PAN24-03'
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-INS24-08'
   },
   {
     id: 7,
     productoId: 7,
-    producto: 'Suero Fisiológico 0.9% 500ml - Braun',
+    producto: 'SPRITE 500 ML',
     movimiento: 'Venta B001-93 (Pack de 6)',
     tipoMovimiento: 'VENTA',
-    fecha: '03/11/2026',
+    fecha: '02/11/2026 19:07:30',
     cantidad: 6,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-SUE24-07'
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-BEB24-07'
   },
   {
     id: 8,
     productoId: 8,
-    producto: 'Bismutol Suspensión 150ml - Bagó',
-    movimiento: 'Venta B001-92 (Pack de 6)',
+    producto: 'COCA COLA 1 LITRO',
+    movimiento: 'Venta B001-92 (pack de 6)',
     tipoMovimiento: 'VENTA',
-    fecha: '02/11/2026',
+    fecha: '02/11/2026 19:06:26',
     cantidad: 6,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-BIS24-09'
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-BEB24-09'
   },
   {
     id: 9,
     productoId: 9,
-    producto: 'Mascarillas Quirúrgicas 3 pliegues Caja x 50',
-    movimiento: 'Venta B001-90 - Paciente Ambulatorio',
+    producto: 'De material Drill nuevo mundo',
+    movimiento: 'Venta B001-90',
     tipoMovimiento: 'VENTA',
-    fecha: '02/11/2026',
+    fecha: '02/11/2026 19:00:13',
     cantidad: 1,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-MAS24-15'
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-MAT24-15'
   },
   {
     id: 10,
     productoId: 10,
-    producto: 'Omeprazol 20mg Cápsulas - Farmaindustria',
-    movimiento: 'Compra C001-12 - Ingreso Droguería Suiza',
-    tipoMovimiento: 'COMPRA',
-    fecha: '02/11/2026',
-    cantidad: 50,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-OMP24-20'
-  },
-  {
-    id: 11,
-    productoId: 2,
-    producto: 'Amoxicilina 500mg Cápsulas - Medifarma',
-    movimiento: 'Ajuste Ingreso (+20 Conteo Físico)',
-    tipoMovimiento: 'AJUSTE',
-    fecha: '01/11/2026',
-    cantidad: 20,
-    sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-    lote: 'L-AMX24-02'
-  },
-  {
-    id: 12,
-    productoId: 1,
-    producto: 'Paracetamol 500mg Tabletas - Genfar',
-    movimiento: 'Transferencia Sede San Miguel -> Sucursal 2',
-    tipoMovimiento: 'TRANSFERENCIA',
-    fecha: '01/11/2026',
-    cantidad: 15,
-    sede: 'SUCURSAL 2 - JESÚS MARÍA',
-    lote: 'L-PAR24-01'
+    producto: 'PAGO ANUAL DEL SERICIO EN LA NUBE (SISTEMA WEB PARA RESTAURANT)',
+    movimiento: 'Venta F001-62 (SISTEMA WEB PARA RESTAURANT)',
+    tipoMovimiento: 'VENTA',
+    fecha: '02/11/2026 18:58:00',
+    cantidad: 1,
+    sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA',
+    lote: 'L-SRV24-01'
   }
 ];
 
 interface InventarioPageProps {
-  defaultTab?: 'kardex' | 'productos';
+  view?: 'movimientos' | 'kardex' | 'productos';
+  defaultTab?: 'kardex' | 'productos' | 'movimientos';
 }
 
-export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPageProps) {
+export default function InventarioPage({ view, defaultTab }: InventarioPageProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const urlSub = searchParams.get('sub');
-  
-  // Tab activo: 'kardex' o 'productos'
-  const [activeTab, setActiveTab] = useState<'kardex' | 'productos'>(() => {
-    if (urlSub === 'productos' || defaultTab === 'productos') return 'productos';
-    return 'kardex';
-  });
 
-  // Notificaciones
+  // Determinar la vista activa (sincronizada con URL)
+  const activeView: 'movimientos' | 'kardex' | 'productos' = useMemo(() => {
+    if (view) return view;
+    if (location.pathname === '/inventario/kardex') return 'kardex';
+    if (location.pathname === '/productos' || location.pathname === '/inventario/productos') return 'productos';
+    if (searchParams.get('sub') === 'kardex') return 'kardex';
+    if (searchParams.get('sub') === 'productos') return 'productos';
+    if (defaultTab) return defaultTab;
+    return 'movimientos';
+  }, [view, location.pathname, searchParams, defaultTab]);
+
+  // Notificación flash
   const [notif, setNotif] = useState<string | null>(null);
 
   function showNotif(msg: string) {
@@ -362,32 +349,47 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
     setTimeout(() => setNotif(null), 3500);
   }
 
-  // Sincronizar tab con URL
-  function handleTabChange(tab: 'kardex' | 'productos') {
-    setActiveTab(tab);
-    setSearchParams({ sub: tab });
-  }
-
   /* =========================================================================
-     ESTADOS SUBMÓDULO: KARDEX
+     ESTADOS SUBMÓDULO 1: ADMINISTRAR INVENTARIO (Screenshot 2)
      ========================================================================= */
   const [movimientos, setMovimientos] = useState<MovimientoItem[]>(INITIAL_MOVIMIENTOS);
-  const [fechaInicio, setFechaInicio] = useState('2026-11-05');
-  const [fechaFin, setFechaFin] = useState('2026-11-05');
+  const [movFechaInicio, setMovFechaInicio] = useState('2026-11-05');
+  const [movFechaFin, setMovFechaFin] = useState('2026-11-05');
+  const [movPageSize, setMovPageSize] = useState(10);
+  const [movSucursal, setMovSucursal] = useState('ALL');
+  const [movSearch, setMovSearch] = useState('');
+  const [movCurrentPage, setMovCurrentPage] = useState(1);
+
+  // Modales Inventario
+  const [modalAjusteOpen, setModalAjusteOpen] = useState(false);
+  const [modalTransOpen, setModalTransOpen] = useState(false);
+
+  // Formulario Ajuste de Inventario
+  const [ajusteProducto, setAjusteProducto] = useState('Unidad de Estado Solido Kingston 240gb A400');
+  const [ajusteLote, setAjusteLote] = useState('L-SSD24-01');
+  const [ajusteTipo, setAjusteTipo] = useState<'INGRESO' | 'SALIDA'>('INGRESO');
+  const [ajusteCantidad, setAjusteCantidad] = useState(10);
+  const [ajusteMotivo, setAjusteMotivo] = useState('Conteo físico de inventario');
+  const [ajusteRef, setAjusteRef] = useState('AJU-2026-001');
+
+  // Formulario Transferencia Directa
+  const [transOrigen, setTransOrigen] = useState('TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526');
+  const [transDestino, setTransDestino] = useState('Sucursal 2 - Jesús María');
+  const [transProducto, setTransProducto] = useState('Laptop Lenovo i8 zz');
+  const [transCantidad, setTransCantidad] = useState(1);
+
+  /* =========================================================================
+     ESTADOS SUBMÓDULO 2: KARDEX (Screenshot 3)
+     ========================================================================= */
+  const [kardexFechaInicio, setKardexFechaInicio] = useState('2026-11-05');
+  const [kardexFechaFin, setKardexFechaFin] = useState('2026-11-05');
   const [kardexPageSize, setKardexPageSize] = useState(10);
   const [kardexSucursal, setKardexSucursal] = useState('ALL');
   const [kardexProductoId, setKardexProductoId] = useState<string>('ALL');
   const [kardexCurrentPage, setKardexCurrentPage] = useState(1);
 
-  // Modal Transferencia
-  const [modalTransOpen, setModalTransOpen] = useState(false);
-  const [transOrigen, setTransOrigen] = useState('Sede Principal - San Miguel');
-  const [transDestino, setTransDestino] = useState('Sucursal 2 - Jesús María');
-  const [transProducto, setTransProducto] = useState('Paracetamol 500mg Tabletas - Genfar');
-  const [transCantidad, setTransCantidad] = useState(10);
-
   /* =========================================================================
-     ESTADOS SUBMÓDULO: ADMINISTRAR PRODUCTOS
+     ESTADOS SUBMÓDULO 3: ADMINISTRAR PRODUCTOS
      ========================================================================= */
   const [productos, setProductos] = useState<ProductoItem[]>(INITIAL_PRODUCTOS);
   const [categorias, setCategorias] = useState<CategoriaItem[]>(INITIAL_CATEGORIAS);
@@ -409,7 +411,7 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
   const [formStockMinimo, setFormStockMinimo] = useState('15');
   const [formStockInicial, setFormStockInicial] = useState('50');
 
-  // Cargar datos del backend si están disponibles
+  // Cargar datos del backend
   useEffect(() => {
     async function loadBackendData() {
       try {
@@ -454,12 +456,12 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
             const mappedMov: MovimientoItem[] = movData.map((m: any, idx: number) => ({
               id: m.id || idx + 1,
               productoId: m.productoId,
-              producto: m.productoNombre || 'Medicamento',
+              producto: m.productoNombre || 'Producto',
               movimiento: m.referencia || `${m.tipo || 'MOVIMIENTO'} #${m.id}`,
-              tipoMovimiento: (m.tipo as any) || 'AJUSTE',
-              fecha: m.fecha ? new Date(m.fecha).toLocaleDateString('es-PE') : '05/11/2026',
+              tipoMovimiento: (m.tipo as any) || 'VENTA',
+              fecha: m.fecha ? new Date(m.fecha).toLocaleString('es-PE') : '05/11/2026 12:00:00',
               cantidad: m.cantidad || 1,
-              sede: m.sede || 'SEDE PRINCIPAL - SAN MIGUEL',
+              sede: m.sede || 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526',
               lote: m.numeroLote || 'L-GENERAL'
             }));
             setMovimientos((prev) => [...mappedMov, ...prev]);
@@ -473,10 +475,35 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
   }, []);
 
   /* =========================================================================
-     CÁLCULO MATEMÁTICO SECUENCIAL DE LA TARJETA KARDEX
+     FILTRADO: ADMINISTRAR INVENTARIO (Screenshot 2)
+     ========================================================================= */
+  const movFiltrados = useMemo(() => {
+    return movimientos.filter((m) => {
+      const matchSearch =
+        movSearch.trim() === '' ||
+        m.producto.toLowerCase().includes(movSearch.toLowerCase()) ||
+        m.movimiento.toLowerCase().includes(movSearch.toLowerCase()) ||
+        m.lote.toLowerCase().includes(movSearch.toLowerCase());
+
+      const matchSucursal =
+        movSucursal === 'ALL' ||
+        (movSucursal === 'PRINCIPAL' && m.sede.includes('PRINCIPAL')) ||
+        (movSucursal === 'SUCURSAL_2' && m.sede.includes('SUCURSAL 2'));
+
+      return matchSearch && matchSucursal;
+    });
+  }, [movimientos, movSearch, movSucursal]);
+
+  const movTotalPages = Math.ceil(movFiltrados.length / movPageSize) || 1;
+  const movPaginated = useMemo(() => {
+    const start = (movCurrentPage - 1) * movPageSize;
+    return movFiltrados.slice(start, start + movPageSize);
+  }, [movFiltrados, movCurrentPage, movPageSize]);
+
+  /* =========================================================================
+     CÁLCULO MATEMÁTICO: TARJETA KARDEX (Screenshot 3)
      ========================================================================= */
   const kardexCalculated = useMemo(() => {
-    // Filtrar por sucursal y producto
     let list = movimientos.filter((m) => {
       const matchSucursal =
         kardexSucursal === 'ALL' ||
@@ -485,14 +512,13 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
 
       const matchProducto =
         kardexProductoId === 'ALL' ||
-        m.productoId === Number(kardexProductoId) ||
+        String(m.productoId) === kardexProductoId ||
         m.producto.toLowerCase().includes(kardexProductoId.toLowerCase());
 
       return matchSucursal && matchProducto;
     });
 
-    // Calcular saldos continuos
-    let balance = 100; // Base inicial de inventario para cálculo continuo
+    let balance = 100;
     return list.map((item) => {
       const isEntrada = item.tipoMovimiento === 'COMPRA' || (item.tipoMovimiento === 'AJUSTE' && item.movimiento.includes('Ingreso'));
       const isSalida = item.tipoMovimiento === 'VENTA' || item.tipoMovimiento === 'TRANSFERENCIA' || (item.tipoMovimiento === 'AJUSTE' && !item.movimiento.includes('Ingreso'));
@@ -513,7 +539,6 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
     });
   }, [movimientos, kardexSucursal, kardexProductoId]);
 
-  // Paginación Kardex
   const kardexTotalPages = Math.ceil(kardexCalculated.length / kardexPageSize) || 1;
   const kardexPaginated = useMemo(() => {
     const start = (kardexCurrentPage - 1) * kardexPageSize;
@@ -521,7 +546,7 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
   }, [kardexCalculated, kardexCurrentPage, kardexPageSize]);
 
   /* =========================================================================
-     FILTRADO Y PAGINACIÓN DE PRODUCTOS
+     FILTRADO: ADMINISTRAR PRODUCTOS
      ========================================================================= */
   const productosFiltrados = useMemo(() => {
     return productos.filter((p) => {
@@ -547,58 +572,96 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
     return productosFiltrados.slice(start, start + prodPageSize);
   }, [productosFiltrados, prodCurrentPage, prodPageSize]);
 
-  // KPIs de Productos
   const kpiTotal = productos.length;
   const kpiEnStock = productos.filter((p) => p.stockDisponible > 0).length;
   const kpiBajoStock = productos.filter((p) => p.stockDisponible <= p.stockMinimo).length;
   const kpiCategorias = categorias.length;
 
   /* =========================================================================
-     ACCIONES KARDEX: Exportar, reset
+     HANDLERS: Ajuste, Transferencia, Producto
      ========================================================================= */
-  function exportKardexExcel() {
-    const headers = ['FECHA', 'MOVIMIENTO', 'INV. INICIAL', 'ENTRADA', 'SALIDA', 'INV. FINAL', 'SUCURSAL', 'LOTE'];
-    const rows = kardexCalculated.map((m) => [
-      `"${m.fecha}"`,
-      `"${m.movimiento}"`,
-      m.invInicial,
-      m.entrada,
-      m.salida,
-      m.invFinal,
-      `"${m.sede}"`,
-      `"${m.lote}"`
-    ]);
+  async function handleGuardarAjuste(e: React.FormEvent) {
+    e.preventDefault();
+    const qtyFinal = ajusteTipo === 'INGRESO' ? Math.abs(ajusteCantidad) : -Math.abs(ajusteCantidad);
+    const nuevoMov: MovimientoItem = {
+      id: Date.now(),
+      producto: ajusteProducto,
+      movimiento: `Ajuste ${ajusteTipo === 'INGRESO' ? 'Ingreso' : 'Salida'} (${ajusteRef})`,
+      tipoMovimiento: 'AJUSTE',
+      fecha: new Date().toLocaleString('es-PE'),
+      cantidad: Math.abs(qtyFinal),
+      sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526',
+      lote: ajusteLote
+    };
 
-    const csvContent =
-      'data:text/csv;charset=utf-8,\uFEFF' +
-      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `tarjeta_kardex_novasalud_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showNotif('Tarjeta Kardex exportada en formato Excel (.CSV).');
+    setMovimientos((prev) => [nuevoMov, ...prev]);
+    setModalAjusteOpen(false);
+    showNotif(`Ajuste de inventario ${ajusteRef} registrado exitosamente.`);
   }
 
-  function exportKardexPdf() {
-    window.print();
+  function handleGuardarTransferencia(e: React.FormEvent) {
+    e.preventDefault();
+    const nuevoMov: MovimientoItem = {
+      id: Date.now(),
+      producto: transProducto,
+      movimiento: `Transferencia ${transOrigen.split('-')[0].trim()} -> ${transDestino.split('-')[0].trim()}`,
+      tipoMovimiento: 'TRANSFERENCIA',
+      fecha: new Date().toLocaleString('es-PE'),
+      cantidad: transCantidad,
+      sede: 'TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526',
+      lote: 'L-GENERAL'
+    };
+
+    setMovimientos((prev) => [nuevoMov, ...prev]);
+    setModalTransOpen(false);
+    showNotif(`Transferencia de ${transCantidad} unidades enviada exitosamente.`);
   }
 
-  function resetKardexFilters() {
-    setFechaInicio('2026-11-05');
-    setFechaFin('2026-11-05');
-    setKardexSucursal('ALL');
-    setKardexProductoId('ALL');
-    setKardexCurrentPage(1);
-    showNotif('Filtros de Kardex restaurados correctamente.');
+  async function handleSaveProduct(e: React.FormEvent) {
+    e.preventDefault();
+    if (!formNombre.trim()) return;
+
+    const catObj = categorias.find((c) => c.id === Number(formCategoriaId));
+    const catName = catObj ? catObj.nombre : 'General';
+
+    if (editingProduct) {
+      const updated: ProductoItem = {
+        ...editingProduct,
+        codigo: formCodigo.trim(),
+        nombre: formNombre.trim(),
+        categoriaId: Number(formCategoriaId),
+        categoriaNombre: catName,
+        unidadBase: formUnidadBase,
+        precioCompra: parseFloat(formPrecioCompra) || 0,
+        precioVenta: parseFloat(formPrecioVenta) || 0,
+        stockMinimo: parseInt(formStockMinimo) || 0,
+        stockDisponible: parseInt(formStockInicial) || editingProduct.stockDisponible
+      };
+
+      setProductos((prev) => prev.map((p) => (p.id === editingProduct.id ? updated : p)));
+      setModalProductOpen(false);
+      showNotif(`Producto "${updated.nombre}" actualizado.`);
+    } else {
+      const nuevo: ProductoItem = {
+        id: Date.now(),
+        codigo: formCodigo.trim() || `PRD-${Date.now().toString().slice(-4)}`,
+        nombre: formNombre.trim(),
+        categoriaId: Number(formCategoriaId),
+        categoriaNombre: catName,
+        unidadBase: formUnidadBase,
+        precioCompra: parseFloat(formPrecioCompra) || 0,
+        precioVenta: parseFloat(formPrecioVenta) || 0,
+        stockDisponible: parseInt(formStockInicial) || 0,
+        stockMinimo: parseInt(formStockMinimo) || 0,
+        activo: true
+      };
+
+      setProductos((prev) => [nuevo, ...prev]);
+      setModalProductOpen(false);
+      showNotif(`Producto "${nuevo.nombre}" creado exitosamente.`);
+    }
   }
 
-  /* =========================================================================
-     ACCIONES PRODUCTOS: Crear, editar, cambiar estado, ir a kardex
-     ========================================================================= */
   function openCreateProductModal() {
     setEditingProduct(null);
     setFormCodigo(`MED-${String(productos.length + 1).padStart(3, '0')}`);
@@ -625,196 +688,39 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
     setModalProductOpen(true);
   }
 
-  async function handleSaveProduct(e: React.FormEvent) {
-    e.preventDefault();
-    if (!formNombre.trim()) {
-      alert('Ingresa el nombre del producto.');
-      return;
-    }
-
-    const catObj = categorias.find((c) => c.id === Number(formCategoriaId));
-    const catName = catObj ? catObj.nombre : 'General';
-
-    if (editingProduct) {
-      // Editar
-      const updated: ProductoItem = {
-        ...editingProduct,
-        codigo: formCodigo.trim(),
-        nombre: formNombre.trim(),
-        categoriaId: Number(formCategoriaId),
-        categoriaNombre: catName,
-        unidadBase: formUnidadBase,
-        precioCompra: parseFloat(formPrecioCompra) || 0,
-        precioVenta: parseFloat(formPrecioVenta) || 0,
-        stockMinimo: parseInt(formStockMinimo) || 0,
-        stockDisponible: parseInt(formStockInicial) || editingProduct.stockDisponible
-      };
-
-      try {
-        await fetch(`/api/productos/${editingProduct.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            codigo: updated.codigo,
-            nombre: updated.nombre,
-            categoriaId: updated.categoriaId,
-            unidadBase: updated.unidadBase,
-            precioVenta: updated.precioVenta,
-            stockMinimo: updated.stockMinimo
-          })
-        });
-      } catch {
-        // Fallback local
-      }
-
-      setProductos((prev) => prev.map((p) => (p.id === editingProduct.id ? updated : p)));
-      setModalProductOpen(false);
-      showNotif(`Producto "${updated.nombre}" actualizado exitosamente.`);
-    } else {
-      // Crear nuevo
-      const nuevo: ProductoItem = {
-        id: Date.now(),
-        codigo: formCodigo.trim() || `PRD-${Date.now().toString().slice(-4)}`,
-        nombre: formNombre.trim(),
-        categoriaId: Number(formCategoriaId),
-        categoriaNombre: catName,
-        unidadBase: formUnidadBase,
-        precioCompra: parseFloat(formPrecioCompra) || 0,
-        precioVenta: parseFloat(formPrecioVenta) || 0,
-        stockDisponible: parseInt(formStockInicial) || 0,
-        stockMinimo: parseInt(formStockMinimo) || 0,
-        activo: true
-      };
-
-      try {
-        const res = await fetch('/api/productos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            codigo: nuevo.codigo,
-            nombre: nuevo.nombre,
-            categoriaId: nuevo.categoriaId,
-            unidadBase: nuevo.unidadBase,
-            precioVenta: nuevo.precioVenta,
-            stockMinimo: nuevo.stockMinimo
-          })
-        });
-        if (res.ok) {
-          const data = await res.json();
-          nuevo.id = data.id || nuevo.id;
-        }
-      } catch {
-        // Fallback local
-      }
-
-      setProductos((prev) => [nuevo, ...prev]);
-      setModalProductOpen(false);
-      showNotif(`Producto "${nuevo.nombre}" registrado exitosamente.`);
-    }
-  }
-
-  async function toggleProductStatus(p: ProductoItem) {
+  function toggleProductStatus(p: ProductoItem) {
     const nextStatus = !p.activo;
-    try {
-      await fetch(`/api/productos/${p.id}/activo`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ activo: nextStatus })
-      });
-    } catch {
-      // Fallback local
-    }
     setProductos((prev) => prev.map((item) => (item.id === p.id ? { ...item, activo: nextStatus } : item)));
     showNotif(`Producto "${p.nombre}" marcado como ${nextStatus ? 'ACTIVO' : 'INACTIVO'}.`);
   }
 
-  // Ver kardex de un producto específico directamente desde la tabla de productos
   function verKardexDeProducto(p: ProductoItem) {
     setKardexProductoId(String(p.id));
-    setActiveTab('kardex');
-    setSearchParams({ sub: 'kardex', productoId: String(p.id) });
+    navigate('/inventario/kardex');
     showNotif(`Visualizando Tarjeta Kardex de: ${p.nombre}`);
-  }
-
-  // Guardar transferencia directa entre sedes
-  function handleGuardarTransferencia(e: React.FormEvent) {
-    e.preventDefault();
-    const nuevoMov: MovimientoItem = {
-      id: Date.now(),
-      producto: transProducto,
-      movimiento: `Transferencia ${transOrigen.split('-')[0].trim()} -> ${transDestino.split('-')[0].trim()}`,
-      tipoMovimiento: 'TRANSFERENCIA',
-      fecha: new Date().toLocaleDateString('es-PE'),
-      cantidad: transCantidad,
-      sede: 'SEDE PRINCIPAL - SAN MIGUEL',
-      lote: 'L-PAR24-01'
-    };
-
-    setMovimientos((prev) => [nuevoMov, ...prev]);
-    setModalTransOpen(false);
-    showNotif(`Transferencia de ${transCantidad} unidades enviada a ${transDestino}.`);
   }
 
   return (
     <div className="inv-page">
-      {/* ================= 1. SUBHEADER BAR OSCURA ================= */}
-      <div className="inv-bar">
-        <h1 className="inv-bar-title">
-          {activeTab === 'kardex' ? (
-            <>
-              <ClipboardList size={15} strokeWidth={2.2} /> KARDEX
-            </>
-          ) : (
-            <>
-              <Boxes size={15} strokeWidth={2.2} /> PRODUCTOS
-            </>
-          )}
-        </h1>
-        <div className="inv-actions">
-          {activeTab === 'kardex' ? (
-            <>
-              <Link to="/ventas?tipo=FACTURA" className="inv-dash-btn" title="Emitir Factura Electrónica">
-                <FileText size={12} strokeWidth={2} /> EMITIR FACTURA
-              </Link>
-              <Link to="/ventas?tipo=BOLETA" className="inv-dash-btn" title="Emitir Boleta de Venta">
-                <Receipt size={12} strokeWidth={2} /> EMITIR BOLETA
-              </Link>
-              <Link to="/ventas?tipo=NOTA_VENTA" className="inv-dash-btn" title="Emitir Nota de Venta">
-                <ClipboardList size={12} strokeWidth={2} /> NOTA DE VENTA
-              </Link>
-            </>
-          ) : (
-            <button
-              type="button"
-              className="btn-new-product"
-              onClick={openCreateProductModal}
-              title="Registrar nuevo producto en catálogo"
-            >
-              <Plus size={14} /> NUEVO PRODUCTO
-            </button>
-          )}
+      {/* ================= 1. SUBHEADER BAR OSCURA (SOLO EN KARDEX) ================= */}
+      {activeView === 'kardex' && (
+        <div className="inv-bar">
+          <h1 className="inv-bar-title">
+            <ClipboardList size={15} strokeWidth={2.2} /> KARDEX
+          </h1>
+          <div className="inv-actions">
+            <Link to="/ventas?tipo=FACTURA" className="inv-dash-btn" title="Emitir Factura Electrónica">
+              <FileText size={12} strokeWidth={2} /> EMITIR FACTURA
+            </Link>
+            <Link to="/ventas?tipo=BOLETA" className="inv-dash-btn" title="Emitir Boleta de Venta">
+              <Receipt size={12} strokeWidth={2} /> EMITIR BOLETA
+            </Link>
+            <Link to="/ventas?tipo=NOTA_VENTA" className="inv-dash-btn" title="Emitir Nota de Venta">
+              <ClipboardList size={12} strokeWidth={2} /> NOTA DE VENTA
+            </Link>
+          </div>
         </div>
-      </div>
-
-      {/* ================= 2. PESTAÑAS SELECTORAS DE SUBMÓDULO ================= */}
-      <div className="inv-tabs-container">
-        <button
-          type="button"
-          className={`inv-submod-tab ${activeTab === 'kardex' ? 'is-active' : ''}`}
-          onClick={() => handleTabChange('kardex')}
-          title="Ver Tarjeta Kardex y movimientos de existencias"
-        >
-          <ClipboardList size={14} /> TARJETA KARDEX
-        </button>
-        <button
-          type="button"
-          className={`inv-submod-tab ${activeTab === 'productos' ? 'is-active' : ''}`}
-          onClick={() => handleTabChange('productos')}
-          title="Administrar catálogo de productos, precios y stock"
-        >
-          <Boxes size={14} /> ADMINISTRAR PRODUCTOS
-        </button>
-      </div>
+      )}
 
       {/* ================= NOTIFICACIÓN FLASH ================= */}
       {notif && (
@@ -837,12 +743,14 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
         </div>
       )}
 
-      {/* ================= 3. CONTENIDO: SUBMÓDULO KARDEX ================= */}
-      {activeTab === 'kardex' && (
+      {/* =========================================================================
+         VISTA 1: ADMINISTRACIÓN DE INVENTARIO (SCREENSHOT 2)
+         ========================================================================= */}
+      {activeView === 'movimientos' && (
         <div className="inv-card">
-          {/* Header Row: Title + Transferencia */}
+          {/* Header Row: Title + Transferencia Directa + Ajustes de Inventario */}
           <div className="inv-header-row">
-            <h2 className="inv-title">ADMINISTRACIÓN DE KARDEX</h2>
+            <h2 className="inv-title">ADMINISTRACIÓN DE INVENTARIO</h2>
             <div className="inv-top-buttons">
               <button
                 type="button"
@@ -850,21 +758,29 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                 onClick={() => setModalTransOpen(true)}
                 title="Realizar transferencia directa entre sedes"
               >
-                <ArrowLeftRight size={13} /> Transferencia Directa
+                <ArrowLeftRight size={13} /> TRANSFERENCIA DIRECTA
+              </button>
+              <button
+                type="button"
+                className="btn-adjust"
+                onClick={() => setModalAjusteOpen(true)}
+                title="Registrar ajuste de inventario"
+              >
+                <Plus size={13} /> AJUSTES DE INVENTARIO <LayoutGrid size={13} style={{ marginLeft: 4 }} />
               </button>
             </div>
           </div>
 
-          {/* Filtros superiores idénticos a la captura de referencia */}
+          {/* Filtros de Administrar Inventario */}
           <div className="inv-filters-grid">
-            {/* Fila 1: Dos selectores de fecha */}
+            {/* Fila 1: Dos fechas */}
             <div className="inv-date-row">
               <div className="inv-date-box" title="Fecha inicio">
                 <Calendar size={15} color="#475569" />
                 <input
                   type="date"
-                  value={fechaInicio}
-                  onChange={(e) => setFechaInicio(e.target.value)}
+                  value={movFechaInicio}
+                  onChange={(e) => setMovFechaInicio(e.target.value)}
                   aria-label="Fecha inicio"
                 />
               </div>
@@ -872,8 +788,223 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                 <Calendar size={15} color="#475569" />
                 <input
                   type="date"
-                  value={fechaFin}
-                  onChange={(e) => setFechaFin(e.target.value)}
+                  value={movFechaFin}
+                  onChange={(e) => setMovFechaFin(e.target.value)}
+                  aria-label="Fecha fin"
+                />
+              </div>
+            </div>
+
+            {/* Fila 2: [10 v]  [SEDE v]  [BUSCAR POR NOMBRE O CÓDIGO DE BARRA] */}
+            <div className="inv-kardex-row-2">
+              <select
+                className="inv-select-limit"
+                value={movPageSize}
+                onChange={(e) => {
+                  setMovPageSize(Number(e.target.value));
+                  setMovCurrentPage(1);
+                }}
+                title="Registros por página"
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+
+              <select
+                className="inv-select-sucursal"
+                value={movSucursal}
+                onChange={(e) => {
+                  setMovSucursal(e.target.value);
+                  setMovCurrentPage(1);
+                }}
+                style={{ flex: 1.2 }}
+                title="Filtrar por sede"
+              >
+                <option value="ALL">TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA - ...</option>
+                <option value="SUCURSAL_2">SUCURSAL 2 - JESÚS MARÍA</option>
+              </select>
+
+              <div className="inv-search-wrap" style={{ flex: 1.5, maxWidth: 'none' }}>
+                <input
+                  type="text"
+                  className="inv-search-input"
+                  placeholder="BUSCAR POR NOMBRE O CÓDIGO DE BARRA"
+                  value={movSearch}
+                  onChange={(e) => {
+                    setMovSearch(e.target.value);
+                    setMovCurrentPage(1);
+                  }}
+                />
+                <Search size={16} className="inv-search-icon" />
+              </div>
+            </div>
+          </div>
+
+          {/* Barra flotante de exportación */}
+          <div className="inv-export-toolbar">
+            <button
+              type="button"
+              className="btn-export btn-export-pdf"
+              onClick={() => window.print()}
+              title="Exportar a PDF / Imprimir"
+            >
+              <FileText size={15} />
+            </button>
+            <button
+              type="button"
+              className="btn-export btn-export-excel"
+              onClick={() => {
+                const csv = 'data:text/csv;charset=utf-8,\uFEFF' +
+                  ['#,PRODUCTO,MOVIMIENTO,FECHA,CANTIDAD', ...movFiltrados.map((m, idx) => `${idx + 1},"${m.producto}","${m.movimiento}","${m.fecha}",${m.cantidad}`)].join('\n');
+                const link = document.createElement('a');
+                link.href = encodeURI(csv);
+                link.download = `inventario_${Date.now()}.csv`;
+                link.click();
+              }}
+              title="Descargar reporte en Excel (.CSV)"
+            >
+              <FileSpreadsheet size={15} />
+            </button>
+            <button
+              type="button"
+              className="btn-export btn-export-config"
+              onClick={() => {
+                setMovSearch('');
+                setMovSucursal('ALL');
+                showNotif('Filtros restaurados.');
+              }}
+              title="Restablecer filtros"
+            >
+              <Settings size={15} />
+            </button>
+          </div>
+
+          {/* Tabla de Movimientos de Inventario (Screenshot 2) */}
+          <div className="inv-table-wrap">
+            <table className="inv-table">
+              <thead>
+                <tr>
+                  <th style={{ width: 44 }}>#</th>
+                  <th>PRODUCTO</th>
+                  <th style={{ width: 340 }}>MOVIMIENTO</th>
+                  <th style={{ width: 180 }}>FECHA</th>
+                  <th style={{ width: 110, textAlign: 'right', paddingRight: 20 }}>CANTIDAD</th>
+                </tr>
+              </thead>
+              <tbody>
+                {movPaginated.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="inv-empty">
+                      No se encontraron movimientos de inventario que coincidan con la búsqueda.
+                    </td>
+                  </tr>
+                ) : (
+                  movPaginated.map((item, idx) => {
+                    const globalIdx = (movCurrentPage - 1) * movPageSize + idx + 1;
+                    return (
+                      <tr key={item.id}>
+                        <td className="inv-td-num">{globalIdx}</td>
+                        <td className="inv-td-product">
+                          <div style={{ fontWeight: 600, color: '#1e293b' }}>{item.producto}</div>
+                        </td>
+                        <td className="inv-td-mov" style={{ color: '#475569', fontWeight: 600 }}>
+                          {item.movimiento}
+                        </td>
+                        <td className="inv-td-date" style={{ color: '#64748b' }}>
+                          {item.fecha}
+                        </td>
+                        <td className="inv-td-qty" style={{ textAlign: 'right', paddingRight: 24, fontWeight: 700 }}>
+                          {item.cantidad}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Paginación */}
+          <div className="inv-pagination">
+            <span>
+              Mostrando {movFiltrados.length === 0 ? 0 : (movCurrentPage - 1) * movPageSize + 1} a{' '}
+              {Math.min(movCurrentPage * movPageSize, movFiltrados.length)} de {movFiltrados.length} movimientos
+            </span>
+            <div className="inv-page-btns">
+              <button
+                type="button"
+                className="inv-btn-nav"
+                disabled={movCurrentPage === 1}
+                onClick={() => setMovCurrentPage((p) => Math.max(1, p - 1))}
+              >
+                ‹
+              </button>
+              {Array.from({ length: Math.min(5, movTotalPages) }).map((_, i) => {
+                const p = i + 1;
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    className={`inv-btn-nav ${movCurrentPage === p ? 'active' : ''}`}
+                    onClick={() => setMovCurrentPage(p)}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+              {movTotalPages > 5 && <span style={{ padding: '0 4px', color: '#94a3b8' }}>...</span>}
+              {movTotalPages > 5 && (
+                <button
+                  type="button"
+                  className={`inv-btn-nav ${movCurrentPage === movTotalPages ? 'active' : ''}`}
+                  onClick={() => setMovCurrentPage(movTotalPages)}
+                >
+                  {movTotalPages}
+                </button>
+              )}
+              <button
+                type="button"
+                className="inv-btn-nav"
+                disabled={movCurrentPage >= movTotalPages}
+                onClick={() => setMovCurrentPage((p) => Math.min(movTotalPages, p + 1))}
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+         VISTA 2: ADMINISTRACIÓN DE KARDEX (SCREENSHOT 3)
+         ========================================================================= */}
+      {activeView === 'kardex' && (
+        <div className="inv-card">
+          <div className="inv-header-row">
+            <h2 className="inv-title">ADMINISTRACIÓN DE KARDEX</h2>
+          </div>
+
+          {/* Filtros idénticos a Screenshot 3 */}
+          <div className="inv-filters-grid">
+            {/* Fila 1: Dos fechas */}
+            <div className="inv-date-row">
+              <div className="inv-date-box" title="Fecha inicio">
+                <Calendar size={15} color="#475569" />
+                <input
+                  type="date"
+                  value={kardexFechaInicio}
+                  onChange={(e) => setKardexFechaInicio(e.target.value)}
+                  aria-label="Fecha inicio"
+                />
+              </div>
+              <div className="inv-date-box" title="Fecha fin">
+                <Calendar size={15} color="#475569" />
+                <input
+                  type="date"
+                  value={kardexFechaFin}
+                  onChange={(e) => setKardexFechaFin(e.target.value)}
                   aria-label="Fecha fin"
                 />
               </div>
@@ -889,7 +1020,6 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                   setKardexCurrentPage(1);
                 }}
                 title="Registros por página"
-                aria-label="Registros por página"
               >
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -905,9 +1035,8 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                   setKardexCurrentPage(1);
                 }}
                 title="Filtrar por sucursal"
-                aria-label="Filtrar por sucursal"
               >
-                <option value="ALL">SUCURSAL (TODAS)</option>
+                <option value="ALL">SUCURSAL</option>
                 <option value="PRINCIPAL">SEDE PRINCIPAL - SAN MIGUEL</option>
                 <option value="SUCURSAL_2">SUCURSAL 2 - JESÚS MARÍA</option>
               </select>
@@ -919,13 +1048,12 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                   setKardexProductoId(e.target.value);
                   setKardexCurrentPage(1);
                 }}
-                title="Filtrar kardex por producto"
-                aria-label="Filtrar kardex por producto"
+                title="Buscar producto"
               >
-                <option value="ALL">BUSCAR EL PRODUCTO (TODOS LOS PRODUCTOS)</option>
+                <option value="ALL">BUSCAR EL PRODUCTO</option>
                 {productos.map((prod) => (
                   <option key={prod.id} value={prod.id}>
-                    [{prod.codigo}] {prod.nombre} ({prod.categoriaNombre})
+                    {prod.nombre}
                   </option>
                 ))}
               </select>
@@ -937,7 +1065,7 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
             <button
               type="button"
               className="btn-export btn-export-pdf"
-              onClick={exportKardexPdf}
+              onClick={() => window.print()}
               title="Exportar a PDF / Imprimir Kardex"
             >
               <FileText size={15} />
@@ -945,7 +1073,14 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
             <button
               type="button"
               className="btn-export btn-export-excel"
-              onClick={exportKardexExcel}
+              onClick={() => {
+                const csv = 'data:text/csv;charset=utf-8,\uFEFF' +
+                  ['FECHA,MOVIMIENTO,INV. INICIAL,ENTRADA,SALIDA,INV. FINAL', ...kardexCalculated.map((m) => `"${m.fecha}","${m.movimiento}",${m.invInicial},${m.entrada},${m.salida},${m.invFinal}`)].join('\n');
+                const link = document.createElement('a');
+                link.href = encodeURI(csv);
+                link.download = `kardex_${Date.now()}.csv`;
+                link.click();
+              }}
               title="Descargar Tarjeta Kardex en Excel (.CSV)"
             >
               <FileSpreadsheet size={15} />
@@ -953,25 +1088,26 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
             <button
               type="button"
               className="btn-export btn-export-config"
-              onClick={resetKardexFilters}
-              title="Restablecer filtros de búsqueda"
+              onClick={() => {
+                setKardexProductoId('ALL');
+                setKardexSucursal('ALL');
+                showNotif('Filtros de Kardex restaurados.');
+              }}
+              title="Restablecer filtros"
             >
               <Settings size={15} />
             </button>
           </div>
 
-          {/* TABLA TARJETA KARDEX (Exactamente como en la captura del usuario) */}
+          {/* TABLA TARJETA KARDEX (Screenshot 3) */}
           <div className="kardex-table-wrap">
             <table className="kardex-table">
               <thead>
-                {/* 1. Banner azul superior: TARJETA KARDEX */}
                 <tr>
                   <th colSpan={6} className="kardex-banner-th">
                     TARJETA KARDEX
                   </th>
                 </tr>
-
-                {/* 2. Sub-bloques: Azul (Fecha/Movimiento) y Verde (Unidades) */}
                 <tr>
                   <th colSpan={2} className="kardex-split-blue">
                     FECHA Y DOCUMENTO / DESCRIPCIÓN MVTO.
@@ -980,10 +1116,8 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                     UNIDADES
                   </th>
                 </tr>
-
-                {/* 3. Encabezados de columnas individuales */}
                 <tr className="kardex-cols-row">
-                  <th style={{ width: 130 }} className="kardex-td-center">FECHA</th>
+                  <th style={{ width: 140 }} className="kardex-td-center">FECHA</th>
                   <th>MOVIMIENTO</th>
                   <th style={{ width: 120 }} className="kardex-td-center">INV. INICIAL</th>
                   <th style={{ width: 110 }} className="kardex-td-center">ENTRADA</th>
@@ -1005,11 +1139,9 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                         {row.fecha}
                       </td>
                       <td>
-                        <div style={{ fontWeight: 700, color: '#1e293b' }}>
-                          {row.movimiento}
-                        </div>
+                        <div style={{ fontWeight: 700, color: '#1e293b' }}>{row.movimiento}</div>
                         <div style={{ fontSize: 10.5, color: '#64748b' }}>
-                          {row.producto} · Lote: {row.lote} · {row.sede}
+                          {row.producto} · Lote: {row.lote}
                         </div>
                       </td>
                       <td className="kardex-td-center" style={{ fontWeight: 700, color: '#475569' }}>
@@ -1039,7 +1171,7 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
             </table>
           </div>
 
-          {/* Paginación Kardex */}
+          {/* Paginación */}
           <div className="inv-pagination">
             <span>
               Mostrando {kardexCalculated.length === 0 ? 0 : (kardexCurrentPage - 1) * kardexPageSize + 1} a{' '}
@@ -1052,13 +1184,10 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                 disabled={kardexCurrentPage === 1}
                 onClick={() => setKardexCurrentPage((p) => Math.max(1, p - 1))}
               >
-                Anterior
+                ‹
               </button>
-              {Array.from({ length: kardexTotalPages }).map((_, i) => {
+              {Array.from({ length: Math.min(5, kardexTotalPages) }).map((_, i) => {
                 const p = i + 1;
-                if (kardexTotalPages > 6 && Math.abs(kardexCurrentPage - p) > 2 && p !== 1 && p !== kardexTotalPages) {
-                  return null;
-                }
                 return (
                   <button
                     key={p}
@@ -1076,17 +1205,18 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                 disabled={kardexCurrentPage >= kardexTotalPages}
                 onClick={() => setKardexCurrentPage((p) => Math.min(kardexTotalPages, p + 1))}
               >
-                Siguiente
+                ›
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ================= 4. CONTENIDO: SUBMÓDULO PRODUCTOS ================= */}
-      {activeTab === 'productos' && (
+      {/* =========================================================================
+         VISTA 3: ADMINISTRACIÓN DE PRODUCTOS
+         ========================================================================= */}
+      {activeView === 'productos' && (
         <div className="inv-card">
-          {/* Header Row: Title + New Product */}
           <div className="inv-header-row">
             <div>
               <h2 className="inv-title">ADMINISTRACIÓN DE PRODUCTOS</h2>
@@ -1327,7 +1457,7 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
             </table>
           </div>
 
-          {/* Paginación Productos */}
+          {/* Paginación */}
           <div className="inv-pagination">
             <span>
               Mostrando {productosFiltrados.length === 0 ? 0 : (prodCurrentPage - 1) * prodPageSize + 1} a{' '}
@@ -1340,13 +1470,10 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                 disabled={prodCurrentPage === 1}
                 onClick={() => setProdCurrentPage((p) => Math.max(1, p - 1))}
               >
-                Anterior
+                ‹
               </button>
-              {Array.from({ length: prodTotalPages }).map((_, i) => {
+              {Array.from({ length: Math.min(5, prodTotalPages) }).map((_, i) => {
                 const p = i + 1;
-                if (prodTotalPages > 6 && Math.abs(prodCurrentPage - p) > 2 && p !== 1 && p !== prodTotalPages) {
-                  return null;
-                }
                 return (
                   <button
                     key={p}
@@ -1364,9 +1491,179 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                 disabled={prodCurrentPage >= prodTotalPages}
                 onClick={() => setProdCurrentPage((p) => Math.min(prodTotalPages, p + 1))}
               >
-                Siguiente
+                ›
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL AJUSTE DE INVENTARIO ================= */}
+      {modalAjusteOpen && (
+        <div className="inv-modal-overlay" onClick={() => setModalAjusteOpen(false)}>
+          <div className="inv-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="inv-modal-header">
+              <h3 className="inv-modal-title">Ajustes de Inventario</h3>
+              <button
+                type="button"
+                className="inv-modal-close"
+                onClick={() => setModalAjusteOpen(false)}
+                title="Cerrar modal"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleGuardarAjuste} className="inv-modal-form">
+              <div className="inv-form-group">
+                <label>Producto a Ajustar</label>
+                <select value={ajusteProducto} onChange={(e) => setAjusteProducto(e.target.value)}>
+                  {productos.map((prod) => (
+                    <option key={prod.id} value={prod.nombre}>
+                      {prod.nombre} (Stock: {prod.stockDisponible})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="inv-form-group">
+                  <label>Tipo de Ajuste</label>
+                  <select value={ajusteTipo} onChange={(e) => setAjusteTipo(e.target.value as any)}>
+                    <option value="INGRESO">Ingreso (+ Existencias)</option>
+                    <option value="SALIDA">Salida (- Merma/Deterioro)</option>
+                  </select>
+                </div>
+
+                <div className="inv-form-group">
+                  <label>Cantidad</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={ajusteCantidad}
+                    onChange={(e) => setAjusteCantidad(parseInt(e.target.value) || 1)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="inv-form-group">
+                  <label>Lote</label>
+                  <input
+                    type="text"
+                    value={ajusteLote}
+                    onChange={(e) => setAjusteLote(e.target.value)}
+                    placeholder="L-2026-01"
+                  />
+                </div>
+
+                <div className="inv-form-group">
+                  <label>N° Referencia</label>
+                  <input
+                    type="text"
+                    value={ajusteRef}
+                    onChange={(e) => setAjusteRef(e.target.value)}
+                    placeholder="AJU-001"
+                  />
+                </div>
+              </div>
+
+              <div className="inv-form-group">
+                <label>Motivo del Ajuste</label>
+                <textarea
+                  rows={2}
+                  value={ajusteMotivo}
+                  onChange={(e) => setAjusteMotivo(e.target.value)}
+                  placeholder="Detalle la justificación del ajuste físico..."
+                />
+              </div>
+
+              <div className="inv-modal-footer">
+                <button
+                  type="button"
+                  className="inv-btn-cancel"
+                  onClick={() => setModalAjusteOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="inv-btn-submit">
+                  Guardar Ajuste
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL TRANSFERENCIA ENTRE SEDES ================= */}
+      {modalTransOpen && (
+        <div className="inv-modal-overlay" onClick={() => setModalTransOpen(false)}>
+          <div className="inv-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="inv-modal-header">
+              <h3 className="inv-modal-title">Transferencia Directa entre Sedes</h3>
+              <button
+                type="button"
+                className="inv-modal-close"
+                onClick={() => setModalTransOpen(false)}
+                title="Cerrar modal"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleGuardarTransferencia} className="inv-modal-form">
+              <div className="inv-form-group">
+                <label>Sede Origen</label>
+                <select value={transOrigen} onChange={(e) => setTransOrigen(e.target.value)}>
+                  <option value="TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526">TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526</option>
+                  <option value="Sucursal 2 - Jesús María">Sucursal 2 - Jesús María</option>
+                </select>
+              </div>
+
+              <div className="inv-form-group">
+                <label>Sede Destino</label>
+                <select value={transDestino} onChange={(e) => setTransDestino(e.target.value)}>
+                  <option value="Sucursal 2 - Jesús María">Sucursal 2 - Jesús María</option>
+                  <option value="TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526">TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526</option>
+                </select>
+              </div>
+
+              <div className="inv-form-group">
+                <label>Producto a Transferir</label>
+                <select value={transProducto} onChange={(e) => setTransProducto(e.target.value)}>
+                  {productos.map((prod) => (
+                    <option key={prod.id} value={prod.nombre}>
+                      {prod.nombre} (Disp: {prod.stockDisponible})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="inv-form-group">
+                <label>Cantidad de Unidades</label>
+                <input
+                  type="number"
+                  min="1"
+                  required
+                  value={transCantidad}
+                  onChange={(e) => setTransCantidad(parseInt(e.target.value) || 1)}
+                />
+              </div>
+
+              <div className="inv-modal-footer">
+                <button
+                  type="button"
+                  className="inv-btn-cancel"
+                  onClick={() => setModalTransOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="inv-btn-submit">
+                  Transferir Unidades
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -1489,78 +1786,6 @@ export default function InventarioPage({ defaultTab = 'kardex' }: InventarioPage
                 </button>
                 <button type="submit" className="inv-btn-submit">
                   {editingProduct ? 'Actualizar Producto' : 'Guardar Producto'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ================= MODAL TRANSFERENCIA ENTRE SEDES ================= */}
-      {modalTransOpen && (
-        <div className="inv-modal-overlay" onClick={() => setModalTransOpen(false)}>
-          <div className="inv-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="inv-modal-header">
-              <h3 className="inv-modal-title">Transferencia Directa entre Sedes</h3>
-              <button
-                type="button"
-                className="inv-modal-close"
-                onClick={() => setModalTransOpen(false)}
-                title="Cerrar modal"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleGuardarTransferencia} className="inv-modal-form">
-              <div className="inv-form-group">
-                <label>Sede Origen</label>
-                <select value={transOrigen} onChange={(e) => setTransOrigen(e.target.value)}>
-                  <option value="Sede Principal - San Miguel">Sede Principal - San Miguel</option>
-                  <option value="Sucursal 2 - Jesús María">Sucursal 2 - Jesús María</option>
-                </select>
-              </div>
-
-              <div className="inv-form-group">
-                <label>Sede Destino</label>
-                <select value={transDestino} onChange={(e) => setTransDestino(e.target.value)}>
-                  <option value="Sucursal 2 - Jesús María">Sucursal 2 - Jesús María</option>
-                  <option value="Sede Principal - San Miguel">Sede Principal - San Miguel</option>
-                </select>
-              </div>
-
-              <div className="inv-form-group">
-                <label>Producto a Transferir</label>
-                <select value={transProducto} onChange={(e) => setTransProducto(e.target.value)}>
-                  {productos.map((prod) => (
-                    <option key={prod.id} value={prod.nombre}>
-                      {prod.nombre} (Disp: {prod.stockDisponible})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="inv-form-group">
-                <label>Cantidad de Unidades</label>
-                <input
-                  type="number"
-                  min="1"
-                  required
-                  value={transCantidad}
-                  onChange={(e) => setTransCantidad(parseInt(e.target.value) || 1)}
-                />
-              </div>
-
-              <div className="inv-modal-footer">
-                <button
-                  type="button"
-                  className="inv-btn-cancel"
-                  onClick={() => setModalTransOpen(false)}
-                >
-                  Cancelar
-                </button>
-                <button type="submit" className="inv-btn-submit">
-                  Transferir Unidades
                 </button>
               </div>
             </form>

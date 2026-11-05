@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createBrowserRouter, NavLink, Outlet, redirect, useLoaderData, useNavigate, useRevalidator, useRouteError } from 'react-router-dom';
+import { createBrowserRouter, NavLink, Outlet, redirect, useLoaderData, useLocation, useNavigate, useRevalidator, useRouteError } from 'react-router-dom';
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import {
   LogOut,
@@ -18,7 +18,9 @@ import {
   Truck,
   Building2,
   BarChart3,
-  ShieldCheck
+  ShieldCheck,
+  ChevronDown,
+  List
 } from 'lucide-react';
 import { AuthError, authRequest } from '../features/auth/api/auth';
 import type { Role, User } from '../features/auth/api/auth';
@@ -33,20 +35,51 @@ import Page6 from '../features/comprobantes/pages/comprobantes.page';
 import Page7 from '../features/reportes/pages/reportes.page';
 import Page8 from '../features/usuarios/pages/usuarios.page';
 
-interface NavEntry {
+interface NavSubItem {
   path: string;
+  label: string;
+  icon?: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
+  element: React.ReactNode;
+}
+
+interface NavEntry {
+  path?: string;
   label: string;
   roles: Role[];
   icon: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
-  element: React.ReactNode;
+  element?: React.ReactNode;
+  children?: NavSubItem[];
 }
 
 const entries: NavEntry[] = [
   { path: '/', label: 'Inicio', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: LayoutDashboard, element: <Page0 /> },
   { path: '/ventas', label: 'Ventas', roles: ['ADMINISTRADOR', 'VENDEDOR'], icon: ShoppingCart, element: <Page3 /> },
   { path: '/comprobantes', label: 'Comprobantes', roles: ['ADMINISTRADOR', 'VENDEDOR'], icon: Receipt, element: <Page6 /> },
-  { path: '/productos', label: 'Productos', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: Pill, element: <Page1 /> },
-  { path: '/inventario', label: 'Inventario', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: Boxes, element: <Page2 /> },
+  {
+    label: 'Inventario',
+    roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'],
+    icon: ShoppingCart, // Matching screenshot 1 cart icon
+    children: [
+      {
+        path: '/inventario',
+        label: 'Administrar Inventario',
+        icon: List,
+        element: <Page2 view="movimientos" />
+      },
+      {
+        path: '/inventario/kardex',
+        label: 'Kardex',
+        icon: List,
+        element: <Page2 view="kardex" />
+      },
+      {
+        path: '/productos',
+        label: 'Administrar Productos',
+        icon: List,
+        element: <Page2 view="productos" />
+      }
+    ]
+  },
   { path: '/compras', label: 'Compras', roles: ['ADMINISTRADOR', 'ALMACENERO'], icon: Truck, element: <Page4 /> },
   { path: '/proveedores', label: 'Proveedores', roles: ['ADMINISTRADOR'], icon: Building2, element: <Page5 /> },
   { path: '/reportes', label: 'Reportes', roles: ['ADMINISTRADOR'], icon: BarChart3, element: <Page7 /> },
@@ -87,9 +120,13 @@ function RouteError() {
 function Layout() {
   const user = useLoaderData() as User;
   const navigate = useNavigate();
+  const location = useLocation();
   const revalidator = useRevalidator();
   const [busy, setBusy] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [openSubmenus, setOpenSubmenus] = useState<Record<string, boolean>>(() => ({
+    Inventario: true,
+  }));
   const [narrow, setNarrow] = useState(() => window.matchMedia('(max-width: 900px)').matches);
   useEffect(() => {
     const media = window.matchMedia('(max-width: 900px)');
@@ -230,10 +267,51 @@ function Layout() {
           <nav className="sidebar-nav" aria-label="Menú principal">
             {allowedEntries.map((entry) => {
               const Icon = entry.icon;
+
+              if (entry.children && entry.children.length > 0) {
+                const isOpen = openSubmenus[entry.label] ?? true;
+                const isGroupActive = entry.children.some((child) => location.pathname === child.path);
+
+                return (
+                  <div key={entry.label} className={`nav-group ${isGroupActive ? 'has-active-child' : ''}`}>
+                    <button
+                      type="button"
+                      className={`nav-group-header ${isGroupActive ? 'has-active-child' : ''}`}
+                      onClick={() => setOpenSubmenus((prev) => ({ ...prev, [entry.label]: !isOpen }))}
+                      aria-expanded={isOpen}
+                    >
+                      <div className="nav-group-left">
+                        <Icon size={16} strokeWidth={2} />
+                        <span>{entry.label}</span>
+                      </div>
+                      <ChevronDown size={14} className={`nav-group-arrow ${isOpen ? 'is-rotated' : ''}`} />
+                    </button>
+                    {isOpen && (
+                      <div className="nav-submenu">
+                        {entry.children.map((sub) => {
+                          const SubIcon = sub.icon || List;
+                          return (
+                            <NavLink
+                              key={sub.path}
+                              to={sub.path}
+                              className={({ isActive }) => `nav-sublink ${isActive ? 'active' : ''}`}
+                              onClick={() => { if (narrow) setCollapsed(false); }}
+                            >
+                              <SubIcon size={14} strokeWidth={2} />
+                              <span>{sub.label}</span>
+                            </NavLink>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               return (
                 <NavLink
                   key={entry.path}
-                  to={entry.path}
+                  to={entry.path!}
                   end={entry.path === '/'}
                   className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
                   onClick={() => { if (narrow) setCollapsed(false); }}
@@ -287,15 +365,30 @@ export const router = createBrowserRouter([
     errorElement: <RouteError />,
     children: entries
       .filter((entry) => entry.path !== '/ventas')
-      .map((entry) => ({
-        path: entry.path,
-        element: entry.element,
-        loader: async (args: LoaderFunctionArgs) => {
-          const result = await sessionLoader(args);
-          if (result instanceof Response) return result;
-          return entry.roles.includes(result.rol) ? null : redirect('/');
-        },
-      })),
+      .flatMap((entry) => {
+        if (entry.children && entry.children.length > 0) {
+          return entry.children.map((child) => ({
+            path: child.path,
+            element: child.element,
+            loader: async (args: LoaderFunctionArgs) => {
+              const result = await sessionLoader(args);
+              if (result instanceof Response) return result;
+              return entry.roles.includes(result.rol) ? null : redirect('/');
+            },
+          }));
+        }
+        return [
+          {
+            path: entry.path!,
+            element: entry.element!,
+            loader: async (args: LoaderFunctionArgs) => {
+              const result = await sessionLoader(args);
+              if (result instanceof Response) return result;
+              return entry.roles.includes(result.rol) ? null : redirect('/');
+            },
+          },
+        ];
+      }),
   },
   { path: '*', loader: () => redirect('/') },
 ]);
