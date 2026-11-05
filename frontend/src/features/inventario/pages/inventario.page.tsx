@@ -159,7 +159,6 @@ export default function InventarioPage() {
   const [fechaFin, setFechaFin] = useState('2026-11-04');
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sedeSeleccionada, setSedeSeleccionada] = useState('ALL');
 
   // Modales
   const [modalAjusteOpen, setModalAjusteOpen] = useState(false);
@@ -219,14 +218,9 @@ export default function InventarioPage() {
         m.movimiento.toLowerCase().includes(search.toLowerCase()) ||
         m.lote.toLowerCase().includes(search.toLowerCase());
 
-      const matchSede =
-        sedeSeleccionada === 'ALL' ||
-        (sedeSeleccionada === 'PRINCIPAL' && m.sede === 'PRINCIPAL') ||
-        (sedeSeleccionada === 'SUCURSAL_2' && m.sede === 'SUCURSAL_2');
-
-      return matchSearch && matchSede;
+      return matchSearch;
     });
-  }, [movimientos, search, sedeSeleccionada]);
+  }, [movimientos, search]);
 
   // Paginación
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
@@ -373,14 +367,6 @@ export default function InventarioPage() {
             >
               <ArrowLeftRight size={13} /> Transferencia Directa
             </button>
-            <button
-              type="button"
-              className="btn-adjust"
-              onClick={() => setModalAjusteOpen(true)}
-              title="Ajustar existencias por ingreso o merma"
-            >
-              <Plus size={13} /> Ajustes de Inventario <LayoutGrid size={13} />
-            </button>
           </div>
         </div>
 
@@ -408,7 +394,7 @@ export default function InventarioPage() {
             </div>
           </div>
 
-          {/* Row 2: Limit, Sede & Search */}
+          {/* Row 2: Limit & Search */}
           <div className="inv-controls-row">
             <select
               className="inv-select-limit"
@@ -423,23 +409,6 @@ export default function InventarioPage() {
               <option value={25}>25</option>
               <option value={50}>50</option>
               <option value={100}>100</option>
-            </select>
-
-            <select
-              className="inv-select-sede"
-              value={sedeSeleccionada}
-              onChange={(e) => {
-                setSedeSeleccionada(e.target.value);
-                setCurrentPage(1);
-              }}
-              title="Filtrar por sede de la botica"
-            >
-              <option value="ALL">
-                TECHMULTISER PRINCIPAL - Sede: CAL. TACNA NRO 5526 URB. SAN MIGUEL LIMA - LIMA
-              </option>
-              <option value="SUCURSAL_2">
-                BOTICA NOVA SALUD - Sede 2: AV. BRASIL 1420 JESÚS MARÍA - LIMA
-              </option>
             </select>
 
             <div className="inv-search-wrap">
@@ -481,7 +450,6 @@ export default function InventarioPage() {
             className="btn-export btn-export-config"
             onClick={() => {
               setSearch('');
-              setSedeSeleccionada('ALL');
               showNotif('Filtros restaurados correctamente.');
             }}
             title="Restablecer filtros"
