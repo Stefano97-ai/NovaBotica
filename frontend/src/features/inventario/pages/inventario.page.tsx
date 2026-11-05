@@ -12,13 +12,10 @@ import {
   Settings,
   X,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Receipt,
+  ClipboardList
 } from 'lucide-react';
-import {
-  FaFileLines,
-  FaFileInvoice,
-  FaFileInvoiceDollar
-} from 'react-icons/fa6';
 import './inventario.css';
 
 interface MovimientoItem {
@@ -328,17 +325,17 @@ export default function InventarioPage() {
       {/* 1. Subheader bar horizontal como el Dashboard */}
       <div className="inv-bar">
         <h1 className="inv-bar-title">
-          <Boxes size={15} /> Inventario
+          <Boxes size={15} strokeWidth={2.2} /> INVENTARIO
         </h1>
         <div className="inv-actions">
           <Link to="/ventas?tipo=FACTURA" className="inv-dash-btn">
-            <FaFileInvoice size={12} /> Emitir factura
+            <FileText size={12} strokeWidth={2} /> EMITIR FACTURA
           </Link>
           <Link to="/ventas?tipo=BOLETA" className="inv-dash-btn">
-            <FaFileInvoiceDollar size={12} /> Emitir boleta
+            <Receipt size={12} strokeWidth={2} /> EMITIR BOLETA
           </Link>
           <Link to="/ventas?tipo=NOTA_VENTA" className="inv-dash-btn">
-            <FaFileLines size={12} /> Nota de venta
+            <ClipboardList size={12} strokeWidth={2} /> NOTA DE VENTA
           </Link>
         </div>
       </div>

@@ -14,13 +14,10 @@ import {
   MessageSquare,
   CheckCircle2,
   X,
-  Package
+  Package,
+  Receipt,
+  ClipboardList
 } from 'lucide-react';
-import {
-  FaFileLines,
-  FaFileInvoice,
-  FaFileInvoiceDollar
-} from 'react-icons/fa6';
 import './compras.css';
 
 interface ItemCompra {
@@ -311,17 +308,17 @@ export default function ComprasPage() {
       {/* 1. Subheader Bar con accesos directos */}
       <div className="compras-bar">
         <h1 className="compras-bar-title">
-          <Truck size={15} /> Registro de Compras
+          <Truck size={15} strokeWidth={2.2} /> REGISTRO DE COMPRAS
         </h1>
         <div className="compras-actions">
           <Link to="/ventas?tipo=FACTURA" className="compras-dash-btn">
-            <FaFileInvoice size={12} /> Emitir factura
+            <FileText size={12} strokeWidth={2} /> EMITIR FACTURA
           </Link>
           <Link to="/ventas?tipo=BOLETA" className="compras-dash-btn">
-            <FaFileInvoiceDollar size={12} /> Emitir boleta
+            <Receipt size={12} strokeWidth={2} /> EMITIR BOLETA
           </Link>
           <Link to="/ventas?tipo=NOTA_VENTA" className="compras-dash-btn">
-            <FaFileLines size={12} /> Nota de venta
+            <ClipboardList size={12} strokeWidth={2} /> NOTA DE VENTA
           </Link>
         </div>
       </div>

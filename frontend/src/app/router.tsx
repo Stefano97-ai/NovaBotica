@@ -9,19 +9,17 @@ import {
   Moon,
   Calculator,
   UserRound,
-  User as UserIcon
+  User as UserIcon,
+  LayoutDashboard,
+  ShoppingCart,
+  Receipt,
+  Pill,
+  Boxes,
+  Truck,
+  Building2,
+  BarChart3,
+  ShieldCheck
 } from 'lucide-react';
-import {
-  FaHouse,
-  FaCashRegister,
-  FaFileInvoiceDollar,
-  FaCapsules,
-  FaBoxesStacked,
-  FaTruck,
-  FaHandshake,
-  FaChartColumn,
-  FaUserShield
-} from 'react-icons/fa6';
 import { AuthError, authRequest } from '../features/auth/api/auth';
 import type { Role, User } from '../features/auth/api/auth';
 import LoginPage from '../features/auth/pages/login.page';
@@ -39,20 +37,20 @@ interface NavEntry {
   path: string;
   label: string;
   roles: Role[];
-  icon: React.ComponentType<{ className?: string; size?: number }>;
+  icon: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
   element: React.ReactNode;
 }
 
 const entries: NavEntry[] = [
-  { path: '/', label: 'Inicio', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: FaHouse, element: <Page0 /> },
-  { path: '/ventas', label: 'Ventas', roles: ['ADMINISTRADOR', 'VENDEDOR'], icon: FaCashRegister, element: <Page3 /> },
-  { path: '/comprobantes', label: 'Comprobantes', roles: ['ADMINISTRADOR', 'VENDEDOR'], icon: FaFileInvoiceDollar, element: <Page6 /> },
-  { path: '/productos', label: 'Productos', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: FaCapsules, element: <Page1 /> },
-  { path: '/inventario', label: 'Inventario', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: FaBoxesStacked, element: <Page2 /> },
-  { path: '/compras', label: 'Compras', roles: ['ADMINISTRADOR', 'ALMACENERO'], icon: FaTruck, element: <Page4 /> },
-  { path: '/proveedores', label: 'Proveedores', roles: ['ADMINISTRADOR'], icon: FaHandshake, element: <Page5 /> },
-  { path: '/reportes', label: 'Reportes', roles: ['ADMINISTRADOR'], icon: FaChartColumn, element: <Page7 /> },
-  { path: '/usuarios', label: 'Usuarios y roles', roles: ['ADMINISTRADOR'], icon: FaUserShield, element: <Page8 /> },
+  { path: '/', label: 'Inicio', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: LayoutDashboard, element: <Page0 /> },
+  { path: '/ventas', label: 'Ventas', roles: ['ADMINISTRADOR', 'VENDEDOR'], icon: ShoppingCart, element: <Page3 /> },
+  { path: '/comprobantes', label: 'Comprobantes', roles: ['ADMINISTRADOR', 'VENDEDOR'], icon: Receipt, element: <Page6 /> },
+  { path: '/productos', label: 'Productos', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: Pill, element: <Page1 /> },
+  { path: '/inventario', label: 'Inventario', roles: ['ADMINISTRADOR', 'VENDEDOR', 'ALMACENERO'], icon: Boxes, element: <Page2 /> },
+  { path: '/compras', label: 'Compras', roles: ['ADMINISTRADOR', 'ALMACENERO'], icon: Truck, element: <Page4 /> },
+  { path: '/proveedores', label: 'Proveedores', roles: ['ADMINISTRADOR'], icon: Building2, element: <Page5 /> },
+  { path: '/reportes', label: 'Reportes', roles: ['ADMINISTRADOR'], icon: BarChart3, element: <Page7 /> },
+  { path: '/usuarios', label: 'Usuarios y roles', roles: ['ADMINISTRADOR'], icon: ShieldCheck, element: <Page8 /> },
 ];
 
 async function sessionLoader({ request }: LoaderFunctionArgs) {
@@ -242,7 +240,7 @@ function Layout() {
                   aria-label={entry.label}
                   title={entry.label}
                 >
-                  <Icon size={14} />
+                  <Icon size={16} strokeWidth={2} />
                   <span>{entry.label}</span>
                 </NavLink>
               );

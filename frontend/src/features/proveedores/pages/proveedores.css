@@ -183,12 +183,25 @@
   color: #1e293b;
 }
 
+.prov-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.prov-search-icon {
+  position: absolute;
+  left: 9px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
 .prov-search-input {
   height: 32px;
   width: 220px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  padding: 0 10px;
+  padding: 0 10px 0 28px;
   font-size: 12px;
   font-weight: 500;
   color: #1e293b;
@@ -197,8 +210,8 @@
 }
 
 .prov-search-input:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  border-color: #6f42c1;
+  box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.15);
 }
 
 /* ================= 4. TABLE ================= */

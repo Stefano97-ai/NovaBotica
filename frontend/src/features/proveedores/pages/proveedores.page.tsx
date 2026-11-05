@@ -1,22 +1,22 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Handshake,
-  UserPlus,
-  UserPen,
+  Building2,
+  Plus,
+  Pencil,
   Trash2,
   Search,
   X,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  ArrowUpDown
+  ChevronsUpDown,
+  FileText,
+  Receipt,
+  ClipboardList,
+  Sparkles,
+  UserPlus
 } from 'lucide-react';
-import {
-  FaFileLines,
-  FaFileInvoice,
-  FaFileInvoiceDollar
-} from 'react-icons/fa6';
 import './proveedores.css';
 
 interface ProveedorItem {
@@ -315,17 +315,17 @@ export default function ProveedoresPage() {
       {/* 1. Subheader Bar con accesos directos */}
       <div className="prov-bar">
         <h1 className="prov-bar-title">
-          <FaFileLines size={13} /> PROVEEDORES
+          <Building2 size={15} strokeWidth={2.2} /> PROVEEDORES
         </h1>
         <div className="prov-actions">
           <Link to="/ventas?tipo=FACTURA" className="prov-dash-btn">
-            <FaFileInvoice size={12} /> EMITIR FACTURA
+            <FileText size={12} strokeWidth={2} /> EMITIR FACTURA
           </Link>
           <Link to="/ventas?tipo=BOLETA" className="prov-dash-btn">
-            <FaFileInvoiceDollar size={12} /> EMITIR BOLETA
+            <Receipt size={12} strokeWidth={2} /> EMITIR BOLETA
           </Link>
           <Link to="/ventas?tipo=NOTA_VENTA" className="prov-dash-btn">
-            <FaFileLines size={12} /> NOTA DE VENTA
+            <ClipboardList size={12} strokeWidth={2} /> NOTA DE VENTA
           </Link>
         </div>
       </div>
@@ -360,7 +360,7 @@ export default function ProveedoresPage() {
             onClick={openNewModal}
             title="Registrar nuevo proveedor o laboratorio"
           >
-            <span style={{ fontSize: 14, fontWeight: 900 }}>+</span> NUEVO PROVEEDOR <UserPlus size={14} />
+            <Plus size={15} strokeWidth={2.6} /> NUEVO PROVEEDOR <Building2 size={14} strokeWidth={2} />
           </button>
         </div>
 
@@ -385,17 +385,20 @@ export default function ProveedoresPage() {
 
           <div className="prov-search-block">
             <label htmlFor="prov-search-input">Buscar:</label>
-            <input
-              id="prov-search-input"
-              type="text"
-              className="prov-search-input"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="RUC, razón social, dirección..."
-            />
+            <div className="prov-search-input-wrap">
+              <Search size={13} className="prov-search-icon" strokeWidth={2} />
+              <input
+                id="prov-search-input"
+                type="text"
+                className="prov-search-input"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="RUC, razón social, dirección..."
+              />
+            </div>
           </div>
         </div>
 
@@ -405,25 +408,25 @@ export default function ProveedoresPage() {
             <thead>
               <tr>
                 <th style={{ width: 40 }} onClick={() => handleSort('id')}>
-                  # <ArrowUpDown size={10} className="sort-icon" />
+                  # <ChevronsUpDown size={11} strokeWidth={1.8} className="sort-icon" />
                 </th>
                 <th style={{ width: 120 }} onClick={() => handleSort('ruc')}>
-                  RUC/DNI <ArrowUpDown size={10} className="sort-icon" />
+                  RUC/DNI <ChevronsUpDown size={11} strokeWidth={1.8} className="sort-icon" />
                 </th>
                 <th onClick={() => handleSort('razonSocial')}>
-                  NOMBRE O RAZÓN SOCIAL <ArrowUpDown size={10} className="sort-icon" />
+                  NOMBRE O RAZÓN SOCIAL <ChevronsUpDown size={11} strokeWidth={1.8} className="sort-icon" />
                 </th>
                 <th onClick={() => handleSort('direccion')}>
-                  DIRECCIÓN <ArrowUpDown size={10} className="sort-icon" />
+                  DIRECCIÓN <ChevronsUpDown size={11} strokeWidth={1.8} className="sort-icon" />
                 </th>
                 <th style={{ width: 180 }} onClick={() => handleSort('email')}>
-                  EMAIL <ArrowUpDown size={10} className="sort-icon" />
+                  EMAIL <ChevronsUpDown size={11} strokeWidth={1.8} className="sort-icon" />
                 </th>
                 <th style={{ width: 120 }} onClick={() => handleSort('telefono')}>
-                  N° CELULAR <ArrowUpDown size={10} className="sort-icon" />
+                  N° CELULAR <ChevronsUpDown size={11} strokeWidth={1.8} className="sort-icon" />
                 </th>
                 <th style={{ width: 90, textAlign: 'center' }}>
-                  ACCIONES <ArrowUpDown size={10} className="sort-icon" />
+                  ACCIONES
                 </th>
               </tr>
             </thead>
@@ -453,7 +456,7 @@ export default function ProveedoresPage() {
                             onClick={() => openEditModal(prov)}
                             title="Editar proveedor"
                           >
-                            <UserPen size={14} />
+                            <Pencil size={13} strokeWidth={2.2} />
                           </button>
                           <button
                             type="button"
@@ -461,7 +464,7 @@ export default function ProveedoresPage() {
                             onClick={() => handleDelete(prov.id, prov.razonSocial)}
                             title="Eliminar proveedor"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={13} strokeWidth={2.2} />
                           </button>
                         </div>
                       </td>
@@ -521,7 +524,7 @@ export default function ProveedoresPage() {
           <div className="prov-modal" onClick={(e) => e.stopPropagation()}>
             <div className="prov-modal-header">
               <h3 className="prov-modal-title">
-                {editingId ? <UserPen size={17} /> : <UserPlus size={17} />}
+                {editingId ? <Pencil size={17} strokeWidth={2.2} /> : <Building2 size={17} strokeWidth={2.2} />}
                 {editingId ? 'Editar Proveedor' : 'Nuevo Proveedor'}
               </h3>
               <button
@@ -552,7 +555,7 @@ export default function ProveedoresPage() {
                       onClick={handleSunatSearch}
                       title="Consultar en SUNAT"
                     >
-                      <Search size={13} /> SUNAT
+                      <Sparkles size={13} strokeWidth={2.2} /> SUNAT
                     </button>
                   </div>
                 </div>
