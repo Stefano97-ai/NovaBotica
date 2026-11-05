@@ -228,8 +228,6 @@ function Layout() {
     <div className={`layout ${!narrow && collapsed ? 'sidebar-mini' : ''} ${narrow && mobileOpen ? 'mobile-nav-open' : ''}`}>
       {/* TOPBAR */}
       <header className="erp-topbar">
-        <div className="topbar-brand">{!narrow && collapsed ? 'NS' : 'NOVA SALUD'}</div>
-
         <div className="topbar-left">
           <button
             type="button"
@@ -245,6 +243,7 @@ function Layout() {
           >
             {narrow && mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
+          <div className="topbar-brand">{!narrow && collapsed ? 'NS' : 'NOVA SALUD'}</div>
           <button
             type="button"
             className={`theme-orb orb-sun ${theme === 'light' ? 'is-active' : ''}`}
