@@ -9,6 +9,9 @@ public class SpaWebController {
     @GetMapping(value = {
         "/",
         "/login",
+        "/inicio",
+        "/dashboard",
+        "/dashboard/**",
         "/ventas",
         "/ventas/**",
         "/comprobantes",

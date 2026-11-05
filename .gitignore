@@ -12,3 +12,4 @@ target/
 next-env.d.ts
 .vscode/
 backend/src/main/resources/static/
+frontend/.vite/

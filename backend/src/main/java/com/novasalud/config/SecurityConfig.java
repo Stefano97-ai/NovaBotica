@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/", "/index.html", "/favicon.ico", "/assets/**",
                     "/manifest.json", "/*.png", "/*.svg", "/*.ico",
-                    "/login", "/ventas/**", "/comprobantes/**", "/productos/**",
+                    "/login", "/inicio", "/dashboard/**", "/ventas/**", "/comprobantes/**", "/productos/**",
                     "/inventario/**", "/compras/**", "/proveedores/**", "/reportes/**", "/usuarios/**"
                 ).permitAll()
                 .requestMatchers("/api/health", "/api/health/db", "/api/auth/login", "/api/auth/logout").permitAll()
