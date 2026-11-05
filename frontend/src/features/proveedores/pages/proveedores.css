@@ -1,0 +1,614 @@
+/* =========================================================
+   NOVA SALUD - ADMINISTRACIÓN DE PROVEEDORES
+   Diseño fiel a la captura de referencia de TECHMULTISERV
+   Integrado con la paleta orgánica y moderna de Nova Salud
+   ========================================================= */
+
+.prov-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  font-family: inherit;
+}
+
+/* ================= 1. SUBHEADER BAR ================= */
+.prov-bar {
+  background: #1f1f1f;
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.prov-bar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.prov-actions {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.prov-dash-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 8px 14px 8px 4px;
+  transition: color 0.15s ease;
+}
+
+.prov-dash-btn::after {
+  content: '';
+  position: absolute;
+  right: -16px;
+  top: 50%;
+  width: 24px;
+  height: 34px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.prov-dash-btn::before {
+  content: '';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  width: 24px;
+  height: 36px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #1f1f1f;
+  z-index: 1;
+}
+
+.prov-dash-btn:hover {
+  color: #d1fae5;
+}
+
+/* ================= 2. MAIN CARD PANEL ================= */
+.prov-card {
+  background: #ffffff;
+  border: 1px solid rgba(215, 226, 218, 0.8);
+  border-radius: 20px;
+  padding: 22px 26px 26px;
+  box-shadow: 0 16px 36px -12px rgba(45, 65, 55, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Header Row: Title & Action Button */
+.prov-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.prov-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #475569;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.btn-new-provider {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #6f42c1;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-new-provider:hover {
+  background: #5e35b1;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(111, 66, 193, 0.38);
+}
+
+/* ================= 3. CONTROLS ROW ================= */
+.prov-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 14px;
+}
+
+.prov-page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.prov-select-size {
+  height: 32px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  outline: none;
+  cursor: pointer;
+}
+
+.prov-search-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.prov-search-input {
+  height: 32px;
+  width: 220px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prov-search-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* ================= 4. TABLE ================= */
+.prov-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+  margin-top: 2px;
+}
+
+.prov-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.prov-table th {
+  padding: 12px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  border-bottom: 2px solid #e2e8f0;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.prov-table th:hover {
+  color: #1e293b;
+}
+
+.sort-icon {
+  margin-left: 4px;
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.prov-table td {
+  padding: 12px 12px;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.prov-table tr:hover td {
+  background: rgba(241, 245, 249, 0.6);
+}
+
+.td-id {
+  width: 40px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.td-doc {
+  width: 120px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #0f172a;
+  letter-spacing: 0.02em;
+}
+
+.td-name {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.td-address {
+  color: #475569;
+  max-width: 320px;
+  font-size: 11px;
+}
+
+.td-email {
+  color: #475569;
+  font-size: 11px;
+}
+
+.td-phone {
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.td-actions {
+  width: 90px;
+  text-align: center;
+}
+
+.action-buttons-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-action-edit {
+  width: 28px;
+  height: 28px;
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-action-edit:hover {
+  background: #d97706;
+  transform: scale(1.1);
+}
+
+.btn-action-delete {
+  width: 28px;
+  height: 28px;
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-action-delete:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+.prov-empty {
+  text-align: center;
+  padding: 36px;
+  color: #64748b;
+  font-size: 12.5px;
+}
+
+/* ================= 5. FOOTER & PAGINATION ================= */
+.prov-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 10px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.prov-page-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.prov-btn-nav {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.prov-btn-nav:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.prov-btn-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.prov-btn-nav.active {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+/* ================= 6. MODAL PROVEEDOR ================= */
+.prov-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.prov-modal {
+  background: #ffffff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 540px;
+  padding: 24px;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.prov-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+
+.prov-modal-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+  text-transform: uppercase;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prov-modal-close {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prov-modal-close:hover {
+  color: #0f172a;
+}
+
+.prov-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prov-form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.prov-input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  color: #1e293b;
+  outline: none;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.prov-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.prov-doc-search-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.prov-doc-search-wrap input {
+  border: none;
+  outline: none;
+  padding: 9px 12px;
+  width: 100%;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+  font-family: inherit;
+}
+
+.btn-search-sunat {
+  height: 38px;
+  padding: 0 14px;
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-search-sunat:hover {
+  background: #4338ca;
+}
+
+.prov-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 14px;
+}
+
+.btn-modal-cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-modal-submit {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* ================= 7. DARK THEME OVERRIDES ================= */
+[data-theme='dark'] .prov-bar {
+  background: #1f1f1f;
+}
+
+[data-theme='dark'] .prov-card {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+}
+
+[data-theme='dark'] .prov-title {
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .prov-search-input,
+[data-theme='dark'] .prov-select-size,
+[data-theme='dark'] .prov-input,
+[data-theme='dark'] .prov-doc-search-wrap {
+  background: #171717;
+  border-color: #333333;
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .prov-table th {
+  color: #94a3b8;
+  border-bottom-color: #333333;
+}
+
+[data-theme='dark'] .prov-table td {
+  color: #e2e8f0;
+  border-bottom-color: #262626;
+}
+
+[data-theme='dark'] .td-name {
+  color: #f8fafc;
+}
+
+[data-theme='dark'] .td-doc {
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .td-address,
+[data-theme='dark'] .td-email {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .prov-table tr:hover td {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='dark'] .prov-modal {
+  background: #1f1f1f;
+  border: 1px solid #333333;
+}
+
+[data-theme='dark'] .prov-modal-title {
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .prov-search-block {
+  color: #f1f1f1;
+}
