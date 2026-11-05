@@ -1234,11 +1234,11 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
             </button>
           </div>
 
-          {/* KPI Ribbon de Productos */}
+          {/* KPI Ribbon de Productos - 3D Realistic Badges */}
           <div className="prod-kpi-ribbon">
             <div className="prod-kpi-card">
-              <div className="prod-kpi-icon" style={{ background: '#e0f2fe', color: '#0369a1' }}>
-                <Package size={22} />
+              <div className="prod-kpi-icon total" title="Total de productos registrados">
+                <Package size={22} strokeWidth={2.2} />
               </div>
               <div className="prod-kpi-info">
                 <span className="prod-kpi-val">{kpiTotal}</span>
@@ -1247,8 +1247,8 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
             </div>
 
             <div className="prod-kpi-card">
-              <div className="prod-kpi-icon" style={{ background: '#dcfce7', color: '#15803d' }}>
-                <CheckCircle2 size={22} />
+              <div className="prod-kpi-icon stock" title="Productos con existencias disponibles">
+                <CheckCircle2 size={22} strokeWidth={2.2} />
               </div>
               <div className="prod-kpi-info">
                 <span className="prod-kpi-val">{kpiEnStock}</span>
@@ -1257,8 +1257,8 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
             </div>
 
             <div className="prod-kpi-card">
-              <div className="prod-kpi-icon" style={{ background: '#fee2e2', color: '#b91c1c' }}>
-                <TrendingDown size={22} />
+              <div className="prod-kpi-icon critico" title="Productos con stock igual o menor al mínimo">
+                <TrendingDown size={22} strokeWidth={2.2} />
               </div>
               <div className="prod-kpi-info">
                 <span className="prod-kpi-val">{kpiBajoStock}</span>
@@ -1267,8 +1267,8 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
             </div>
 
             <div className="prod-kpi-card">
-              <div className="prod-kpi-icon" style={{ background: '#fef3c7', color: '#b45309' }}>
-                <Layers size={22} />
+              <div className="prod-kpi-icon cat" title="Categorías terapéuticas activas">
+                <Layers size={22} strokeWidth={2.2} />
               </div>
               <div className="prod-kpi-info">
                 <span className="prod-kpi-val">{kpiCategorias}</span>
@@ -1422,30 +1422,33 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                           </button>
                         </td>
                         <td className="kardex-td-center">
-                          <div style={{ display: 'inline-flex', gap: 6 }}>
+                          <div className="prod-action-btns">
                             <button
                               type="button"
-                              className="prod-btn-action"
+                              className="btn-prod-action edit"
                               onClick={() => openEditProductModal(p)}
                               title="Editar producto"
+                              aria-label="Editar producto"
                             >
-                              <PenSquare size={13} />
+                              <PenSquare size={13} strokeWidth={2.2} />
                             </button>
                             <button
                               type="button"
-                              className="prod-btn-action prod-btn-action-kardex"
+                              className="btn-prod-action kardex"
                               onClick={() => verKardexDeProducto(p)}
                               title="Ver Tarjeta Kardex de este producto"
+                              aria-label="Ver Tarjeta Kardex"
                             >
-                              <ClipboardList size={13} />
+                              <ClipboardList size={13} strokeWidth={2.2} />
                             </button>
                             <button
                               type="button"
-                              className="prod-btn-action"
+                              className={`btn-prod-action power ${p.activo ? 'is-active' : 'is-inactive'}`}
                               onClick={() => toggleProductStatus(p)}
                               title={p.activo ? 'Desactivar producto' : 'Activar producto'}
+                              aria-label={p.activo ? 'Desactivar producto' : 'Activar producto'}
                             >
-                              <Power size={13} color={p.activo ? '#dc2626' : '#16a34a'} />
+                              <Power size={13} strokeWidth={2.2} />
                             </button>
                           </div>
                         </td>

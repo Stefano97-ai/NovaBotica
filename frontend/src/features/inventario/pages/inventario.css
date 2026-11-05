@@ -534,13 +534,47 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
+/* 3D Realistic Square Jewel Badge */
 .prod-kpi-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px; /* Cuadrado con micro-radio biselado */
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  color: #ffffff;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.65),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.25),
+    0 6px 14px -2px var(--glow, rgba(0, 0, 0, 0.25));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prod-kpi-card:hover .prod-kpi-icon {
+  transform: scale(1.08);
+}
+
+.prod-kpi-icon.total {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  --glow: rgba(2, 132, 199, 0.5);
+}
+
+.prod-kpi-icon.stock {
+  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+  --glow: rgba(5, 150, 105, 0.5);
+}
+
+.prod-kpi-icon.critico {
+  background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+  --glow: rgba(220, 38, 38, 0.5);
+}
+
+.prod-kpi-icon.cat {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  --glow: rgba(217, 119, 6, 0.5);
 }
 
 .prod-kpi-info {
@@ -678,37 +712,117 @@
   color: #64748b;
 }
 
-.prod-btn-action {
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #475569;
+/* Action Buttons - Tactile 3D Realistic Square Push-Buttons */
+.prod-action-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-prod-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px; /* Cuadrado táctil realista */
+  border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.prod-btn-action:hover {
-  background: #f8fafc;
-  color: #0f172a;
-  border-color: #94a3b8;
-  transform: translateY(-1px);
-}
-
-.prod-btn-action-kardex {
-  color: #2563eb;
-  border-color: rgba(37, 99, 235, 0.3);
-  background: rgba(37, 99, 235, 0.05);
-}
-
-.prod-btn-action-kardex:hover {
-  background: #2563eb;
+  position: relative;
   color: #ffffff;
-  border-color: #2563eb;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+/* 1. Botón Editar (Ámbar / Naranja 3D táctil) */
+.btn-prod-action.edit {
+  background: linear-gradient(180deg, #fbbf24 0%, #ea580c 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    inset 0 -1.5px 1px rgba(0, 0, 0, 0.25),
+    0 3px 6px rgba(234, 88, 12, 0.35);
+}
+
+.btn-prod-action.edit:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.75),
+    0 5px 10px rgba(234, 88, 12, 0.45);
+}
+
+.btn-prod-action.edit:active {
+  transform: translateY(1.5px);
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* 2. Botón Kardex (Azul Zafiro 3D táctil) */
+.btn-prod-action.kardex {
+  background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    inset 0 -1.5px 1px rgba(0, 0, 0, 0.25),
+    0 3px 6px rgba(37, 99, 235, 0.35);
+}
+
+.btn-prod-action.kardex:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.75),
+    0 5px 10px rgba(37, 99, 235, 0.45);
+}
+
+.btn-prod-action.kardex:active {
+  transform: translateY(1.5px);
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* 3. Botón Power / Estado (Rojo Rubí o Verde Esmeralda 3D táctil) */
+.btn-prod-action.power.is-active {
+  background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    inset 0 -1.5px 1px rgba(0, 0, 0, 0.25),
+    0 3px 6px rgba(220, 38, 38, 0.35);
+}
+
+.btn-prod-action.power.is-active:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.75),
+    0 5px 10px rgba(220, 38, 38, 0.45);
+}
+
+.btn-prod-action.power.is-inactive {
+  background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    inset 0 -1.5px 1px rgba(0, 0, 0, 0.25),
+    0 3px 6px rgba(5, 150, 105, 0.35);
+}
+
+.btn-prod-action.power.is-inactive:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.75),
+    0 5px 10px rgba(5, 150, 105, 0.45);
+}
+
+.btn-prod-action.power:active {
+  transform: translateY(1.5px);
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 /* ================= 8. TABLE ================= */
@@ -1064,10 +1178,8 @@
   color: #f1f1f1;
 }
 
-[data-theme='dark'] .prod-btn-action {
-  background: #1f1f1f;
-  border-color: #333333;
-  color: #cbd5e1;
+[data-theme='dark'] .btn-prod-action {
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 [data-theme='dark'] .inv-table th {
