@@ -1,0 +1,729 @@
+/* =========================================================
+   NOVA SALUD - REGISTRO DE COMPRAS A PROVEEDORES
+   Diseño fiel a la captura de referencia de TECHMULTISERV
+   Integrado con la paleta orgánica y moderna de Nova Salud
+   ========================================================= */
+
+.compras-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  font-family: inherit;
+}
+
+/* ================= 1. SUBHEADER BAR ================= */
+.compras-bar {
+  background: #1f1f1f;
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.compras-bar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.compras-actions {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.compras-dash-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 8px 14px 8px 4px;
+  transition: color 0.15s ease;
+}
+
+.compras-dash-btn::after {
+  content: '';
+  position: absolute;
+  right: -16px;
+  top: 50%;
+  width: 24px;
+  height: 34px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.compras-dash-btn::before {
+  content: '';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  width: 24px;
+  height: 36px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #1f1f1f;
+  z-index: 1;
+}
+
+.compras-dash-btn:hover {
+  color: #d1fae5;
+}
+
+/* ================= 2. MAIN CARD PANEL ================= */
+.compras-card {
+  background: #ffffff;
+  border: 1px solid rgba(215, 226, 218, 0.8);
+  border-radius: 20px;
+  padding: 22px 26px 26px;
+  box-shadow: 0 16px 36px -12px rgba(45, 65, 55, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ================= 3. ROW 1: COMPROBANTE HEADER ================= */
+.compras-row-voucher {
+  display: grid;
+  grid-template-columns: 1.4fr 1.2fr 1.3fr 1fr 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  height: 38px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-with-icon:focus-within {
+  border-color: #227c59;
+  box-shadow: 0 0 0 3px rgba(34, 124, 89, 0.15);
+}
+
+.input-with-icon select,
+.input-with-icon input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.btn-row-clear {
+  width: 38px;
+  height: 38px;
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-row-clear:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+/* ================= 4. SECTION: DATOS PROVEEDOR ================= */
+.compras-supplier-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 14px;
+}
+
+.supplier-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.supplier-row-1 {
+  display: grid;
+  grid-template-columns: 180px 1.4fr 2fr;
+  gap: 12px;
+}
+
+.doc-input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  height: 38px;
+  overflow: hidden;
+}
+
+.doc-input-wrap input {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0 12px;
+  width: 100%;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  font-family: inherit;
+}
+
+.btn-search-doc {
+  height: 100%;
+  width: 42px;
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-search-doc:hover {
+  background: #4338ca;
+}
+
+.supplier-row-2 {
+  display: grid;
+  grid-template-columns: 2.2fr 1.4fr 1.6fr;
+  gap: 12px;
+}
+
+.supplier-row-3 {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 240px;
+}
+
+.supplier-row-3 label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.standard-input {
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  background: #ffffff;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.standard-input:focus {
+  border-color: #227c59;
+  box-shadow: 0 0 0 3px rgba(34, 124, 89, 0.15);
+}
+
+/* ================= 5. BUTTONS OVER TABLE ================= */
+.compras-actions-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.btn-add-prods {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #3b28b6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(59, 40, 182, 0.3);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-add-prods:hover {
+  background: #2f1fa3;
+  transform: translateY(-1px);
+}
+
+.btn-new-prod {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #111827;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.25);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-new-prod:hover {
+  background: #1f2937;
+  transform: translateY(-1px);
+}
+
+/* ================= 6. PRODUCTS TABLE ================= */
+.compras-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.compras-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.compras-table th {
+  background: #f8fafc;
+  padding: 11px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.compras-table td {
+  padding: 10px 12px;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.compras-table tr:hover td {
+  background: rgba(241, 245, 249, 0.6);
+}
+
+.cell-input-number {
+  width: 70px;
+  height: 32px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0 6px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.cell-input-text {
+  width: 110px;
+  height: 32px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.btn-del-item {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.btn-del-item:hover {
+  transform: scale(1.15);
+  color: #dc2626;
+}
+
+.empty-table-row {
+  text-align: center;
+  padding: 30px;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* ================= 7. BOTTOM SECTION: CONDITIONS + SUMMARY ================= */
+.compras-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 24px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 18px;
+}
+
+/* Left: Discount, Payment & Notes */
+.compras-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-field-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field-block label {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #475569;
+  letter-spacing: 0.03em;
+}
+
+.textarea-with-icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #ffffff;
+  min-height: 90px;
+}
+
+.textarea-with-icon textarea {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-family: inherit;
+  font-size: 12px;
+  color: #1e293b;
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* Right: RESUMEN / TOTALS */
+.compras-summary-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.summary-heading {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #334155;
+  text-align: right;
+  margin-bottom: 4px;
+}
+
+.summary-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.summary-line-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.summary-line-value {
+  width: 130px;
+  height: 28px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-line.line-total .summary-line-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+.summary-line.line-total .summary-line-value {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 900;
+  height: 34px;
+}
+
+/* ================= 8. BOTTOM ACTION BUTTONS ================= */
+.compras-footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.btn-save-purchase {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #1e1b4b;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(30, 27, 75, 0.35);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-save-purchase:hover {
+  background: #2e1065;
+  transform: scale(1.08);
+}
+
+.btn-clear-purchase {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.35);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-clear-purchase:hover {
+  background: #b91c1c;
+  transform: scale(1.08);
+}
+
+/* ================= 9. MODAL PRODUCT PICKER ================= */
+.compras-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.compras-modal {
+  background: #ffffff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 620px;
+  padding: 24px;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.compras-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+
+.compras-modal-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+  text-transform: uppercase;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.catalog-search-input {
+  width: 100%;
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 12.5px;
+  color: #1e293b;
+  outline: none;
+}
+
+.catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px;
+}
+
+.catalog-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.catalog-item:hover {
+  background: #e2e8f0;
+}
+
+/* ================= 10. DARK THEME OVERRIDES ================= */
+[data-theme='dark'] .compras-bar {
+  background: #1f1f1f;
+}
+
+[data-theme='dark'] .compras-card {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+}
+
+[data-theme='dark'] .input-with-icon,
+[data-theme='dark'] .standard-input,
+[data-theme='dark'] .doc-input-wrap,
+[data-theme='dark'] .textarea-with-icon,
+[data-theme='dark'] .cell-input-number,
+[data-theme='dark'] .cell-input-text {
+  background: #171717;
+  border-color: #333333;
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .input-with-icon select,
+[data-theme='dark'] .input-with-icon input,
+[data-theme='dark'] .textarea-with-icon textarea {
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .compras-table th {
+  background: #171717;
+  color: #94a3b8;
+  border-bottom-color: #333333;
+}
+
+[data-theme='dark'] .compras-table td {
+  color: #e2e8f0;
+  border-bottom-color: #262626;
+}
+
+[data-theme='dark'] .compras-summary-panel {
+  background: #171717;
+  border-color: #2a2a2a;
+}
+
+[data-theme='dark'] .summary-line-value {
+  background: #1f1f1f;
+  border-color: #333333;
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .summary-line.line-total .summary-line-value {
+  background: #1e1b4b;
+  border-color: #4f46e5;
+  color: #a5b4fc;
+}
+
+[data-theme='dark'] .compras-modal {
+  background: #1f1f1f;
+  border: 1px solid #333333;
+}
+
+[data-theme='dark'] .catalog-item {
+  background: #171717;
+}
+
+[data-theme='dark'] .catalog-item:hover {
+  background: #262626;
+}
+
+/* ================= 11. RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .compras-row-voucher {
+    grid-template-columns: 1fr 1fr;
+  }
+  .supplier-row-1,
+  .supplier-row-2 {
+    grid-template-columns: 1fr;
+  }
+  .compras-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
