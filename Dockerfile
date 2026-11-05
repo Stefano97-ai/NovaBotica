@@ -5,15 +5,16 @@
 
 # 1. Frontend Build
 FROM node:22-bookworm-slim AS web-build
-WORKDIR /app/frontend
+WORKDIR /app
 
 # Install dependencies
-COPY frontend/package.json ./
-RUN npm install
+COPY package.json package-lock.json ./
+COPY frontend/package.json ./frontend/
+RUN npm ci
 
 # Build Vite SPA production assets
-COPY frontend ./
-RUN npm run build
+COPY frontend ./frontend
+RUN npm run build --workspace frontend
 
 # 2. Backend Build with bundled static SPA
 FROM maven:3.9-eclipse-temurin-21 AS java-build
@@ -44,3 +45,13 @@ ENV HOST=0.0.0.0
 EXPOSE 3000
 
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
+
+# Local Compose still builds the named API and nginx targets.
+FROM runtime AS api
+
+FROM nginx:stable-alpine AS web
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=web-build /app/frontend/dist /usr/share/nginx/html
+
+# Keep the default Railway image as the unified Spring Boot + SPA runtime.
+FROM runtime AS production
