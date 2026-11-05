@@ -18,7 +18,8 @@ import {
   FaComputer,
   FaComputerMouse,
   FaHardDrive,
-  FaCartShopping
+  FaCartShopping,
+  FaPrint
 } from 'react-icons/fa6';
 import { X, CheckCircle2 } from 'lucide-react';
 import './ventas.css';
@@ -31,8 +32,7 @@ interface ProductItem {
   precio: number;
   stock: number;
   unidad: string;
-  iconType: 'avatar' | 'laptop' | 'computer' | 'mouse' | 'ssd';
-  hasAddButton?: boolean;
+  iconType: 'avatar' | 'laptop' | 'computer' | 'mouse' | 'ssd' | 'camera' | 'printer';
 }
 
 interface CartItem {
@@ -63,7 +63,6 @@ const INITIAL_DEMO_PRODUCTS: ProductItem[] = [
     stock: 20,
     unidad: 'UNIDAD',
     iconType: 'laptop',
-    hasAddButton: true,
   },
   {
     id: 3,
@@ -71,17 +70,17 @@ const INITIAL_DEMO_PRODUCTS: ProductItem[] = [
     nombre: 'Computadora Dell Vostro Sff 3710 Core I7-12700 8gb Ddr4 compatible...',
     categoria: 'Equipos',
     precio: 3200.0,
-    stock: 50,
+    stock: 48,
     unidad: 'UNIDAD',
     iconType: 'computer',
   },
   {
     id: 4,
     codigo: 'LAP-004',
-    nombre: 'LAPTOP HP 250 G8 CORE I5 11VA GEN 8GB 256GB SSD',
+    nombre: 'Laptop Lenovo i8 zz',
     categoria: 'Equipos',
-    precio: 2450.0,
-    stock: 344,
+    precio: 5000.0,
+    stock: 343,
     unidad: 'UNIDAD',
     iconType: 'laptop',
   },
@@ -101,9 +100,29 @@ const INITIAL_DEMO_PRODUCTS: ProductItem[] = [
     nombre: 'DISCO SOLIDO SSD KINGSTON A400 960GB SATA',
     categoria: 'Almacenamiento',
     precio: 280.0,
-    stock: 3577,
+    stock: 3575,
     unidad: 'UNIDAD',
     iconType: 'ssd',
+  },
+  {
+    id: 7,
+    codigo: 'GEN-007',
+    nombre: 'PRODUCTO SIN FOTO COMPATIBLE',
+    categoria: 'Accesorios',
+    precio: 75.0,
+    stock: 27,
+    unidad: 'UNIDAD',
+    iconType: 'camera',
+  },
+  {
+    id: 8,
+    codigo: 'IMP-008',
+    nombre: 'IMPRESORA EPSON ECOTANK L3250',
+    categoria: 'Equipos',
+    precio: 899.0,
+    stock: 5549,
+    unidad: 'UNIDAD',
+    iconType: 'printer',
   },
 ];
 
@@ -442,8 +461,17 @@ export default function VentasPage() {
       case 'mouse':
         return <FaComputerMouse size={64} color="#f59e0b" />;
       case 'ssd':
-      default:
         return <FaHardDrive size={64} color="#6b7280" />;
+      case 'camera':
+        return (
+          <div style={{ position: 'relative', width: 72, height: 72, borderRadius: '50%', border: '2px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FaCamera size={34} color="#334155" />
+            <div style={{ position: 'absolute', width: '80px', height: '2.5px', background: '#334155', transform: 'rotate(-45deg)' }} />
+          </div>
+        );
+      case 'printer':
+      default:
+        return <FaPrint size={64} color="#334155" />;
     }
   }
 
