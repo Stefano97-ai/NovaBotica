@@ -1,1 +1,2 @@
 docker/*.sh text eol=lf
+backend/database/migrations/004_ventas_series_documentos.sql text eol=lf

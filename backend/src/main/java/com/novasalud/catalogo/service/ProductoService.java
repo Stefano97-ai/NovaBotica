@@ -71,6 +71,7 @@ public class ProductoService {
         producto.setPrecioVenta(dto.precioVenta());
         producto.setStockMinimo(dto.stockMinimo() == null ? 0 : dto.stockMinimo());
         producto.setActivo(true);
+        producto.setRequiereSerie(Boolean.TRUE.equals(dto.requiereSerie()));
 
         return toDto(productoRepository.save(producto));
     }
@@ -95,6 +96,7 @@ public class ProductoService {
         if (dto.activo() != null) {
             producto.setActivo(dto.activo());
         }
+        if (dto.requiereSerie() != null) producto.setRequiereSerie(dto.requiereSerie());
 
         return toDto(productoRepository.save(producto));
     }
@@ -108,7 +110,7 @@ public class ProductoService {
     }
 
     public ProductoDto toDto(Producto p) {
-        Long stock = loteRepository.calcularStockDisponible(p.getId(), LocalDate.now());
+        Long stock = loteRepository.calcularStockDisponible(p.getId(), LocalDate.now(java.time.ZoneId.of("America/Lima")));
         return new ProductoDto(
             p.getId(),
             p.getCategoria().getId(),
@@ -120,7 +122,8 @@ public class ProductoService {
             p.getStockMinimo(),
             stock == null ? 0L : stock,
             p.isActivo(),
-            p.getCreadoEn()
+            p.getCreadoEn(),
+            p.isRequiereSerie()
         );
     }
 }

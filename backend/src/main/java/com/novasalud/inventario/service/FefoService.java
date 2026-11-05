@@ -29,7 +29,7 @@ public class FefoService {
             throw new BusinessException("La cantidad solicitada debe ser mayor a 0.");
         }
 
-        List<Lote> lotesVigentes = loteRepository.findLotesFefoVigentes(productoId, LocalDate.now());
+        List<Lote> lotesVigentes = loteRepository.findLotesFefoVigentes(productoId, LocalDate.now(java.time.ZoneId.of("America/Lima")));
         List<AsignacionFefo> asignaciones = new ArrayList<>();
         int pendiente = cantidadRequerida;
 

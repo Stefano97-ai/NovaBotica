@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record CreateClienteDto(
     @NotBlank(message = "El tipo de documento es obligatorio")
-    @Pattern(regexp = "^(DNI|RUC)$", message = "El tipo de documento debe ser DNI o RUC")
+    @Pattern(regexp = "^(DNI|RUC|CE)$", message = "El tipo de documento debe ser DNI, RUC o CE")
     String tipoDocumento,
 
     @NotBlank(message = "El número de documento es obligatorio")

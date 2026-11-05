@@ -15,6 +15,8 @@ import com.novasalud.inventario.model.Movimiento;
 import com.novasalud.inventario.repository.LoteRepository;
 import com.novasalud.inventario.repository.MovimientoRepository;
 import com.novasalud.inventario.service.FefoService;
+import com.novasalud.inventario.service.SerieUnidadService;
+import jakarta.persistence.EntityManager;
 import com.novasalud.shared.exception.BadRequestException;
 import com.novasalud.shared.exception.BusinessException;
 import com.novasalud.shared.exception.ResourceNotFoundException;
@@ -44,6 +46,8 @@ public class VentaService {
     private final MovimientoRepository movimientoRepository;
     private final FefoService fefoService;
     private final ComprobanteService comprobanteService;
+    private final SerieUnidadService series;
+    private final EntityManager entityManager;
 
     public VentaService(
         VentaRepository ventaRepository,
@@ -56,7 +60,9 @@ public class VentaService {
         LoteRepository loteRepository,
         MovimientoRepository movimientoRepository,
         FefoService fefoService,
-        ComprobanteService comprobanteService
+        ComprobanteService comprobanteService,
+        SerieUnidadService series,
+        EntityManager entityManager
     ) {
         this.ventaRepository = ventaRepository;
         this.detalleVentaRepository = detalleVentaRepository;
@@ -69,6 +75,8 @@ public class VentaService {
         this.movimientoRepository = movimientoRepository;
         this.fefoService = fefoService;
         this.comprobanteService = comprobanteService;
+        this.series = series;
+        this.entityManager = entityManager;
     }
 
     @Transactional(readOnly = true)
@@ -109,12 +117,23 @@ public class VentaService {
             return toDto(ventaRepository.findByClaveIdempotencia(idempotenciaKey).get());
         }
 
+        String documentType=dto.tipoComprobante()==null?"BOLETA":dto.tipoComprobante().trim().toUpperCase();
+        if ("FACTURA".equals(documentType) && (cliente==null || !"RUC".equals(cliente.getTipoDocumento())))
+            throw new BusinessException("Para emitir factura selecciona un cliente con RUC.");
+        if ("BOLETA".equals(documentType) && cliente!=null && "RUC".equals(cliente.getTipoDocumento()))
+            throw new BusinessException("La boleta no admite un cliente con RUC.");
+        if (!java.util.Set.of("BOLETA","FACTURA","NOTA_VENTA").contains(documentType))
+            throw new BusinessException("Tipo de comprobante no válido.");
+        if (dto.items().stream().map(ItemVentaDto::productoId).distinct().count()!=dto.items().size())
+            throw new BusinessException("Agrupa cada producto en una sola línea.");
+        productoRepository.lockForSale(dto.items().stream().map(ItemVentaDto::productoId).sorted().toList());
+
         // 1. Calcular totales preliminares
         BigDecimal subtotalAcum = BigDecimal.ZERO;
         BigDecimal impuestoAcum = BigDecimal.ZERO;
         BigDecimal totalAcum = BigDecimal.ZERO;
 
-        record LineaCalculada(Producto producto, int cantidad, BigDecimal precioUnit, BigDecimal sub, BigDecimal imp, BigDecimal tot) {}
+        record LineaCalculada(Producto producto, int cantidad, BigDecimal precioUnit, BigDecimal sub, BigDecimal imp, BigDecimal tot, List<Long> unidades) {}
         List<LineaCalculada> lineas = new ArrayList<>();
 
         for (ItemVentaDto item : dto.items()) {
@@ -134,7 +153,7 @@ public class VentaService {
             impuestoAcum = impuestoAcum.add(impuestoLinea);
             totalAcum = totalAcum.add(totalLinea);
 
-            lineas.add(new LineaCalculada(producto, item.cantidad(), precioUnit, subtotalLinea, impuestoLinea, totalLinea));
+            lineas.add(new LineaCalculada(producto, item.cantidad(), precioUnit, subtotalLinea, impuestoLinea, totalLinea,item.unidadesSerializadas()));
         }
 
         // RF-22: Verificar total pagado >= total de la venta
@@ -209,6 +228,8 @@ public class VentaService {
                 movimientoRepository.save(mov);
             }
             detGuardado.setAsignacionesLote(asignacionesGuardadas);
+            entityManager.flush();
+            series.asignar(lin.producto().getId(),lin.unidades(),lin.cantidad(),asignacionesGuardadas);
             detallesGuardados.add(detGuardado);
         }
 
@@ -237,7 +258,7 @@ public class VentaService {
      */
     @Transactional(rollbackFor = Exception.class)
     public VentaResponseDto anularVenta(Long ventaId, AnularVentaDto dto, Long usuarioId) {
-        Venta venta = ventaRepository.findById(ventaId)
+        Venta venta = ventaRepository.lockById(ventaId)
             .orElseThrow(() -> new ResourceNotFoundException("Venta no encontrada con ID: " + ventaId));
 
         if ("ANULADA".equals(venta.getEstado())) {
@@ -252,6 +273,8 @@ public class VentaService {
         venta.setAnuladaEn(Instant.now());
         venta.setMotivoAnulacion(dto.motivo().trim());
 
+        productoRepository.lockForSale(venta.getDetalles().stream().map(d->d.getProducto().getId()).distinct().sorted().toList());
+        series.liberarVenta(ventaId);
         // Compensación de stock por lotes (revertir movimientos de salida)
         for (DetalleVenta det : venta.getDetalles()) {
             for (DetalleVentaLote dvl : det.getAsignacionesLote()) {
@@ -300,7 +323,8 @@ public class VentaService {
                 d.getSubtotal(),
                 d.getImpuesto(),
                 d.getTotal(),
-                lotes
+                lotes,
+                series.deDetalle(d.getId())
             );
         }).toList();
 

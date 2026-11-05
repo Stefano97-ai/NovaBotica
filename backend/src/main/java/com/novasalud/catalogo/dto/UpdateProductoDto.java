@@ -24,5 +24,6 @@ public record UpdateProductoDto(
     @Min(value = 0, message = "El stock mínimo no puede ser negativo")
     Integer stockMinimo,
 
-    Boolean activo
+    Boolean activo,
+    Boolean requiereSerie
 ) {}

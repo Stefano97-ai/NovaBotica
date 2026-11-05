@@ -1,15 +1,10 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   FaHouse,
-  FaCashRegister,
-  FaGear,
   FaFloppyDisk,
   FaTrashCan,
-  FaBolt,
-  FaBarcode,
   FaCreditCard,
-  FaCalculator,
   FaMagnifyingGlass,
   FaCamera,
   FaPenToSquare,
@@ -21,7 +16,13 @@ import {
   FaCartShopping,
   FaPrint
 } from 'react-icons/fa6';
-import { X, CheckCircle2 } from 'lucide-react';
+import { X, CheckCircle2, ListChecks } from 'lucide-react';
+import { calculateSaleTotals } from '../domain/sale-totals';
+import { PaymentRows } from '../presentation/components/payment-rows';
+import { SerialPicker } from '../presentation/components/serial-picker';
+import { paymentError, paidCents, syncPaymentTotal, type PaymentRow } from '../domain/payment';
+import type { AvailableSerial } from '../domain/series';
+import { loadSerials, resolveCustomer, salesRequest, type SaleCustomer } from '../infrastructure/sales-api';
 import './ventas.css';
 
 interface ProductItem {
@@ -32,6 +33,7 @@ interface ProductItem {
   precio: number;
   stock: number;
   unidad: string;
+  requiereSerie: boolean;
   iconType: 'avatar' | 'laptop' | 'computer' | 'mouse' | 'ssd' | 'camera' | 'printer';
 }
 
@@ -41,90 +43,9 @@ interface CartItem {
   nombre: string;
   precioUnitario: number;
   cantidad: number;
+  requiereSerie: boolean;
+  series: AvailableSerial[];
 }
-
-const INITIAL_DEMO_PRODUCTS: ProductItem[] = [
-  {
-    id: 1,
-    codigo: 'SERV-001',
-    nombre: 'ALQUILER DE EQUIPOS DE COMPUTO',
-    categoria: 'Servicios',
-    precio: 120.0,
-    stock: 99,
-    unidad: 'SERVICIO',
-    iconType: 'avatar',
-  },
-  {
-    id: 2,
-    codigo: 'LAP-002',
-    nombre: 'LAPTOP DELL INSPIRON 15 3000',
-    categoria: 'Equipos',
-    precio: 2890.0,
-    stock: 20,
-    unidad: 'UNIDAD',
-    iconType: 'laptop',
-  },
-  {
-    id: 3,
-    codigo: 'PC-003',
-    nombre: 'Computadora Dell Vostro Sff 3710 Core I7-12700 8gb Ddr4 compatible...',
-    categoria: 'Equipos',
-    precio: 3200.0,
-    stock: 48,
-    unidad: 'UNIDAD',
-    iconType: 'computer',
-  },
-  {
-    id: 4,
-    codigo: 'LAP-004',
-    nombre: 'Laptop Lenovo i8 zz',
-    categoria: 'Equipos',
-    precio: 5000.0,
-    stock: 343,
-    unidad: 'UNIDAD',
-    iconType: 'laptop',
-  },
-  {
-    id: 5,
-    codigo: 'ACC-005',
-    nombre: 'MOUSE GAMER RGB 6 BOTONES ÓPTICO USB',
-    categoria: 'Accesorios',
-    precio: 45.0,
-    stock: 3347,
-    unidad: 'UNIDAD',
-    iconType: 'mouse',
-  },
-  {
-    id: 6,
-    codigo: 'ACC-006',
-    nombre: 'DISCO SOLIDO SSD KINGSTON A400 960GB SATA',
-    categoria: 'Almacenamiento',
-    precio: 280.0,
-    stock: 3575,
-    unidad: 'UNIDAD',
-    iconType: 'ssd',
-  },
-  {
-    id: 7,
-    codigo: 'GEN-007',
-    nombre: 'PRODUCTO SIN FOTO COMPATIBLE',
-    categoria: 'Accesorios',
-    precio: 75.0,
-    stock: 27,
-    unidad: 'UNIDAD',
-    iconType: 'camera',
-  },
-  {
-    id: 8,
-    codigo: 'IMP-008',
-    nombre: 'IMPRESORA EPSON ECOTANK L3250',
-    categoria: 'Equipos',
-    precio: 899.0,
-    stock: 5549,
-    unidad: 'UNIDAD',
-    iconType: 'printer',
-  },
-];
 
 export default function VentasPage() {
   const navigate = useNavigate();
@@ -141,22 +62,15 @@ export default function VentasPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Document Type: FACTURA | BOLETA | NOTA VENTA
-  const [docType, setDocType] = useState<'FACTURA' | 'BOLETA' | 'NOTA VENTA'>(() => {
+  // Document Type: FACTURA | BOLETA
+  const [docType, setDocType] = useState<'FACTURA' | 'BOLETA'>(() => {
     if (initialType === 'FACTURA') return 'FACTURA';
-    if (initialType === 'NOTA_VENTA') return 'NOTA VENTA';
     return 'BOLETA';
   });
 
   // Products and Categories
-  const [products, setProducts] = useState<ProductItem[]>(INITIAL_DEMO_PRODUCTS);
-  const [categories, setCategories] = useState<string[]>([
-    'Todas las categorías',
-    'Servicios',
-    'Equipos',
-    'Accesorios',
-    'Almacenamiento',
-  ]);
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [categories, setCategories] = useState<string[]>(['Todas las categorías']);
   const [selectedCategory, setSelectedCategory] = useState('Todas las categorías');
   const [searchQuery, setSearchQuery] = useState('');
   const [pageSize, setPageSize] = useState('20');
@@ -166,30 +80,30 @@ export default function VentasPage() {
 
   // Client form
   const [clientDocType, setClientDocType] = useState(() => (initialType === 'FACTURA' ? 'RUC' : 'SIN DOCUMENTO'));
-  const [clientDocNumber, setClientDocNumber] = useState(() => (initialType === 'FACTURA' ? '20601234567' : '00000000'));
-  const [clientName, setClientName] = useState(() => (initialType === 'FACTURA' ? 'CORPORACION NOVASALUD S.A.C.' : 'DNI 00000000 CLIENTES VARIOS'));
+  const [clientDocNumber, setClientDocNumber] = useState('');
+  const [clientName, setClientName] = useState('');
   const [clientDetails, setClientDetails] = useState('-');
   const [clientPhone, setClientPhone] = useState('');
-  const [sendWhatsApp, setSendWhatsApp] = useState(false);
-
-  // Barcode quick add
-  const [barcodeInput, setBarcodeInput] = useState('');
 
   // Cart
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  // Discounts
-  const [discountType, setDiscountType] = useState<'PERCENT' | 'SOLES'>('PERCENT');
-  const [discountValue, setDiscountValue] = useState('0');
-
-  // Payments
-  const [paymentMethod, setPaymentMethod] = useState('Efectivo');
-  const [paymentAmount, setPaymentAmount] = useState('0.00');
+  // Payments are allocated amounts; cash tender/change is a separate calculator.
+  const newPayment = (): PaymentRow => ({ id: crypto.randomUUID(), metodo: 'Efectivo', monto: '0.00', referencia: '' });
+  const [payments, setPayments] = useState<PaymentRow[]>(() => [newPayment()]);
   const [showVueltoModal, setShowVueltoModal] = useState(false);
   const [pagaCon, setPagaCon] = useState('');
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
+  const requestRef = useRef<{ signature: string; key: string } | null>(null);
+  const [saleError, setSaleError] = useState('');
+  const [catalogError, setCatalogError] = useState('');
+  const [catalogVersion, setCatalogVersion] = useState(0);
+  const [serialProductId, setSerialProductId] = useState<number | null>(null);
+  const serialItem = cart.find(item => item.productoId === serialProductId);
 
   // Modals / Feedback
-  const [successSale, setSuccessSale] = useState<{ id: string; total: number; docType: string } | null>(null);
+  const [successSale, setSuccessSale] = useState<{ id: string; total: number; docType: string; pagos: { metodo: string; monto: number }[] } | null>(null);
 
   // Load backend products and categories if available
   useEffect(() => {
@@ -210,7 +124,7 @@ export default function VentasPage() {
 
         if (prodRes.ok) {
           const prodData = await prodRes.json();
-          if (Array.isArray(prodData) && prodData.length > 0) {
+          if (Array.isArray(prodData)) {
             const mapped: ProductItem[] = prodData.map((p: {
               id: number;
               codigo: string;
@@ -219,6 +133,7 @@ export default function VentasPage() {
               precioVenta: number;
               stockDisponible?: number;
               unidadBase?: string;
+              requiereSerie?: boolean;
             }) => ({
               id: p.id,
               codigo: p.codigo,
@@ -227,6 +142,7 @@ export default function VentasPage() {
               precio: Number(p.precioVenta) || 0,
               stock: Number(p.stockDisponible) || 0,
               unidad: p.unidadBase || 'UNIDAD',
+              requiereSerie: Boolean(p.requiereSerie),
               iconType: (p.nombre.toLowerCase().includes('laptop')
                 ? 'laptop'
                 : p.nombre.toLowerCase().includes('mouse')
@@ -237,17 +153,17 @@ export default function VentasPage() {
                 ? 'printer'
                 : 'computer') as ProductItem['iconType'],
             }));
-            const backendIds = new Set(mapped.map((m) => m.id));
-            const remainingDemos = INITIAL_DEMO_PRODUCTS.filter((d) => !backendIds.has(d.id));
-            setProducts([...mapped, ...remainingDemos]);
+            setProducts(mapped);
           }
         }
+        if (!prodRes.ok) throw new Error('No se pudo cargar el catálogo.');
+        setCatalogError('');
       } catch {
-        // Fallback to initial demo items
+        setCatalogError('No pudimos cargar el catálogo. Vuelve a actualizarlo antes de vender.');
       }
     }
     loadBackendData();
-  }, []);
+  }, [catalogVersion]);
 
   // Filtered Products
   const filteredProducts = useMemo(() => {
@@ -276,7 +192,11 @@ export default function VentasPage() {
 
   // Add to Cart
   function addToCart(p: ProductItem, qtyToAdd?: number) {
+    if (savingRef.current) return;
     const qty = qtyToAdd ?? getQty(p.id);
+    const existing = cart.find(item => item.productoId === p.id)?.cantidad ?? 0;
+    if (qty + existing > p.stock) { setSaleError('La cantidad supera el stock disponible de este producto.'); return; }
+    setSaleError('');
     setCart((prev) => {
       const index = prev.findIndex((item) => item.productoId === p.id);
       if (index >= 0) {
@@ -295,6 +215,8 @@ export default function VentasPage() {
           nombre: p.nombre,
           precioUnitario: p.precio,
           cantidad: qty,
+          requiereSerie: p.requiereSerie,
+          series: [],
         },
       ];
     });
@@ -305,151 +227,65 @@ export default function VentasPage() {
     setCart((prev) => prev.filter((item) => item.productoId !== productoId));
   }
 
-  // Calculations
-  const subtotalBruto = useMemo(() => {
-    return cart.reduce((sum, item) => sum + item.precioUnitario * item.cantidad, 0);
-  }, [cart]);
-
-  const discountMonto = useMemo(() => {
-    const val = parseFloat(discountValue) || 0;
-    if (val <= 0) return 0;
-    if (discountType === 'PERCENT') {
-      return (subtotalBruto * val) / 100;
-    }
-    return Math.min(subtotalBruto, val);
-  }, [subtotalBruto, discountType, discountValue]);
-
-  const subtotalNeto = Math.max(0, subtotalBruto - discountMonto);
-  const igv = subtotalNeto * 0.18;
-  const total = subtotalNeto;
+  const { subtotal, igv, total } = useMemo(() => calculateSaleTotals(cart), [cart]);
 
   // Default payment amount to total
   useEffect(() => {
-    setPaymentAmount(total > 0 ? total.toFixed(2) : '0.00');
+    setPayments(previous => syncPaymentTotal(previous, total));
   }, [total]);
 
-  // Document Type Change
-  function handleDocTypeChange(type: 'FACTURA' | 'BOLETA' | 'NOTA VENTA') {
-    setDocType(type);
-    if (type === 'FACTURA') {
-      setClientDocType('RUC');
-      setClientDocNumber('20601234567');
-      setClientName('CORPORACION NOVASALUD S.A.C.');
-    } else if (type === 'BOLETA') {
-      setClientDocType('SIN DOCUMENTO');
-      setClientDocNumber('00000000');
-      setClientName('DNI 00000000 CLIENTES VARIOS');
-    } else {
-      setClientDocType('SIN DOCUMENTO');
-      setClientDocNumber('00000000');
-      setClientName('CLIENTES VARIOS');
-    }
+  function resetCustomer() {
+    setClientDocNumber(''); setClientName(''); setClientDetails(''); setClientPhone(''); setSaleError('');
   }
-
-  // Barcode Add
-  function handleBarcodeSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!barcodeInput.trim()) return;
-    const found = products.find(
-      (p) =>
-        p.codigo.toLowerCase() === barcodeInput.trim().toLowerCase() ||
-        p.nombre.toLowerCase().includes(barcodeInput.trim().toLowerCase())
-    );
-    if (found) {
-      addToCart(found, 1);
-      setBarcodeInput('');
-    } else {
-      alert(`Producto con código "${barcodeInput}" no encontrado.`);
-    }
+  function handleDocTypeChange(type: 'FACTURA' | 'BOLETA') {
+    setDocType(type); setClientDocType(type === 'FACTURA' ? 'RUC' : 'SIN DOCUMENTO'); resetCustomer();
   }
-
-  // Search Client
   async function searchClient() {
-    if (!clientDocNumber.trim()) return;
+    if (!clientDocNumber.trim() || clientDocType === 'SIN DOCUMENTO') return;
     try {
-      const res = await fetch(
-        `/api/clientes/buscar?tipo=${encodeURIComponent(clientDocType)}&numero=${encodeURIComponent(
-          clientDocNumber.trim()
-        )}`
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setClientName(data.nombre || clientName);
-        setClientDetails(data.direccion || '-');
-        if (data.telefono) setClientPhone(data.telefono);
-      }
-    } catch {
-      // Ignore
-    }
+      const customer = await salesRequest<SaleCustomer>(`/clientes/buscar?tipo=${encodeURIComponent(clientDocType)}&numero=${encodeURIComponent(clientDocNumber.trim())}`);
+      setClientName(customer.nombre); setClientDetails(customer.direccion ?? ''); setClientPhone(customer.telefono ?? ''); setSaleError('');
+    } catch (error) { setSaleError(error instanceof Error ? error.message : 'No se pudo buscar al cliente.'); }
   }
-
-  // Emit Sale (Save)
   async function emitSale() {
-    if (cart.length === 0) {
-      alert('Agrega al menos un producto al carrito antes de emitir la venta.');
-      return;
-    }
-
-    const payload = {
-      tipoComprobante: docType === 'NOTA VENTA' ? 'NOTA_VENTA' : docType,
-      items: cart.map((i) => ({
-        productoId: i.productoId,
-        cantidad: i.cantidad,
-        precioUnitario: i.precioUnitario,
-      })),
-      pagos: [
-        {
-          metodo: paymentMethod,
-          monto: parseFloat(paymentAmount) || total,
-        },
-      ],
-      claveIdempotencia: crypto.randomUUID ? crypto.randomUUID() : 'tx-' + Date.now(),
-    };
-
-    try {
-      const res = await fetch('/api/ventas', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Nova-Client': 'web',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setSuccessSale({
-          id: data.id ? String(data.id) : String(Math.floor(1000 + Math.random() * 9000)),
-          total: total,
-          docType: docType,
-        });
-      } else {
-        setSuccessSale({
-          id: String(Math.floor(1000 + Math.random() * 9000)),
-          total: total,
-          docType: docType,
-        });
+    if (savingRef.current) return;
+    setSaleError('');
+    if (!cart.length) { setSaleError('Agrega al menos un producto al comprobante.'); return; }
+    const invalidPayment = paymentError(payments, total);
+    if (invalidPayment) { setSaleError(invalidPayment); return; }
+    if (clientDocType !== 'SIN DOCUMENTO') {
+      const pattern = clientDocType === 'RUC' ? /^\d{11}$/ : clientDocType === 'DNI' ? /^\d{8}$/ : /^[A-Za-z0-9]{6,11}$/;
+      if (!pattern.test(clientDocNumber.trim()) || clientName.trim().length < 2) {
+        setSaleError('Completa el número de documento y el nombre del cliente, o búscalo con la lupa.'); return;
       }
-    } catch {
-      setSuccessSale({
-        id: String(Math.floor(1000 + Math.random() * 9000)),
-        total: total,
-        docType: docType,
-      });
     }
-
-    setCart([]);
+    savingRef.current = true; setSaving(true);
+    try {
+      const customer = await resolveCustomer(clientDocType, clientDocNumber, clientName, clientDetails, clientPhone);
+      const payload = {
+        clienteId: customer?.id ?? null, tipoComprobante: docType,
+        items: cart.map(item => ({ productoId: item.productoId, cantidad: item.cantidad,
+          precioUnitario: item.precioUnitario, unidadesSerializadas: item.series.map(unit => unit.id) })),
+        pagos: payments.map(row => ({ metodo: row.metodo, monto: Number(row.monto), referencia: row.referencia.trim() || null })),
+      };
+      const signature = JSON.stringify(payload);
+      if (requestRef.current?.signature !== signature) requestRef.current = { signature, key: crypto.randomUUID() };
+      const result = await salesRequest<{ id: number; total: number }>('/ventas', { ...payload, claveIdempotencia: requestRef.current.key });
+      setSuccessSale({ id: String(result.id), total: Number(result.total), docType, pagos: payload.pagos });
+      setCart([]); setPayments([newPayment()]); requestRef.current = null; setCatalogVersion(v => v + 1);
+    } catch (error) {
+      setSaleError(error instanceof Error ? error.message : 'No pudimos confirmar la venta. Conservamos el comprobante para reintentar.');
+    } finally { savingRef.current = false; setSaving(false); }
   }
-
   function clearCart() {
-    if (cart.length > 0 && !confirm('¿Estás seguro de vaciar el comprobante?')) return;
-    setCart([]);
-    setDiscountValue('0');
+    if (savingRef.current || (cart.length > 0 && !confirm('¿Estás seguro de vaciar el comprobante?'))) return;
+    setCart([]); setPayments([newPayment()]); setSaleError(''); requestRef.current = null;
   }
 
   // Vuelto calculation
   const pagaConNum = parseFloat(pagaCon) || 0;
-  const vuelto = Math.max(0, pagaConNum - total);
+  const cashDue = paidCents(payments.filter(row => row.metodo === 'Efectivo')) / 100;
+  const vuelto = Math.max(0, pagaConNum - cashDue);
 
   // Render product visual / icon with high fidelity
   function renderIcon(type: ProductItem['iconType'], id?: number) {
@@ -767,16 +603,15 @@ export default function VentasPage() {
           <button className="pos-home-btn" title="Volver al menú principal" onClick={() => navigate('/')}>
             <FaHouse size={16} />
           </button>
-          <button className="pos-register-btn" title="Punto de Venta activo">
-            <FaCashRegister size={16} />
-          </button>
         </div>
 
-        {/* Central Pills: FACTURA | BOLETA | NOTA VENTA */}
+        {/* Central Pills: FACTURA | BOLETA */}
         <div className="doc-type-pillbox">
           <button
             type="button"
             className={`doc-pill-btn ${docType === 'FACTURA' ? 'is-active' : ''}`}
+            disabled={saving}
+            aria-pressed={docType === 'FACTURA'}
             onClick={() => handleDocTypeChange('FACTURA')}
           >
             FACTURA
@@ -784,24 +619,14 @@ export default function VentasPage() {
           <button
             type="button"
             className={`doc-pill-btn ${docType === 'BOLETA' ? 'is-active' : ''}`}
+            disabled={saving}
+            aria-pressed={docType === 'BOLETA'}
             onClick={() => handleDocTypeChange('BOLETA')}
           >
             BOLETA
           </button>
-          <button
-            type="button"
-            className={`doc-pill-btn ${docType === 'NOTA VENTA' ? 'is-active' : ''}`}
-            onClick={() => handleDocTypeChange('NOTA VENTA')}
-          >
-            NOTA VENTA
-          </button>
         </div>
 
-        <div className="pos-top-right">
-          <button className="pos-gear-btn" title="Configuración de ventas">
-            <FaGear size={16} />
-          </button>
-        </div>
       </header>
 
       {/* ================= 2. POS BODY ================= */}
@@ -851,6 +676,7 @@ export default function VentasPage() {
             </div>
           </div>
 
+          {catalogError && <div role="alert" className="pos-sale-error">{catalogError}<button type="button" onClick={() => setCatalogVersion(v => v + 1)}>Reintentar</button></div>}
           {/* Product Cards Grid */}
           <div className="pos-cards-grid">
             {filteredProducts.map((p) => {
@@ -940,7 +766,8 @@ export default function VentasPage() {
         </section>
 
         {/* ================= RIGHT COLUMN: CHECKOUT PANEL ================= */}
-        <aside className="pos-checkout-pane">
+        <aside className="pos-checkout-pane" aria-label="Cliente y comprobante de venta">
+          <fieldset disabled={saving} className="pos-checkout-fields">
           {/* CLIENTE Section */}
           <div className="pos-client-block">
             <h3 className="pos-section-label">CLIENTE:</h3>
@@ -951,13 +778,12 @@ export default function VentasPage() {
                 <FaCreditCard className="pos-doc-icon" size={13} />
                 <select
                   className="pos-doc-select"
+                  aria-label="Tipo de documento del cliente"
+                  disabled={docType === 'FACTURA'}
                   value={clientDocType}
-                  onChange={(e) => setClientDocType(e.target.value)}
+                  onChange={(e) => { setClientDocType(e.target.value); resetCustomer(); }}
                 >
-                  <option value="SIN DOCUMENTO">SIN DOCUMENTO</option>
-                  <option value="DNI">DNI</option>
-                  <option value="RUC">RUC</option>
-                  <option value="CE">CARNET EXTR.</option>
+                  {docType === 'FACTURA' ? <option value="RUC">RUC</option> : <><option value="SIN DOCUMENTO">SIN DOCUMENTO</option><option value="DNI">DNI</option><option value="CE">CARNET EXTR.</option></>}
                 </select>
               </div>
 
@@ -965,6 +791,9 @@ export default function VentasPage() {
                 <input
                   type="text"
                   className="pos-doc-num-input"
+                  aria-label="Número de documento del cliente"
+                  disabled={clientDocType === 'SIN DOCUMENTO'}
+                  maxLength={clientDocType === 'DNI' ? 8 : 11}
                   value={clientDocNumber}
                   onChange={(e) => setClientDocNumber(e.target.value)}
                   placeholder="00000000"
@@ -973,6 +802,7 @@ export default function VentasPage() {
                   type="button"
                   className="pos-doc-search-btn"
                   title="Buscar cliente en el sistema"
+                  disabled={clientDocType === 'SIN DOCUMENTO'}
                   onClick={searchClient}
                 >
                   <FaMagnifyingGlass size={13} />
@@ -985,18 +815,21 @@ export default function VentasPage() {
               <input
                 type="text"
                 className="pos-client-name-input"
+                aria-label="Nombre o razón social del cliente"
+                placeholder={clientDocType === 'SIN DOCUMENTO' ? 'CLIENTES VARIOS' : 'Nombre o razón social'}
+                disabled={clientDocType === 'SIN DOCUMENTO'}
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
               />
               <input
                 type="text"
-                className="pos-client-extra-input"
+                className="pos-client-extra-input" aria-label="Dirección del cliente" placeholder="Dirección"
                 value={clientDetails}
                 onChange={(e) => setClientDetails(e.target.value)}
               />
             </div>
 
-            {/* Row 3: WhatsApp notification */}
+            {/* Customer phone */}
             <div className="pos-client-row-3" style={{ marginTop: 8 }}>
               <div className="pos-phone-wrap">
                 <span className="pos-flag-badge">🇵🇪 +51</span>
@@ -1009,35 +842,8 @@ export default function VentasPage() {
                 />
               </div>
 
-              <div className="pos-wa-ask">
-                <span>¿Desea enviar al whatsapp?</span>
-                <button
-                  type="button"
-                  className={`pos-wa-btn ${sendWhatsApp ? 'is-yes' : ''}`}
-                  onClick={() => setSendWhatsApp(!sendWhatsApp)}
-                >
-                  {sendWhatsApp ? 'Sí' : 'No'}
-                </button>
-              </div>
             </div>
           </div>
-
-          {/* Barcode row + Quick Add */}
-          <form className="pos-scan-row" onSubmit={handleBarcodeSubmit}>
-            <div className="pos-scan-input-wrap">
-              <FaBarcode className="pos-scan-icon" />
-              <input
-                type="text"
-                className="pos-scan-input"
-                placeholder="Escanear código..."
-                value={barcodeInput}
-                onChange={(e) => setBarcodeInput(e.target.value)}
-              />
-            </div>
-            <button type="submit" className="pos-quick-add-btn">
-              <FaBolt size={12} /> COTIZAR / AGREGAR RÁPIDO
-            </button>
-          </form>
 
           {/* Cart Table */}
           <div className="pos-table-wrap">
@@ -1069,7 +875,8 @@ export default function VentasPage() {
                       </td>
                       <td>S/ {item.precioUnitario.toFixed(2)}</td>
                       <td style={{ fontWeight: 700 }}>S/ {(item.precioUnitario * item.cantidad).toFixed(2)}</td>
-                      <td>
+                      <td className="pos-cart-item-actions">
+                        {item.requiereSerie && <button type="button" className="pos-item-series-btn" title={`Series de ${item.nombre}`} aria-label={`Seleccionar series de ${item.nombre}`} onClick={() => setSerialProductId(item.productoId)}><ListChecks size={16} /><span>{item.series.length}/{item.cantidad}</span></button>}
                         <button
                           type="button"
                           className="pos-item-remove-btn"
@@ -1086,52 +893,17 @@ export default function VentasPage() {
             </table>
           </div>
 
-          {/* Totals & Discounts */}
+          {/* Sale totals: catalog prices already include IGV. */}
           <div className="pos-totals-row">
-            {/* Discount box on left */}
-            <div className="pos-discount-box">
-              <div className="pos-disc-toggle-group">
-                <button
-                  type="button"
-                  className={`pos-disc-btn ${discountType === 'PERCENT' ? 'is-active' : ''}`}
-                  onClick={() => setDiscountType('PERCENT')}
-                >
-                  %
-                </button>
-                <button
-                  type="button"
-                  className={`pos-disc-btn ${discountType === 'SOLES' ? 'is-active' : ''}`}
-                  onClick={() => setDiscountType('SOLES')}
-                >
-                  S/
-                </button>
-              </div>
-
-              <div className="pos-disc-input-wrap">
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b' }}>
-                  {discountType === 'PERCENT' ? '%' : 'S/'}
-                </span>
-                <input
-                  type="number"
-                  min="0"
-                  step="any"
-                  className="pos-disc-input"
-                  value={discountValue}
-                  onChange={(e) => setDiscountValue(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Summary on right */}
             <div className="pos-summary-list">
               <span className="pos-sum-title">RESUMEN</span>
               <div className="pos-sum-row">
-                <span>DESCUENTO (-)</span>
-                <span>{discountMonto.toFixed(2)}</span>
+                <span>SUBTOTAL</span>
+                <span>S/ {subtotal.toFixed(2)}</span>
               </div>
               <div className="pos-sum-row">
-                <span>IGV(18%)</span>
-                <span>{igv.toFixed(2)}</span>
+                <span>IGV (18%, incluido)</span>
+                <span>S/ {igv.toFixed(2)}</span>
               </div>
               <div className="pos-sum-total">
                 <span>TOTAL</span>
@@ -1140,53 +912,12 @@ export default function VentasPage() {
             </div>
           </div>
 
-          {/* Payment Methods */}
-          <div className="pos-payment-block">
-            <h4 className="pos-section-label" style={{ margin: 0 }}>
-              MÉTODOS DE PAGO:
-            </h4>
-
-            <div className="pos-pay-row">
-              <select
-                className="pos-pay-select"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              >
-                <option value="Efectivo">Efectivo</option>
-                <option value="Yape">Yape</option>
-                <option value="Plin">Plin</option>
-                <option value="Tarjeta Débito">Tarjeta Débito</option>
-                <option value="Tarjeta Crédito">Tarjeta Crédito</option>
-                <option value="Transferencia">Transferencia</option>
-              </select>
-
-              <input
-                type="number"
-                step="0.01"
-                className="pos-pay-amount"
-                value={paymentAmount}
-                onChange={(e) => setPaymentAmount(e.target.value)}
-                placeholder="0.00"
-              />
-            </div>
-
-            <div className="pos-pay-actions-row">
-              <button
-                type="button"
-                className="pos-vuelto-btn"
-                onClick={() => setShowVueltoModal(true)}
-              >
-                <FaCalculator size={12} /> Vuelto / Cambio
-              </button>
-              <button
-                type="button"
-                className="pos-add-pay-btn"
-                onClick={() => alert(`Método de pago ${paymentMethod} agregado por S/ ${paymentAmount}`)}
-              >
-                + Agregar Pago
-              </button>
-            </div>
-          </div>
+          <PaymentRows rows={payments} total={total} disabled={saving}
+            onChange={(id, patch) => setPayments(rows => rows.map(row => row.id === id ? { ...row, ...patch } : row))}
+            onAdd={() => setPayments(rows => [...rows, { ...newPayment(), monto: (Math.max(0, Math.round(total * 100) - paidCents(rows)) / 100).toFixed(2) }])}
+            onRemove={id => setPayments(rows => syncPaymentTotal(rows.filter(row => row.id !== id), total))}
+            onChangeCalculator={() => setShowVueltoModal(true)} />
+          {saleError && <div className="pos-sale-error" role="alert">{saleError}</div>}
 
           {/* Bottom Big Action Buttons (Save/Emit & Trash) */}
           <div className="pos-bottom-btns">
@@ -1196,7 +927,7 @@ export default function VentasPage() {
               title="Emitir venta y guardar comprobante"
               onClick={emitSale}
             >
-              <FaFloppyDisk />
+              {saving ? <span>…</span> : <FaFloppyDisk />}
             </button>
             <button
               type="button"
@@ -1207,8 +938,12 @@ export default function VentasPage() {
               <FaTrashCan />
             </button>
           </div>
+          </fieldset>
         </aside>
       </div>
+
+      {serialItem && <SerialPicker productId={serialItem.productoId} name={serialItem.nombre} quantity={serialItem.cantidad} initial={serialItem.series} load={loadSerials}
+        onClose={() => setSerialProductId(null)} onSave={selected => { setCart(rows => rows.map(row => row.productoId === serialItem.productoId ? { ...row, series: selected } : row)); setSerialProductId(null); }} />}
 
       {/* ================= VUELTO / CAMBIO MODAL ================= */}
       {showVueltoModal && (
@@ -1237,7 +972,7 @@ export default function VentasPage() {
           >
             <h3 style={{ margin: '0 0 14px', fontSize: 16, fontWeight: 800 }}>Calculadora de Vuelto</h3>
             <p style={{ margin: '0 0 10px', fontSize: 13, color: '#64748b' }}>
-              Total a pagar: <strong>S/ {total.toFixed(2)}</strong>
+              Efectivo a cobrar: <strong>S/ {cashDue.toFixed(2)}</strong>
             </p>
 
             <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4 }}>
@@ -1364,11 +1099,11 @@ export default function VentasPage() {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <span style={{ color: '#64748b' }}>Cliente:</span>
-                <strong>{clientName}</strong>
+                <strong>{clientName || 'CLIENTES VARIOS'}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <span style={{ color: '#64748b' }}>Método:</span>
-                <strong>{paymentMethod}</strong>
+                <strong>{successSale.pagos.map(p => `${p.metodo}: S/ ${p.monto.toFixed(2)}`).join(' · ')}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Total cobrado:</span>

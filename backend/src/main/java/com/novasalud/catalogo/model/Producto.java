@@ -34,6 +34,12 @@ public class Producto {
     @Column(nullable = false)
     private boolean activo = true;
 
+    @Column(name = "requiere_serie", nullable = false)
+    private boolean requiereSerie;
+
+    public boolean isRequiereSerie() { return requiereSerie; }
+    public void setRequiereSerie(boolean value) { requiereSerie = value; }
+
     @Column(name = "creado_en", nullable = false, updatable = false)
     private Instant creadoEn = Instant.now();
 

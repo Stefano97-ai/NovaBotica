@@ -1,28 +1,24 @@
-import { File as FileIcon, FilePlus2, FileMinus2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import {
   AlertCircle,
-  Calendar,
   EyeOff,
   Menu,
-  BarChart3,
-  PieChart,
   RefreshCw,
   Wallet,
   FileText,
   Receipt,
-  ClipboardList,
   Boxes,
   AlertTriangle,
   Clock
 } from 'lucide-react';
 import {
-  FaFileLines,
   FaFileInvoice,
   FaFileInvoiceDollar
 } from 'react-icons/fa6';
 import type { User } from '../../auth/api/auth';
+import { InicioCharts } from '../presentation/components/inicio-charts';
+import { loadInicioCharts } from '../infrastructure/inicio-charts-api';
 import './inicio.css';
 
 interface Summary {
@@ -50,6 +46,7 @@ export default function Page() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [version, setVersion] = useState(0);
+  const onUnauthorized = useCallback(() => navigate('/login', { replace: true }), [navigate]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -87,14 +84,6 @@ export default function Page() {
   const salesCount = data?.sales?.count ?? 0;
   const formattedSales = money.format(salesTotal).replace('PEN', 'S/').replace(/\s/g, ' ');
 
-  // Escala del gráfico: S/ 0 a S/ max (como la referencia, con rejilla horizontal)
-  const maxY = salesTotal > 0 ? Math.ceil(salesTotal) : 1;
-  const ticks = [1, 0.8, 0.6, 0.4, 0.2, 0].map((t) => ({
-    y: 14 + (1 - t) * 180,
-    label: 'S/ ' + Number((maxY * t).toFixed(2)),
-  }));
-  const barH = salesTotal > 0 ? (salesTotal / maxY) * 180 : 0;
-
   return (
     <div className="dash">
       {/* Barra DASHBOARD + botones de emisión en la misma horizontal */}
@@ -105,7 +94,6 @@ export default function Page() {
         <div className="dash-actions">
           <Link to="/ventas?tipo=FACTURA" className="dash-btn"><FaFileInvoice size={12} /> Emitir factura</Link>
           <Link to="/ventas?tipo=BOLETA" className="dash-btn"><FaFileInvoiceDollar size={12} /> Emitir boleta</Link>
-          <Link to="/ventas?tipo=NOTA_VENTA" className="dash-btn"><FaFileLines size={12} /> Nota de venta</Link>
         </div>
       </div>
 
@@ -113,8 +101,8 @@ export default function Page() {
         <div className="dash-panel-top">
           <button className="eye-btn" title="Ocultar montos"><EyeOff size={13} /></button>
           <button className="period-btn" title="Actualizar" disabled={loading} onClick={() => setVersion((v) => v + 1)}>
-            {loading ? <RefreshCw size={12} /> : <Calendar size={12} />}
-            Este mes
+            <RefreshCw size={12} />
+            {loading ? 'Actualizando…' : 'Actualizar'}
           </button>
         </div>
 
@@ -153,56 +141,35 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="kpi-card card-dark">
-            <div className="kpi-icon-box icon-box-dark"><FileIcon size={22} strokeWidth={2.2} /></div>
+          <div className="kpi-card card-emerald">
+            <div className="kpi-icon-box icon-box-emerald"><Boxes size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
-              <span className="kpi-title">Notas de venta</span>
-              <span className="kpi-value">S/ 0.00</span>
-              <span className="kpi-subtext">0 comprobantes</span>
+              <span className="kpi-title">Productos activos</span>
+              <span className="kpi-value">{data?.products ?? '—'}</span>
+              <span className="kpi-subtext">En catálogo</span>
             </div>
           </div>
 
-          <div className="kpi-card card-emerald">
-            <div className="kpi-icon-box icon-box-emerald"><FilePlus2 size={22} strokeWidth={2.2} /></div>
+          <div className="kpi-card card-orange">
+            <div className="kpi-icon-box icon-box-orange"><AlertTriangle size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
-              <span className="kpi-title">Notas de débito</span>
-              <span className="kpi-value" aria-label="Importe no disponible">—</span>
-              <span className="kpi-subtext">Sin datos disponibles</span>
+              <span className="kpi-title">Stock por reponer</span>
+              <span className="kpi-value">{data?.lowStock ?? '—'}</span>
+              <span className="kpi-subtext">Bajo el stock mínimo</span>
             </div>
           </div>
 
           <div className="kpi-card card-rose">
-            <div className="kpi-icon-box icon-box-rose"><FileMinus2 size={22} strokeWidth={2.2} /></div>
+            <div className="kpi-icon-box icon-box-rose"><Clock size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
-              <span className="kpi-title">Notas de crédito</span>
-              <span className="kpi-value" aria-label="Importe no disponible">—</span>
-              <span className="kpi-subtext">Sin datos disponibles</span>
+              <span className="kpi-title">Próximos a vencer</span>
+              <span className="kpi-value">{data?.expiringCount ?? '—'}</span>
+              <span className="kpi-subtext">Próximos 30 días</span>
             </div>
           </div>
         </div>
 
-        <div className="dash-bottom">
-          <div className="dash-box">
-            <h2 className="dash-box-title"><BarChart3 size={13} /> Evolución de ventas</h2>
-            <svg className="chart-svg" viewBox="0 0 640 230" preserveAspectRatio="none" role="img" aria-label="Evolución de ventas">
-              {ticks.map((t) => (
-                <g key={t.label + t.y}>
-                  <text x="0" y={t.y + 4} className="chart-text" fontSize="11">{t.label}</text>
-                  <line x1="50" x2="636" y1={t.y} y2={t.y} className="chart-grid-line" strokeWidth="1.2" />
-                </g>
-              ))}
-              {salesTotal > 0 && (
-                <rect x="320" y={194 - barH} width="40" height={barH} rx="3" fill="#6a46f2" />
-              )}
-              <text x="340" y="216" className="chart-text" fontSize="11" textAnchor="middle">Hoy</text>
-            </svg>
-          </div>
-
-          <div className="dash-box">
-            <h2 className="dash-box-title"><PieChart size={13} /> Top 5 productos más vendidos</h2>
-            <p className="top-empty">Aún no hay ventas registradas para mostrar el ranking.</p>
-          </div>
-        </div>
+        <InicioCharts load={loadInicioCharts} version={version} onUnauthorized={onUnauthorized} canViewSales={user.rol !== 'ALMACENERO'} />
 
         {data && (data.expiring.length > 0 || data.lowStock > 0) && (
           <div className="dash-box" style={{ marginTop: 14 }}>

@@ -137,6 +137,9 @@ public class DetalleVenta {
     }
 
     public void setAsignacionesLote(List<DetalleVentaLote> asignacionesLote) {
-        this.asignacionesLote = asignacionesLote;
+        if (this.asignacionesLote != asignacionesLote) {
+            this.asignacionesLote.clear();
+            if (asignacionesLote != null) this.asignacionesLote.addAll(asignacionesLote);
+        }
     }
 }

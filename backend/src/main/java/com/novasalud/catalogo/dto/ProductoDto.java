@@ -14,5 +14,6 @@ public record ProductoDto(
     Integer stockMinimo,
     Long stockDisponible,
     boolean activo,
-    Instant creadoEn
+    Instant creadoEn,
+    boolean requiereSerie
 ) {}

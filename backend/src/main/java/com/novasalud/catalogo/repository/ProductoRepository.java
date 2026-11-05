@@ -5,10 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Producto p WHERE p.id IN :ids ORDER BY p.id")
+    List<Producto> lockForSale(List<Long> ids);
     Optional<Producto> findByCodigo(String codigo);
     Optional<Producto> findByCodigoIgnoreCase(String codigo);
     boolean existsByCodigoIgnoreCase(String codigo);

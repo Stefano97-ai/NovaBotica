@@ -53,6 +53,9 @@ public class ClienteService {
         if ("RUC".equals(tipo) && !numero.matches("^[0-9]{11}$")) {
             throw new BadRequestException("El RUC debe tener exactamente 11 dígitos.");
         }
+        if ("CE".equals(tipo) && !numero.matches("^[A-Za-z0-9]{6,11}$")) {
+            throw new BadRequestException("El carnet de extranjería debe tener entre 6 y 11 caracteres alfanuméricos.");
+        }
 
         if (clienteRepository.findByTipoDocumentoAndNumeroDocumento(tipo, numero).isPresent()) {
             throw new BadRequestException("Ya existe un cliente con " + tipo + " " + numero);

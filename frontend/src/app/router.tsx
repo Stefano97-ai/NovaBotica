@@ -206,7 +206,6 @@ function Layout() {
           <button className="topbar-burger" aria-label="Mostrar u ocultar menú" aria-controls="workspace-sidebar" aria-expanded={narrow ? collapsed : !collapsed} title="Mostrar / ocultar menú" onClick={() => setCollapsed((v) => !v)}>
             <Menu size={20} />
           </button>
-          <span className="brand-badge">PRUEBAS</span>
           <button
             type="button"
             className={`theme-orb orb-sun ${theme === 'light' ? 'is-active' : ''}`}
@@ -225,8 +224,6 @@ function Layout() {
           >
             <Moon size={14} />
           </button>
-          <span className="tc-badge">TC - Venta: 3.467 Compra: 3.458</span>
-          <button className="calc-btn" title="Calculadora"><Calculator size={16} /></button>
         </div>
 
         <div className="topbar-right">

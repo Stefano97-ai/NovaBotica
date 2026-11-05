@@ -173,7 +173,10 @@ public class Venta {
     }
 
     public void setDetalles(List<DetalleVenta> detalles) {
-        this.detalles = detalles;
+        if (this.detalles != detalles) {
+            this.detalles.clear();
+            if (detalles != null) this.detalles.addAll(detalles);
+        }
     }
 
     public List<Pago> getPagos() {
@@ -181,6 +184,9 @@ public class Venta {
     }
 
     public void setPagos(List<Pago> pagos) {
-        this.pagos = pagos;
+        if (this.pagos != pagos) {
+            this.pagos.clear();
+            if (pagos != null) this.pagos.addAll(pagos);
+        }
     }
 }

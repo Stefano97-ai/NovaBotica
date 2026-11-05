@@ -13,5 +13,8 @@ public record DetalleVentaResponseDto(
     BigDecimal subtotal,
     BigDecimal impuesto,
     BigDecimal total,
-    List<AsignacionLoteDto> lotes
-) {}
+    List<AsignacionLoteDto> lotes,
+    List<SerieVendida> series
+) {
+    public record SerieVendida(Long id, String numeroSerie) {}
+}

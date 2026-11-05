@@ -26,5 +26,6 @@ public record CreateProductoDto(
     BigDecimal precioVenta,
 
     @Min(value = 0, message = "El stock mínimo no puede ser negativo")
-    Integer stockMinimo
+    Integer stockMinimo,
+    Boolean requiereSerie
 ) {}

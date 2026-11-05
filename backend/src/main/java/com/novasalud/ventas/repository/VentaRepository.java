@@ -8,10 +8,15 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VentaRepository extends JpaRepository<Venta, Long> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT v FROM Venta v WHERE v.id=:id")
+    Optional<Venta> lockById(Long id);
     List<Venta> findAllByOrderByFechaDesc();
     List<Venta> findByEstadoOrderByFechaDesc(String estado);
     List<Venta> findByUsuarioIdOrderByFechaDesc(Long usuarioId);
