@@ -563,25 +563,25 @@ export default function VentasPage() {
                     <div className="pos-card-stock-tag">STOCK: {p.stock}</div>
                   )}
 
-                  {/* Product visual */}
+                  {/* Product visual con botón flotante al pasar el mouse */}
                   <div
                     className="pos-card-img-wrap"
                     onClick={() => addToCart(p, qty)}
                     style={{ cursor: 'pointer' }}
                   >
                     {renderIcon(p.iconType)}
-                  </div>
-
-                  {/* Violet "🛒 AGREGAR" pill button under image (as in reference) */}
-                  {p.hasAddButton && (
                     <button
                       type="button"
                       className="pos-card-add-pill-btn"
-                      onClick={() => addToCart(p, qty)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(p, qty);
+                      }}
+                      title="Agregar producto al comprobante"
                     >
                       <FaCartShopping size={11} /> AGREGAR
                     </button>
-                  )}
+                  </div>
 
                   {/* Product Info */}
                   <div

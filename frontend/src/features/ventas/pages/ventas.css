@@ -292,6 +292,7 @@
   max-width: 95px;
   max-height: 85px;
   object-fit: contain;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .pos-card-avatar {
@@ -303,14 +304,26 @@
   align-items: center;
   justify-content: center;
   color: #1e293b;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* "🛒 AGREGAR" button below image (like in the Dell card) */
+.pos-card:hover .pos-card-img,
+.pos-card:hover .pos-card-avatar,
+.pos-card:hover .pos-card-img-wrap svg {
+  transform: scale(1.05);
+}
+
+/* "🛒 AGREGAR" button - smoothly appears on hover over product / icon */
 .pos-card-add-pill-btn {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px) scale(0.9);
+  opacity: 0;
+  pointer-events: none;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #2b1d8f;
   background: linear-gradient(135deg, #2a1388 0%, #5a52f3 100%);
   color: #ffffff;
   border: none;
@@ -319,16 +332,30 @@
   padding: 5px 16px;
   border-radius: 999px;
   cursor: pointer;
-  margin-top: -6px;
-  margin-bottom: 6px;
-  box-shadow: 0 3px 8px rgba(90, 82, 243, 0.35);
-  transition: transform 0.15s ease, filter 0.15s ease;
-  align-self: center;
+  box-shadow: 0 4px 14px rgba(42, 19, 136, 0.45);
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.15s ease,
+              filter 0.15s ease;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.pos-card:hover .pos-card-add-pill-btn,
+.pos-card-img-wrap:hover .pos-card-add-pill-btn {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 .pos-card-add-pill-btn:hover {
-  transform: scale(1.05);
-  filter: brightness(1.1);
+  transform: translateX(-50%) translateY(-2px) scale(1.06);
+  filter: brightness(1.15);
+  box-shadow: 0 6px 18px rgba(90, 82, 243, 0.55);
+}
+
+.pos-card-add-pill-btn:active {
+  transform: translateX(-50%) translateY(0) scale(0.98);
 }
 
 /* Title and price */
