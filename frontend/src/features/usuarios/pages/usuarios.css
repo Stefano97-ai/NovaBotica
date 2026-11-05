@@ -112,39 +112,52 @@
   box-shadow: 0 8px 20px rgba(45, 65, 55, 0.07);
 }
 
+/* 3D Realistic Square Jewel Badge */
 .usr-stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px; /* Cuadrado con esquinas biseladas */
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  color: #ffffff;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.65),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.25),
+    0 6px 14px -2px var(--glow, rgba(0, 0, 0, 0.25));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.usr-stat-card:hover .usr-stat-icon {
+  transform: scale(1.08);
 }
 
 .usr-stat-icon.total {
-  background: #f1f5f9;
-  color: #475569;
+  background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+  --glow: rgba(30, 41, 59, 0.5);
 }
 
 .usr-stat-icon.admin {
-  background: #f3e8ff;
-  color: #7c3aed;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  --glow: rgba(109, 40, 217, 0.55);
 }
 
 .usr-stat-icon.vendedor {
-  background: #dcfce7;
-  color: #15803d;
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  --glow: rgba(4, 120, 87, 0.5);
 }
 
 .usr-stat-icon.almacen {
-  background: #fef3c7;
-  color: #b45309;
+  background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+  --glow: rgba(217, 119, 6, 0.5);
 }
 
 .usr-stat-icon.active {
-  background: #ccfbf1;
-  color: #0f766e;
+  background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+  --glow: rgba(15, 118, 110, 0.5);
 }
 
 .usr-stat-info {
@@ -392,30 +405,36 @@
   gap: 10px;
 }
 
+/* User avatar badge - Square 3D Realistic */
 .usr-avatar-badge {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 6px; /* Cuadrado biselado */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
   color: #ffffff;
   flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.25),
+    0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .usr-avatar-badge.admin {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
 }
 
 .usr-avatar-badge.vendedor {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
 }
 
 .usr-avatar-badge.almacen {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
 }
 
 .usr-username {
@@ -425,23 +444,24 @@
   color: #0f172a;
 }
 
-/* Role Badges */
+/* Role Badges - Square 3D Structure */
 .usr-role-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: 6px; /* Cuadrado en lugar de capsula */
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .usr-role-pill.admin {
-  background: #f3e8ff;
+  background: #f5f3ff;
   color: #6b21a8;
-  border: 1px solid #d8b4fe;
+  border: 1px solid #ddd6fe;
 }
 
 .usr-role-pill.vendedor {
@@ -474,23 +494,25 @@
   font-weight: 600;
 }
 
-/* Status Pill */
+/* Status Pill - Square Badge with 3D tactile feel */
 .usr-status-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
-  border-radius: 20px;
+  padding: 4px 10px;
+  border-radius: 6px; /* Cuadrado */
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
-  border: none;
+  border: 1px solid transparent;
   transition: all 0.15s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .usr-status-pill.active {
   background: #d1fae5;
   color: #065f46;
+  border-color: #a7f3d0;
 }
 
 .usr-status-pill.active:hover {
@@ -500,6 +522,7 @@
 .usr-status-pill.inactive {
   background: #fee2e2;
   color: #991b1b;
+  border-color: #fecaca;
 }
 
 .usr-status-pill.inactive:hover {
@@ -507,9 +530,9 @@
 }
 
 .usr-status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px; /* Cuadrado con micro-radio */
 }
 
 .usr-status-dot.active {
@@ -520,70 +543,101 @@
   background: #ef4444;
 }
 
-/* Action Buttons */
+/* Action Buttons - Tactile 3D Realistic Squares */
 .usr-action-btns {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 .btn-usr-action {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px; /* Cuadrado estilizado */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
 }
 
 .btn-usr-action.edit {
-  background: #f59e0b;
+  background: linear-gradient(180deg, #fbbf24 0%, #ea580c 100%);
   color: #ffffff;
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2),
+    0 3px 6px rgba(234, 88, 12, 0.35);
 }
 
 .btn-usr-action.edit:hover {
-  background: #d97706;
+  background: linear-gradient(180deg, #f59e0b 0%, #c2410c 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(217, 119, 6, 0.35);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    0 4px 10px rgba(234, 88, 12, 0.45);
 }
 
 .btn-usr-action.key {
-  background: #3b82f6;
+  background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
   color: #ffffff;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2),
+    0 3px 6px rgba(37, 99, 235, 0.35);
 }
 
 .btn-usr-action.key:hover {
-  background: #2563eb;
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.35);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    0 4px 10px rgba(37, 99, 235, 0.45);
 }
 
 .btn-usr-action.toggle {
-  background: #64748b;
+  background: linear-gradient(180deg, #64748b 0%, #334155 100%);
   color: #ffffff;
-  box-shadow: 0 2px 4px rgba(100, 116, 139, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2),
+    0 3px 6px rgba(51, 65, 85, 0.35);
 }
 
 .btn-usr-action.toggle:hover {
-  background: #475569;
+  background: linear-gradient(180deg, #475569 0%, #1e293b 100%);
   transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    0 4px 10px rgba(51, 65, 85, 0.45);
 }
 
 .btn-usr-action.delete {
-  background: #ef4444;
+  background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
   color: #ffffff;
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2),
+    0 3px 6px rgba(220, 38, 38, 0.35);
 }
 
 .btn-usr-action.delete:hover {
-  background: #dc2626;
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.35);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    0 4px 10px rgba(220, 38, 38, 0.45);
+}
+
+.btn-usr-action:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* ================= 6. PERMISSIONS MATRIX ================= */

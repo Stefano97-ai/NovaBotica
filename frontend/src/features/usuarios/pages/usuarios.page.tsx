@@ -406,7 +406,7 @@ export default function UsuariosPage() {
       <div className="usr-stats-grid">
         <div className="usr-stat-card">
           <div className="usr-stat-icon total">
-            <Users size={18} strokeWidth={2.2} />
+            <Users size={20} strokeWidth={2.4} />
           </div>
           <div className="usr-stat-info">
             <span className="usr-stat-val">{stats.total}</span>
@@ -416,7 +416,7 @@ export default function UsuariosPage() {
 
         <div className="usr-stat-card">
           <div className="usr-stat-icon admin">
-            <Shield size={18} strokeWidth={2.2} />
+            <ShieldCheck size={20} strokeWidth={2.4} />
           </div>
           <div className="usr-stat-info">
             <span className="usr-stat-val">{stats.admins}</span>
@@ -426,7 +426,7 @@ export default function UsuariosPage() {
 
         <div className="usr-stat-card">
           <div className="usr-stat-icon vendedor">
-            <ShoppingCart size={18} strokeWidth={2.2} />
+            <ShoppingCart size={20} strokeWidth={2.4} />
           </div>
           <div className="usr-stat-info">
             <span className="usr-stat-val">{stats.vendedores}</span>
@@ -436,7 +436,7 @@ export default function UsuariosPage() {
 
         <div className="usr-stat-card">
           <div className="usr-stat-icon almacen">
-            <Boxes size={18} strokeWidth={2.2} />
+            <Boxes size={20} strokeWidth={2.4} />
           </div>
           <div className="usr-stat-info">
             <span className="usr-stat-val">{stats.almaceneros}</span>
@@ -446,7 +446,7 @@ export default function UsuariosPage() {
 
         <div className="usr-stat-card">
           <div className="usr-stat-icon active">
-            <Check size={18} strokeWidth={2.2} />
+            <CheckCircle2 size={20} strokeWidth={2.4} />
           </div>
           <div className="usr-stat-info">
             <span className="usr-stat-val">{stats.activos}</span>
