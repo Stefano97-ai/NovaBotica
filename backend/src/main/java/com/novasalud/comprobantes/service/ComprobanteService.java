@@ -45,12 +45,24 @@ public class ComprobanteService {
     public List<ComprobanteResponseDto> buscar(String serie, Long correlativo) {
         return comprobanteRepository.findAllByOrderByCreadoEnDesc().stream()
             .filter(c -> {
-                if (c.getSerieComprobante() == null || c.getSerieComprobante().getSerie() == null) return false;
-                if (serie != null && !serie.isBlank() && !c.getSerieComprobante().getSerie().equalsIgnoreCase(serie.trim())) {
-                    return false;
+                // Si se especifica número, buscar por correlativo, por ID de venta o por ID de comprobante
+                if (correlativo != null) {
+                    boolean matchCorrelativo = c.getCorrelativo() != null && c.getCorrelativo().equals(correlativo);
+                    boolean matchVentaId = c.getVenta() != null && c.getVenta().getId() != null && c.getVenta().getId().equals(correlativo);
+                    boolean matchComprobanteId = c.getId() != null && c.getId().equals(correlativo);
+                    if (!matchCorrelativo && !matchVentaId && !matchComprobanteId) {
+                        return false;
+                    }
                 }
-                if (correlativo != null && (c.getCorrelativo() == null || !c.getCorrelativo().equals(correlativo))) {
-                    return false;
+                // Si se especifica serie, validar coincidencia salvo que haya coincidido directamente por ID de venta
+                if (serie != null && !serie.isBlank()) {
+                    if (c.getSerieComprobante() != null && c.getSerieComprobante().getSerie() != null) {
+                        boolean matchSerie = c.getSerieComprobante().getSerie().equalsIgnoreCase(serie.trim());
+                        boolean matchVentaId = correlativo != null && c.getVenta() != null && c.getVenta().getId() != null && c.getVenta().getId().equals(correlativo);
+                        if (!matchSerie && !matchVentaId) {
+                            return false;
+                        }
+                    }
                 }
                 return true;
             })

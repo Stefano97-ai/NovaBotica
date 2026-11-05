@@ -14,6 +14,7 @@ import './comprobantes.css';
 
 interface ComprobanteItem {
   id: number;
+  ventaId?: number;
   tipo: string;
   serie: string;
   correlativo: number;
@@ -31,6 +32,50 @@ export default function ComprobantesPage() {
   const [buscando, setBuscando] = useState(false);
   const [resultado, setResultado] = useState<ComprobanteItem | null>(null);
   const [sinResultados, setSinResultados] = useState(false);
+  const [recientes, setRecientes] = useState<any[]>([]);
+
+  // Load latest emitted receipts for instant navigation
+  useEffect(() => {
+    fetch('/api/comprobantes')
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => {
+        if (Array.isArray(d)) setRecientes(d.slice(0, 5));
+      })
+      .catch(() => {});
+  }, []);
+
+  function handleSelectReciente(comp: any) {
+    if (comp.tipoCodigo === 'FACTURA') setTipoComprobante('FACTURA');
+    else if (comp.tipoCodigo === 'BOLETA') setTipoComprobante('BOLETA');
+    else setTipoComprobante('NOTA DE VENTA');
+
+    setSerie(comp.serie || 'B001');
+    setCorrelativo(String(comp.correlativo));
+
+    const rawNumDoc = comp.clienteNumeroDoc || '';
+    const rawTipoDoc = comp.clienteTipoDoc || 'DNI';
+    const clienteNombre = comp.clienteNombre || 'CLIENTES VARIOS';
+    let clienteDoc = '';
+    if (rawNumDoc && rawNumDoc !== '00000000' && rawNumDoc !== '-') {
+      clienteDoc = `${rawTipoDoc} ${rawNumDoc}`;
+    } else {
+      clienteDoc = 'DNI 00000000';
+    }
+
+    setResultado({
+      id: comp.id,
+      ventaId: comp.ventaId,
+      tipo: comp.tipoNombre || 'BOLETA',
+      serie: comp.serie || 'B001',
+      correlativo: comp.correlativo || 1,
+      estado: comp.estado || 'ACEPTADO POR SUNAT',
+      clienteNombre,
+      clienteDoc,
+      fecha: comp.creadoEn ? new Date(comp.creadoEn).toLocaleString('es-PE') : new Date().toLocaleString('es-PE'),
+      total: Number(comp.total) || 0,
+    });
+    setSinResultados(false);
+  }
 
   // Auto-update serie based on tipo
   function handleTipoChange(nuevoTipo: string) {
@@ -42,11 +87,28 @@ export default function ComprobantesPage() {
 
   async function handleConsultar(e: React.FormEvent) {
     e.preventDefault();
-    const corrTrimmed = correlativo.trim();
+    let corrTrimmed = correlativo.trim();
     if (!corrTrimmed) {
       setSinResultados(true);
       setResultado(null);
       return;
+    }
+
+    let serieTrimmed = serie.trim().toUpperCase();
+
+    // Support entering formats like "#793", "B001-00000793", "B001-793"
+    if (corrTrimmed.startsWith('#')) {
+      corrTrimmed = corrTrimmed.slice(1).trim();
+    }
+    if (corrTrimmed.includes('-')) {
+      const parts = corrTrimmed.split('-');
+      if (parts.length === 2) {
+        if (parts[0].trim()) {
+          serieTrimmed = parts[0].trim().toUpperCase();
+          setSerie(serieTrimmed);
+        }
+        corrTrimmed = parts[1].trim();
+      }
     }
 
     const corrNum = parseInt(corrTrimmed, 10);
@@ -60,19 +122,22 @@ export default function ComprobantesPage() {
     setSinResultados(false);
     setResultado(null);
 
-    const serieTrimmed = serie.trim().toUpperCase();
-
     try {
       const res = await fetch(`/api/comprobantes?serie=${encodeURIComponent(serieTrimmed)}&correlativo=${corrNum}`);
       if (res.ok) {
         const data = await res.json();
         const list = Array.isArray(data) ? data : [data];
-        const match = list.find(
-          (c: any) =>
-            c &&
-            c.serie?.toUpperCase() === serieTrimmed &&
-            Number(c.correlativo) === corrNum
-        );
+        // Match by correlativo OR by ventaId OR by comprobante id
+        const match =
+          list.find(
+            (c: any) =>
+              c && (
+                Number(c.correlativo) === corrNum ||
+                Number(c.ventaId) === corrNum ||
+                Number(c.id) === corrNum
+              )
+          ) || (list.length === 1 ? list[0] : null);
+
         if (match) {
           // Parse datosDocumento as fallback if fields are nested
           let parsedDoc: any = {};
@@ -118,6 +183,7 @@ export default function ComprobantesPage() {
 
           setResultado({
             id: match.id,
+            ventaId: match.ventaId,
             tipo: match.tipoNombre || tipoComprobante,
             serie: match.serie || serieTrimmed,
             correlativo: match.correlativo || corrNum,
@@ -243,8 +309,8 @@ export default function ComprobantesPage() {
                 <span className="consult-info-val">{resultado.fecha}</span>
               </div>
               <div className="consult-info-item">
-                <span className="consult-info-label">Moneda</span>
-                <span className="consult-info-val">SOLES (PEN)</span>
+                <span className="consult-info-label">N° Operación (Venta)</span>
+                <span className="consult-info-val">#{resultado.ventaId || resultado.id}</span>
               </div>
               <div className="consult-info-item">
                 <span className="consult-info-label">Importe Total</span>
@@ -289,6 +355,58 @@ export default function ComprobantesPage() {
             <span style={{ fontSize: 12, color: '#94a3b8', display: 'block', marginTop: 4 }}>
               Verifica que el número y serie ingresados correspondan a una venta registrada en el sistema.
             </span>
+          </div>
+        )}
+
+        {/* Accesos rápidos a últimos comprobantes emitidos */}
+        {recientes.length > 0 && (
+          <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
+              Comprobantes emitidos recientemente en el sistema:
+            </h3>
+            <div style={{ display: 'grid', gap: 8 }}>
+              {recientes.map((comp) => (
+                <button
+                  key={comp.id}
+                  type="button"
+                  onClick={() => handleSelectReciente(comp)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderRadius: 8,
+                    border: '1px solid #cbd5e1',
+                    background: '#f8fafc',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = '#f1f5f9')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <FaFileInvoiceDollar size={15} color="#2563eb" />
+                    <div>
+                      <strong style={{ fontSize: 13, color: '#1e293b' }}>
+                        {comp.tipoNombre || comp.tipoCodigo} {comp.serie}-{String(comp.correlativo).padStart(8, '0')}
+                      </strong>
+                      <span style={{ fontSize: 11.5, color: '#64748b', display: 'block' }}>
+                        Venta #{comp.ventaId} · {comp.clienteNumeroDoc && comp.clienteNumeroDoc !== '00000000' && comp.clienteNumeroDoc !== '-' ? `${comp.clienteTipoDoc || 'DNI'} ${comp.clienteNumeroDoc} - ` : ''}{comp.clienteNombre || 'CLIENTES VARIOS'}
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <strong style={{ fontSize: 13, color: '#10b981' }}>
+                      S/ {Number(comp.total || 0).toFixed(2)}
+                    </strong>
+                    <span style={{ fontSize: 11, color: '#94a3b8', display: 'block' }}>
+                      {comp.creadoEn ? new Date(comp.creadoEn).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }) : ''}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </section>

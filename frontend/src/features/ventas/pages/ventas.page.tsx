@@ -96,7 +96,13 @@ export default function VentasPage() {
   const serialItem = cart.find(item => item.productoId === serialProductId);
 
   // Modals / Feedback
-  const [successSale, setSuccessSale] = useState<{ id: string; total: number; docType: string; pagos: { metodo: string; monto: number }[] } | null>(null);
+  const [successSale, setSuccessSale] = useState<{
+    id: string;
+    total: number;
+    docType: string;
+    pagos: { metodo: string; monto: number }[];
+    comprobanteNumero?: string;
+  } | null>(null);
 
   // Load backend products and categories if available
   useEffect(() => {
@@ -256,8 +262,27 @@ export default function VentasPage() {
       };
       const signature = JSON.stringify(payload);
       if (requestRef.current?.signature !== signature) requestRef.current = { signature, key: crypto.randomUUID() };
-      const result = await salesRequest<{ id: number; total: number }>('/ventas', { ...payload, claveIdempotencia: requestRef.current.key });
-      setSuccessSale({ id: String(result.id), total: Number(result.total), docType, pagos: payload.pagos });
+      const result = await salesRequest<{
+        id: number;
+        total: number;
+        comprobante?: {
+          numeroCompleto?: string;
+          serie?: string;
+          correlativo?: number;
+        };
+      }>('/ventas', { ...payload, claveIdempotencia: requestRef.current.key });
+
+      const compNum =
+        result.comprobante?.numeroCompleto ||
+        `${docType === 'FACTURA' ? 'F001' : docType === 'BOLETA' ? 'B001' : 'NV001'}-${String(result.comprobante?.correlativo || result.id).padStart(8, '0')}`;
+
+      setSuccessSale({
+        id: String(result.id),
+        total: Number(result.total),
+        docType,
+        pagos: payload.pagos,
+        comprobanteNumero: compNum,
+      });
       setCart([]); setPayments([newPayment()]); requestRef.current = null; setCatalogVersion(v => v + 1);
     } catch (error) {
       setSaleError(error instanceof Error ? error.message : 'No pudimos confirmar la venta. Conservamos el comprobante para reintentar.');
@@ -707,10 +732,18 @@ export default function VentasPage() {
             <CheckCircle2 size={56} color="#10b981" style={{ margin: '0 auto 12px' }} />
             <h2 className="pos-modal-title-lg">¡Venta Emitida con Éxito!</h2>
             <p className="pos-modal-sub">
-              Comprobante <strong>{successSale.docType} N° {successSale.id}</strong> registrado correctamente.
+              Comprobante <strong>{successSale.comprobanteNumero || `${successSale.docType} N° ${successSale.id}`}</strong> registrado correctamente.
             </p>
 
             <div className="pos-success-summary">
+              <div className="pos-success-row">
+                <span>Comprobante:</span>
+                <strong>{successSale.comprobanteNumero}</strong>
+              </div>
+              <div className="pos-success-row">
+                <span>N° Operación (Venta):</span>
+                <strong>#{successSale.id}</strong>
+              </div>
               <div className="pos-success-row">
                 <span>Cliente:</span>
                 <strong>{clientName || 'CLIENTES VARIOS'}</strong>
