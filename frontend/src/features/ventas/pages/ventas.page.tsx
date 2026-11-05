@@ -227,13 +227,19 @@ export default function VentasPage() {
               precio: Number(p.precioVenta) || 0,
               stock: Number(p.stockDisponible) || 0,
               unidad: p.unidadBase || 'UNIDAD',
-              iconType: p.nombre.toLowerCase().includes('laptop')
+              iconType: (p.nombre.toLowerCase().includes('laptop')
                 ? 'laptop'
                 : p.nombre.toLowerCase().includes('mouse')
                 ? 'mouse'
-                : 'computer',
+                : p.nombre.toLowerCase().includes('ssd') || p.nombre.toLowerCase().includes('disco')
+                ? 'ssd'
+                : p.nombre.toLowerCase().includes('impresora')
+                ? 'printer'
+                : 'computer') as ProductItem['iconType'],
             }));
-            setProducts((prev) => [...mapped, ...prev]);
+            const backendIds = new Set(mapped.map((m) => m.id));
+            const remainingDemos = INITIAL_DEMO_PRODUCTS.filter((d) => !backendIds.has(d.id));
+            setProducts([...mapped, ...remainingDemos]);
           }
         }
       } catch {
@@ -445,34 +451,303 @@ export default function VentasPage() {
   const pagaConNum = parseFloat(pagaCon) || 0;
   const vuelto = Math.max(0, pagaConNum - total);
 
-  // Render product icon
-  function renderIcon(type: ProductItem['iconType']) {
-    switch (type) {
-      case 'avatar':
-        return (
-          <div className="pos-card-avatar">
-            <FaUserTie size={50} color="#1e293b" />
-          </div>
-        );
-      case 'laptop':
-        return <FaLaptop size={68} color="#2563eb" />;
-      case 'computer':
-        return <FaComputer size={68} color="#475569" />;
-      case 'mouse':
-        return <FaComputerMouse size={64} color="#f59e0b" />;
-      case 'ssd':
-        return <FaHardDrive size={64} color="#6b7280" />;
-      case 'camera':
-        return (
-          <div style={{ position: 'relative', width: 72, height: 72, borderRadius: '50%', border: '2px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <FaCamera size={34} color="#334155" />
-            <div style={{ position: 'absolute', width: '80px', height: '2.5px', background: '#334155', transform: 'rotate(-45deg)' }} />
-          </div>
-        );
-      case 'printer':
-      default:
-        return <FaPrint size={64} color="#334155" />;
+  // Render product visual / icon with high fidelity
+  function renderIcon(type: ProductItem['iconType'], id?: number) {
+    if (type === 'avatar' || id === 1) {
+      return (
+        <div
+          className="pos-card-avatar"
+          style={{
+            background: '#86efac',
+            width: 82,
+            height: 82,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(134, 239, 172, 0.4)',
+          }}
+        >
+          <svg width="60" height="60" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="22" r="11" fill="#facc15" />
+            <path d="M22 20c0-6 4-11 10-11s10 5 10 11c-3-2-6-3-10-3s-7 1-10 3z" fill="#334155" />
+            <path d="M14 56c0-10 8-18 18-18s18 8 18 18z" fill="#1e293b" />
+            <path d="M28 38l4 9 4-9z" fill="#ffffff" />
+            <path d="M30.5 40l1.5 12 1.5-12-1.5-2z" fill="#ef4444" />
+          </svg>
+        </div>
+      );
     }
+
+    if (id === 2) {
+      // Dell Inspiron Gaming Laptop (Black with fiery red/dark screen wallpaper)
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div
+            style={{
+              width: 84,
+              height: 54,
+              background: '#0f172a',
+              borderRadius: '4px 4px 1px 1px',
+              border: '2px solid #1e293b',
+              padding: 2,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(135deg, #7f1d1d 0%, #1e1b4b 60%, #dc2626 100%)',
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)' }} />
+            </div>
+          </div>
+          <div
+            style={{
+              width: 96,
+              height: 5,
+              background: 'linear-gradient(180deg, #475569 0%, #1e293b 100%)',
+              borderRadius: '1px 1px 4px 4px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.25)',
+            }}
+          />
+        </div>
+      );
+    }
+
+    if (id === 3 || type === 'computer') {
+      // Dell Vostro Silver Laptop / PC (Silver body with sunset screen)
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div
+            style={{
+              width: 86,
+              height: 55,
+              background: '#334155',
+              borderRadius: '4px 4px 1px 1px',
+              border: '2px solid #475569',
+              padding: 2,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(135deg, #d97706 0%, #9333ea 50%, #2563eb 100%)',
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
+            </div>
+          </div>
+          <div
+            style={{
+              width: 98,
+              height: 6,
+              background: 'linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%)',
+              borderRadius: '1px 1px 4px 4px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            }}
+          />
+        </div>
+      );
+    }
+
+    if (id === 4 || type === 'laptop') {
+      // Lenovo Blue Laptop (Blue body with Windows 11 bloom wallpaper)
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div
+            style={{
+              width: 86,
+              height: 56,
+              background: '#1e3a8a',
+              borderRadius: '4px 4px 1px 1px',
+              border: '2px solid #1d4ed8',
+              padding: 2,
+              boxShadow: '0 2px 8px rgba(30, 58, 138, 0.3)',
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 50%, #1e40af 100%)',
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {/* Windows 11 Bloom logo */}
+              <div
+                style={{
+                  width: 14,
+                  height: 14,
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 1.5,
+                  padding: 1,
+                }}
+              >
+                <div style={{ background: '#ffffff', borderRadius: 0.5 }} />
+                <div style={{ background: '#ffffff', borderRadius: 0.5 }} />
+                <div style={{ background: '#ffffff', borderRadius: 0.5 }} />
+                <div style={{ background: '#ffffff', borderRadius: 0.5 }} />
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              width: 100,
+              height: 6,
+              background: 'linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%)',
+              borderRadius: '1px 1px 4px 4px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.25)',
+            }}
+          />
+        </div>
+      );
+    }
+
+    if (type === 'mouse' || id === 5) {
+      // Gaming Mouse RGB
+      return (
+        <div
+          style={{
+            position: 'relative',
+            width: 48,
+            height: 76,
+            background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
+            borderRadius: '24px 24px 20px 20px',
+            border: '2px solid #334155',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+          }}
+        >
+          {/* Scroll wheel */}
+          <div style={{ width: 5, height: 16, background: '#f59e0b', borderRadius: 2, marginTop: 8 }} />
+          {/* RGB body contour */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 12,
+              width: 32,
+              height: 2.5,
+              background: 'linear-gradient(90deg, #ef4444 0%, #10b981 50%, #3b82f6 100%)',
+              borderRadius: 2,
+              boxShadow: '0 0 6px rgba(16, 185, 129, 0.6)',
+            }}
+          />
+        </div>
+      );
+    }
+
+    if (type === 'ssd' || id === 6) {
+      // Kingston A400 SSD 960GB
+      return (
+        <div
+          style={{
+            width: 78,
+            height: 62,
+            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+            borderRadius: 5,
+            border: '1.5px solid #475569',
+            padding: '6px 8px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxShadow: '0 3px 8px rgba(0,0,0,0.25)',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 10, fontWeight: 900, color: '#ef4444', letterSpacing: '0.02em' }}>Kingston</span>
+            <span style={{ fontSize: 8, fontWeight: 800, color: '#94a3b8' }}>A400</span>
+          </div>
+          <div style={{ fontSize: 11, fontWeight: 900, color: '#ffffff', textAlign: 'center', letterSpacing: '0.04em' }}>
+            960GB SSD
+          </div>
+          <div style={{ height: 3, background: '#334155', borderRadius: 1.5 }} />
+        </div>
+      );
+    }
+
+    if (type === 'camera' || id === 7) {
+      // Camera crossed with slash ("No Image" placeholder)
+      return (
+        <div
+          style={{
+            position: 'relative',
+            width: 76,
+            height: 76,
+            borderRadius: '50%',
+            border: '2.5px solid #1e293b',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <FaCamera size={38} color="#1e293b" />
+          <div
+            style={{
+              position: 'absolute',
+              width: '88px',
+              height: '2.5px',
+              background: '#1e293b',
+              transform: 'rotate(-45deg)',
+            }}
+          />
+        </div>
+      );
+    }
+
+    // Default: Epson Printer
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div
+          style={{
+            width: 36,
+            height: 18,
+            background: '#ffffff',
+            border: '1.5px solid #cbd5e1',
+            borderRadius: '2px 2px 0 0',
+            borderBottom: 'none',
+          }}
+        />
+        <div
+          style={{
+            width: 84,
+            height: 42,
+            background: '#1e293b',
+            borderRadius: 4,
+            border: '1.5px solid #334155',
+            padding: 5,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxShadow: '0 3px 8px rgba(0,0,0,0.2)',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
+            <span style={{ fontSize: 7, fontWeight: 800, color: '#94a3b8' }}>EPSON</span>
+          </div>
+          <div style={{ width: '100%', height: 4, background: '#0f172a', borderRadius: 1 }} />
+        </div>
+      </div>
+    );
   }
 
   if (loading) {
@@ -597,7 +872,7 @@ export default function VentasPage() {
                     onClick={() => addToCart(p, qty)}
                     style={{ cursor: 'pointer' }}
                   >
-                    {renderIcon(p.iconType)}
+                    {renderIcon(p.iconType, p.id)}
                     <button
                       type="button"
                       className="pos-card-add-pill-btn"
