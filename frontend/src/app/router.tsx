@@ -5,16 +5,14 @@ import {
   LogOut,
   Bell,
   Menu,
+  X,
   Sun,
   Moon,
-  Calculator,
   UserRound,
   User as UserIcon,
   LayoutDashboard,
   ShoppingCart,
   Receipt,
-  Pill,
-  Boxes,
   Truck,
   Building2,
   BarChart3,
@@ -99,19 +97,23 @@ async function sessionLoader({ request }: LoaderFunctionArgs) {
 function RouteError() {
   const error = useRouteError();
   return (
-    <div style={{ padding: 40, textAlign: 'center', color: '#fff' }}>
-      <h1>No pudimos abrir tu sesión</h1>
-      <p>{error instanceof Error ? error.message : 'Vuelve a intentarlo en un momento.'}</p>
-      <button
-        style={{ padding: '8px 16px', marginTop: 16, cursor: 'pointer', borderRadius: 6 }}
-        onClick={() => window.location.reload()}
-      >
-        Volver a intentar
-      </button>
-      <br />
-      <a href="/login" style={{ color: '#3b82f6', marginTop: 12, display: 'inline-block' }}>
-        Ir al inicio de sesión
-      </a>
+    <div className="route-error-shell">
+      <div className="route-error-card">
+        <h1>No pudimos abrir tu sesión</h1>
+        <p>{error instanceof Error ? error.message : 'Vuelve a intentarlo en un momento.'}</p>
+        <div className="route-error-actions">
+          <button
+            type="button"
+            className="route-error-btn"
+            onClick={() => window.location.reload()}
+          >
+            Volver a intentar
+          </button>
+          <a href="/login" className="route-error-link">
+            Ir al inicio de sesión
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
@@ -124,22 +126,41 @@ function Layout() {
   const revalidator = useRevalidator();
   const [busy, setBusy] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [openSubmenus, setOpenSubmenus] = useState<Record<string, boolean>>(() => ({
     Inventario: true,
   }));
-  const [narrow, setNarrow] = useState(() => window.matchMedia('(max-width: 900px)').matches);
+  const [narrow, setNarrow] = useState(() => window.matchMedia('(max-width: 960px)').matches);
   useEffect(() => {
-    const media = window.matchMedia('(max-width: 900px)');
-    const update = () => { setNarrow(media.matches); };
+    const media = window.matchMedia('(max-width: 960px)');
+    const update = () => {
+      setNarrow(media.matches);
+      if (!media.matches) setMobileOpen(false);
+    };
     media.addEventListener('change', update);
     return () => media.removeEventListener('change', update);
   }, []);
   useEffect(() => {
-    if (!narrow || !collapsed) return;
-    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') { setCollapsed(false); document.querySelector<HTMLButtonElement>('.topbar-burger')?.focus(); } };
+    setMobileOpen(false);
+  }, [location.pathname]);
+  useEffect(() => {
+    if (!narrow || !mobileOpen) {
+      document.body.style.overflow = '';
+      return;
+    }
+    document.body.style.overflow = 'hidden';
+    const close = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileOpen(false);
+        document.querySelector<HTMLButtonElement>('.topbar-burger')?.focus();
+      }
+    };
     window.addEventListener('keydown', close);
-    return () => window.removeEventListener('keydown', close);
-  }, [narrow, collapsed]);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', close);
+    };
+  }, [narrow, mobileOpen]);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     try {
       const saved = localStorage.getItem('nova-theme');
@@ -204,14 +225,25 @@ function Layout() {
 
   return (
     <AlertsProvider key={user.id + ':' + user.rol} source={alertsRepository} refreshKey={location.key} onUnauthorized={alertsUnauthorized}>
-    <div className={`layout ${collapsed ? 'sidebar-mini' : ''}`}>
+    <div className={`layout ${!narrow && collapsed ? 'sidebar-mini' : ''} ${narrow && mobileOpen ? 'mobile-nav-open' : ''}`}>
       {/* TOPBAR */}
       <header className="erp-topbar">
-        <div className="topbar-brand">{collapsed ? 'NS' : 'NOVA SALUD'}</div>
+        <div className="topbar-brand">{!narrow && collapsed ? 'NS' : 'NOVA SALUD'}</div>
 
         <div className="topbar-left">
-          <button className="topbar-burger" aria-label="Mostrar u ocultar menú" aria-controls="workspace-sidebar" aria-expanded={narrow ? collapsed : !collapsed} title="Mostrar / ocultar menú" onClick={() => setCollapsed((v) => !v)}>
-            <Menu size={20} />
+          <button
+            type="button"
+            className="topbar-burger"
+            aria-label={narrow ? (mobileOpen ? 'Cerrar menú' : 'Abrir menú') : 'Mostrar u ocultar menú'}
+            aria-controls="workspace-sidebar"
+            aria-expanded={narrow ? mobileOpen : !collapsed}
+            title="Mostrar / ocultar menú"
+            onClick={() => {
+              if (narrow) setMobileOpen((v) => !v);
+              else setCollapsed((v) => !v);
+            }}
+          >
+            {narrow && mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <button
             type="button"
@@ -247,7 +279,14 @@ function Layout() {
 
       {/* SIDEBAR + MAIN */}
       <div className="erp-container">
-        <aside id="workspace-sidebar" className={`erp-sidebar ${collapsed ? 'is-collapsed' : ''}`}>
+        {narrow && mobileOpen && (
+          <div
+            className="sidebar-backdrop"
+            aria-hidden="true"
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+        <aside id="workspace-sidebar" className={`erp-sidebar ${!narrow && collapsed ? 'is-collapsed' : ''} ${narrow && mobileOpen ? 'is-mobile-open' : ''}`}>
           <div className="sidebar-profile">
             <div className="avatar-large">
               <UserRound className="avatar-icon" />
@@ -272,8 +311,16 @@ function Layout() {
                     <button
                       type="button"
                       className={`nav-group-header ${isGroupActive ? 'has-active-child' : ''}`}
-                      onClick={() => setOpenSubmenus((prev) => ({ ...prev, [entry.label]: !isOpen }))}
-                      aria-expanded={isOpen}
+                      title={entry.label}
+                      onClick={() => {
+                        if (!narrow && collapsed) {
+                          setCollapsed(false);
+                          setOpenSubmenus((prev) => ({ ...prev, [entry.label]: true }));
+                        } else {
+                          setOpenSubmenus((prev) => ({ ...prev, [entry.label]: !isOpen }));
+                        }
+                      }}
+                      aria-expanded={(!narrow && collapsed) ? false : isOpen}
                     >
                       <div className="nav-group-left">
                         <Icon size={16} strokeWidth={2} />
@@ -281,7 +328,7 @@ function Layout() {
                       </div>
                       <ChevronDown size={14} className={`nav-group-arrow ${isOpen ? 'is-rotated' : ''}`} />
                     </button>
-                    {isOpen && (
+                    {isOpen && !(!narrow && collapsed) && (
                       <div className="nav-submenu">
                         {entry.children.map((sub) => {
                           const SubIcon = sub.icon || List;
@@ -290,7 +337,7 @@ function Layout() {
                               key={sub.path}
                               to={sub.path}
                               className={({ isActive }) => `nav-sublink ${isActive ? 'active' : ''}`}
-                              onClick={() => { if (narrow) setCollapsed(false); }}
+                              onClick={() => { if (narrow) setMobileOpen(false); }}
                             >
                               <SubIcon size={14} strokeWidth={2} />
                               <span>{sub.label}</span>
@@ -309,7 +356,7 @@ function Layout() {
                   to={entry.path!}
                   end={entry.path === '/'}
                   className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                  onClick={() => { if (narrow) setCollapsed(false); }}
+                  onClick={() => { if (narrow) setMobileOpen(false); }}
                   aria-label={entry.label}
                   title={entry.label}
                 >

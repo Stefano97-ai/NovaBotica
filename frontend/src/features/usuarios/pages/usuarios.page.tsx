@@ -605,14 +605,14 @@ export default function UsuariosPage() {
 
                       return (
                         <tr key={user.id}>
-                          <td style={{ color: '#475569', fontWeight: 700 }}>{globalIdx}</td>
+                          <td className="usr-td-index">{globalIdx}</td>
                           <td>
                             <div className="usr-login-cell">
                               <div className={`usr-avatar-badge ${roleClass}`}>{initial}</div>
                               <span className="usr-username">{user.username}</span>
                             </div>
                           </td>
-                          <td style={{ color: '#0f172a', fontWeight: 700 }}>{user.nombre}</td>
+                          <td className="usr-td-fullname">{user.nombre}</td>
                           <td>
                             <span className={`usr-role-pill ${roleClass}`}>
                               {user.rolCodigo === 'ADMINISTRADOR' && <Shield size={11} />}
@@ -932,7 +932,7 @@ export default function UsuariosPage() {
 
                 {/* Vista previa de permisos del rol seleccionado */}
                 <div className="usr-role-card-preview">
-                  <strong style={{ color: '#1e293b' }}>Resumen de permisos: </strong>
+                  <strong className="usr-role-preview-title">Resumen de permisos: </strong>
                   {formRol === 'ADMINISTRADOR' && (
                     <span>Control total de ventas, compras, inventario, reportes y configuración de cuentas.</span>
                   )}
@@ -978,7 +978,7 @@ export default function UsuariosPage() {
 
                 <div className="usr-form-group">
                   <label>Estado de la Cuenta</label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, color: '#1e293b' }}>
+                  <label className="usr-active-checkbox-row">
                     <input
                       type="checkbox"
                       checked={formActivo}

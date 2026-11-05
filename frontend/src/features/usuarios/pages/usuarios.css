@@ -403,8 +403,19 @@
 
 .usr-table {
   width: 100%;
+  min-width: 780px;
   border-collapse: collapse;
   font-size: 11.5px;
+}
+
+.usr-td-index {
+  color: #475569;
+  font-weight: 700;
+}
+
+.usr-td-fullname {
+  color: #0f172a;
+  font-weight: 700;
 }
 
 .usr-table th {
@@ -689,6 +700,7 @@
 
 .usr-matrix-table {
   width: 100%;
+  min-width: 640px;
   border-collapse: collapse;
   font-size: 12px;
 }
@@ -837,12 +849,12 @@
   box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.25);
   width: 100%;
   max-width: 520px;
-  padding: 24px;
+  padding: clamp(18px, 4vw, 24px);
   animation: usrSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   gap: 18px;
-  max-height: 90vh;
+  max-height: calc(100dvh - 32px);
   overflow-y: auto;
 }
 
@@ -976,4 +988,246 @@
   background: #5e35b1;
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(111, 66, 193, 0.38);
+}
+
+.usr-role-preview-title {
+  color: #1e293b;
+}
+
+.usr-active-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e293b;
+  text-transform: none !important;
+}
+
+/* ================= 9. DARK THEME OVERRIDES ================= */
+[data-theme='dark'] .usr-stat-card,
+[data-theme='dark'] .usr-card {
+  background: #1f1f1f;
+  border-color: #2e2e2e;
+}
+
+[data-theme='dark'] .usr-stat-val,
+[data-theme='dark'] .usr-title,
+[data-theme='dark'] .usr-username,
+[data-theme='dark'] .usr-td-fullname,
+[data-theme='dark'] .usr-matrix-table td.mod-desc,
+[data-theme='dark'] .usr-modal-title,
+[data-theme='dark'] .usr-role-preview-title,
+[data-theme='dark'] .usr-active-checkbox-row {
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .usr-stat-lbl,
+[data-theme='dark'] .usr-control-item,
+[data-theme='dark'] .usr-td-index,
+[data-theme='dark'] .usr-matrix-table td.mod-desc small,
+[data-theme='dark'] .usr-form-group label {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .usr-tabs {
+  background: #151515;
+}
+
+[data-theme='dark'] .usr-tab-btn {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .usr-tab-btn.active {
+  background: #282828;
+  color: #ffffff;
+}
+
+[data-theme='dark'] .usr-controls-row,
+[data-theme='dark'] .usr-matrix-wrap,
+[data-theme='dark'] .usr-modal-header,
+[data-theme='dark'] .usr-modal-actions {
+  border-color: #2f2f2f;
+}
+
+[data-theme='dark'] .usr-select,
+[data-theme='dark'] .usr-search-input,
+[data-theme='dark'] .usr-input {
+  background: #171717;
+  border-color: #333333;
+  color: #f1f1f1;
+}
+
+[data-theme='dark'] .usr-table th,
+[data-theme='dark'] .usr-matrix-table th {
+  background: #191919;
+  color: #94a3b8;
+  border-bottom-color: #333333;
+}
+
+[data-theme='dark'] .usr-table td,
+[data-theme='dark'] .usr-matrix-table td {
+  color: #e2e8f0;
+  border-bottom-color: #262626;
+}
+
+[data-theme='dark'] .usr-table tr:hover td {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='dark'] .usr-perm-tag {
+  background: #262626;
+  border-color: #383838;
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .perm-badge-no {
+  background: #262626;
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .usr-modal {
+  background: #1f1f1f;
+  border: 1px solid #333333;
+}
+
+[data-theme='dark'] .usr-role-card-preview {
+  background: #171717;
+  border-color: #2f2f2f;
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .btn-usr-cancel,
+[data-theme='dark'] .usr-btn-nav:not(.active) {
+  background: #262626;
+  border-color: #3a3a3a;
+  color: #e2e8f0;
+}
+
+/* ================= 10. RESPONSIVE ================= */
+@media (max-width: 1200px) {
+  .usr-stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .usr-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .usr-bar {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .usr-actions {
+    width: 100%;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .usr-dash-btn {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 135px;
+    justify-content: center;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.05);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    text-align: center;
+  }
+
+  [data-theme='dark'] .usr-dash-btn {
+    background: #27272a;
+    border-color: #3f3f46;
+  }
+
+  .usr-dash-btn::before,
+  .usr-dash-btn::after {
+    display: none;
+  }
+
+  .usr-card {
+    padding: 16px 14px 20px;
+    border-radius: 16px;
+  }
+
+  .usr-title-wrap {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .usr-tabs {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .usr-tab-btn {
+    flex: 1;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  .btn-new-user {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .usr-search-wrap {
+    flex: 1 1 100%;
+  }
+
+  .usr-search-input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .usr-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .usr-dash-btn {
+    flex: 1 1 100%;
+  }
+
+  .usr-filters-group {
+    width: 100%;
+  }
+
+  .usr-control-item {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+
+  .usr-control-item .usr-select {
+    flex: 1;
+    max-width: 200px;
+  }
+
+  .usr-modal-actions {
+    flex-wrap: wrap;
+  }
+
+  .btn-usr-cancel,
+  .btn-usr-submit {
+    flex: 1 1 130px;
+    text-align: center;
+  }
+
+  .usr-footer-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .usr-page-btns {
+    width: 100%;
+    flex-wrap: wrap;
+  }
 }

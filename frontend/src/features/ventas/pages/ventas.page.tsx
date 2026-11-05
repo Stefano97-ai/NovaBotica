@@ -272,6 +272,10 @@ export default function VentasPage() {
   const pagaConNum = parseFloat(pagaCon) || 0;
   const cashDue = paidCents(payments.filter(row => row.metodo === 'Efectivo')) / 100;
   const vuelto = Math.max(0, pagaConNum - cashDue);
+  const cartItemsCount = cart.reduce((acc, item) => acc + item.cantidad, 0);
+  const scrollToCheckout = () => {
+    document.getElementById('pos-checkout')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // Render product visual / icon with high fidelity
   if (loading) {
@@ -315,6 +319,17 @@ export default function VentasPage() {
           </button>
         </div>
 
+        <div className="pos-top-right">
+          <button
+            type="button"
+            className="pos-top-cart-btn"
+            onClick={scrollToCheckout}
+            title="Ir al comprobante"
+          >
+            <FaCartShopping size={14} />
+            <span>{cartItemsCount}</span>
+          </button>
+        </div>
       </header>
 
       {/* ================= 2. POS BODY ================= */}
@@ -442,7 +457,7 @@ export default function VentasPage() {
         </section>
 
         {/* ================= RIGHT COLUMN: CHECKOUT PANEL ================= */}
-        <aside className="pos-checkout-pane" aria-label="Cliente y comprobante de venta">
+        <aside id="pos-checkout" className="pos-checkout-pane" aria-label="Cliente y comprobante de venta">
           <fieldset disabled={saving} className="pos-checkout-fields">
           {/* CLIENTE Section */}
           <div className="pos-client-block">
@@ -618,76 +633,48 @@ export default function VentasPage() {
         </aside>
       </div>
 
+      {cart.length > 0 && (
+        <div className="pos-mobile-cart-bar">
+          <div className="pos-mobile-cart-info">
+            <span className="pos-mobile-cart-count">{cartItemsCount} {cartItemsCount === 1 ? 'ítem' : 'ítems'}</span>
+            <strong className="pos-mobile-cart-total">S/ {total.toFixed(2)}</strong>
+          </div>
+          <button type="button" className="pos-mobile-cart-cta" onClick={scrollToCheckout}>
+            <FaCartShopping size={14} /> Ver comprobante / Cobrar
+          </button>
+        </div>
+      )}
+
       {serialItem && <SerialPicker productId={serialItem.productoId} name={serialItem.nombre} quantity={serialItem.cantidad} initial={serialItem.series} load={loadSerials}
         onClose={() => setSerialProductId(null)} onSave={selected => { setCart(rows => rows.map(row => row.productoId === serialItem.productoId ? { ...row, series: selected } : row)); setSerialProductId(null); }} />}
 
       {/* ================= VUELTO / CAMBIO MODAL ================= */}
       {showVueltoModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-          onClick={() => setShowVueltoModal(false)}
-        >
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: 12,
-              padding: 24,
-              width: 340,
-              boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-              color: '#1e293b',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 14px', fontSize: 16, fontWeight: 800 }}>Calculadora de Vuelto</h3>
-            <p style={{ margin: '0 0 10px', fontSize: 13, color: '#64748b' }}>
+        <div className="pos-modal-backdrop" onClick={() => setShowVueltoModal(false)}>
+          <div className="pos-modal-card pos-modal-sm" onClick={(e) => e.stopPropagation()}>
+            <h3 className="pos-modal-title">Calculadora de Vuelto</h3>
+            <p className="pos-modal-sub">
               Efectivo a cobrar: <strong>S/ {cashDue.toFixed(2)}</strong>
             </p>
 
-            <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4 }}>
+            <label className="pos-modal-label">
               Cliente paga con (S/):
             </label>
             <input
               type="number"
-              style={{
-                width: '100%',
-                height: 40,
-                border: '1px solid #cbd5e1',
-                borderRadius: 8,
-                padding: '0 12px',
-                fontSize: 16,
-                fontWeight: 700,
-                marginBottom: 12,
-                outline: 'none',
-              }}
+              className="pos-vuelto-input"
               value={pagaCon}
               onChange={(e) => setPagaCon(e.target.value)}
               placeholder="0.00"
               autoFocus
             />
 
-            <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+            <div className="pos-vuelto-bills">
               {[10, 20, 50, 100, 200].map((billete) => (
                 <button
                   key={billete}
                   type="button"
-                  style={{
-                    flex: 1,
-                    padding: '6px 0',
-                    background: '#f1f5f9',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: 6,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
+                  className="pos-vuelto-bill-btn"
                   onClick={() => setPagaCon(String(billete))}
                 >
                   S/ {billete}
@@ -695,36 +682,16 @@ export default function VentasPage() {
               ))}
             </div>
 
-            <div
-              style={{
-                background: vuelto > 0 ? '#ecfdf5' : '#f8fafc',
-                border: `1px solid ${vuelto > 0 ? '#a7f3d0' : '#e2e8f0'}`,
-                borderRadius: 8,
-                padding: '12px 16px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 16,
-              }}
-            >
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#334155' }}>Vuelto a entregar:</span>
-              <span style={{ fontSize: 20, fontWeight: 800, color: vuelto > 0 ? '#059669' : '#0f172a' }}>
+            <div className={`pos-vuelto-box ${vuelto > 0 ? 'has-change' : ''}`}>
+              <span className="pos-vuelto-box-label">Vuelto a entregar:</span>
+              <span className="pos-vuelto-box-val">
                 S/ {vuelto.toFixed(2)}
               </span>
             </div>
 
             <button
               type="button"
-              style={{
-                width: '100%',
-                height: 38,
-                background: '#5a52f3',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 8,
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
+              className="pos-modal-primary-btn"
               onClick={() => setShowVueltoModal(false)}
             >
               Listo
@@ -735,72 +702,33 @@ export default function VentasPage() {
 
       {/* ================= SUCCESS SALE MODAL ================= */}
       {successSale && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: 14,
-              padding: 26,
-              width: 380,
-              textAlign: 'center',
-              boxShadow: '0 15px 35px rgba(0,0,0,0.25)',
-              color: '#0f172a',
-            }}
-          >
+        <div className="pos-modal-backdrop">
+          <div className="pos-modal-card pos-modal-md pos-modal-center">
             <CheckCircle2 size={56} color="#10b981" style={{ margin: '0 auto 12px' }} />
-            <h2 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 800 }}>¡Venta Emitida con Éxito!</h2>
-            <p style={{ margin: '0 0 16px', fontSize: 12, color: '#64748b' }}>
+            <h2 className="pos-modal-title-lg">¡Venta Emitida con Éxito!</h2>
+            <p className="pos-modal-sub">
               Comprobante <strong>{successSale.docType} N° {successSale.id}</strong> registrado correctamente.
             </p>
 
-            <div
-              style={{
-                background: '#f8fafc',
-                borderRadius: 8,
-                padding: 12,
-                fontSize: 13,
-                marginBottom: 18,
-                textAlign: 'left',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <span style={{ color: '#64748b' }}>Cliente:</span>
+            <div className="pos-success-summary">
+              <div className="pos-success-row">
+                <span>Cliente:</span>
                 <strong>{clientName || 'CLIENTES VARIOS'}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <span style={{ color: '#64748b' }}>Método:</span>
+              <div className="pos-success-row">
+                <span>Método:</span>
                 <strong>{successSale.pagos.map(p => `${p.metodo}: S/ ${p.monto.toFixed(2)}`).join(' · ')}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Total cobrado:</span>
-                <strong style={{ color: '#2563eb' }}>S/ {successSale.total.toFixed(2)}</strong>
+              <div className="pos-success-row">
+                <span>Total cobrado:</span>
+                <strong className="pos-success-total">S/ {successSale.total.toFixed(2)}</strong>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div className="pos-success-actions">
               <button
                 type="button"
-                style={{
-                  flex: 1,
-                  height: 38,
-                  background: '#0284c7',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  fontWeight: 700,
-                  fontSize: 12,
-                  cursor: 'pointer',
-                }}
+                className="pos-print-btn"
                 onClick={() => {
                   window.print();
                 }}
@@ -809,17 +737,7 @@ export default function VentasPage() {
               </button>
               <button
                 type="button"
-                style={{
-                  flex: 1,
-                  height: 38,
-                  background: '#1e1b4b',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  fontWeight: 700,
-                  fontSize: 12,
-                  cursor: 'pointer',
-                }}
+                className="pos-new-sale-btn"
                 onClick={() => setSuccessSale(null)}
               >
                 Nueva Venta

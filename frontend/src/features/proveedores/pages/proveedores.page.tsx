@@ -580,7 +580,7 @@ export default function ProveedoresPage() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 12 }}>
+                <div className="prov-form-row-2">
                   <div className="prov-form-group">
                     <label>Correo Electrónico</label>
                     <input

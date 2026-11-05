@@ -524,7 +524,7 @@ export default function ComprasPage() {
           <div className="compras-left-col">
             <div className="form-field-block">
               <label>Método de Pago:</label>
-              <div className="input-with-icon" style={{ width: 300 }}>
+              <div className="input-with-icon compras-pay-method-box">
                 <select
                   value={metodoPago}
                   onChange={(e) => setMetodoPago(e.target.value)}
@@ -660,20 +660,20 @@ export default function ComprasPage() {
                   className="catalog-item"
                   onClick={() => addItemFromCatalog(med)}
                 >
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 12.5, color: '#0f172a' }}>
+                  <div className="catalog-item-info">
+                    <div className="catalog-item-name">
                       {med.nombre}
                     </div>
-                    <div style={{ fontSize: 11, color: '#64748b' }}>
+                    <div className="catalog-item-meta">
                       Código: {med.codigo} · {med.unidad}
                       {med.requiereSerie && ' · Serie única por unidad'}
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 800, fontSize: 13, color: '#1f6f50' }}>
+                  <div className="catalog-item-price-col">
+                    <div className="catalog-item-price">
                       S/ {med.costoDefecto.toFixed(2)}
                     </div>
-                    <span style={{ fontSize: 10, color: '#4f46e5', fontWeight: 600 }}>
+                    <span className="catalog-item-add">
                       + Agregar
                     </span>
                   </div>
@@ -721,7 +721,7 @@ export default function ComprasPage() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="compras-form-row-2">
                   <div className="form-field-block">
                     <label htmlFor="purchase-new-code">Código Interno</label>
                     <input

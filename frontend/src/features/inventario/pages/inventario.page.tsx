@@ -663,15 +663,15 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                       <tr key={item.id}>
                         <td className="inv-td-num">{globalIdx}</td>
                         <td className="inv-td-product">
-                          <div style={{ fontWeight: 600, color: '#1e293b' }}>{item.producto}</div>
+                          <div className="inv-product-name">{item.producto}</div>
                         </td>
-                        <td className="inv-td-mov" style={{ color: '#475569', fontWeight: 600 }}>
+                        <td className="inv-td-mov">
                           {item.movimiento}
                         </td>
-                        <td className="inv-td-date" style={{ color: '#64748b' }}>
+                        <td className="inv-td-date">
                           {item.fecha}
                         </td>
-                        <td className="inv-td-qty" style={{ textAlign: 'right', paddingRight: 24, fontWeight: 700 }}>
+                        <td className="inv-td-qty">
                           {item.cantidad}
                         </td>
                       </tr>
@@ -896,18 +896,18 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                           </span>
                         </td>
                         <td>
-                          <div style={{ fontWeight: 700, color: '#1e293b' }}>{p.nombre}</div>
-                          <span style={{ fontSize: 10, color: '#64748b' }}>
+                          <div className="prod-name-primary">{p.nombre}</div>
+                          <span className="prod-name-sub">
                             Mínimo sugerido: {p.stockMinimo} {p.unidadBase}s
                           </span>
                         </td>
                         <td>
                           <span className="prod-cat-badge">{p.categoriaNombre}</span>
                         </td>
-                        <td className="kardex-td-center" style={{ fontWeight: 600, color: '#475569' }}>
+                        <td className="kardex-td-center prod-unit-cell">
                           {p.unidadBase}
                         </td>
-                        <td className="kardex-td-right" style={{ fontWeight: 800, color: '#2563eb' }}>
+                        <td className="kardex-td-right prod-price-cell">
                           S/ {p.precioVenta.toFixed(2)}
                         </td>
                         <td className="kardex-td-center">
@@ -1050,7 +1050,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                 </select>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="inv-form-row-2">
                 <div className="inv-form-group">
                   <label>Tipo de Ajuste</label>
                   <select value={ajusteTipo} onChange={(e) => setAjusteTipo(e.target.value as any)}>
@@ -1071,7 +1071,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="inv-form-row-2">
                 <div className="inv-form-group">
                   <label>Lote</label>
                   <input
@@ -1223,7 +1223,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                   setProductError('');setFormImage(file);
                 }}/>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 12 }}>
+              <div className="inv-form-row-2">
                 <div className="inv-form-group">
                   <label>Código de Barras / SKU *</label>
                   <input
@@ -1261,7 +1261,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="inv-form-row-2">
                 <div className="inv-form-group">
                   <label>Unidad Base *</label>
                   <select
@@ -1290,7 +1290,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="inv-form-row-2">
                 <div className="inv-form-group">
                   <label>Stock Mínimo de Alerta</label>
                   <input

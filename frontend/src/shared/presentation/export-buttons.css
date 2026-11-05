@@ -1,4 +1,4 @@
-.nova-export-bar{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px auto;font-size:12px}
+.nova-export-bar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin:6px auto;font-size:12px;max-width:100%;text-align:center}
 .nova-export-dock{display:inline-flex;align-items:center;background:#262626;border-radius:8px;padding:5px 8px;gap:8px;box-shadow:0 4px 12px #0003}
 .nova-export-btn{width:32px;height:32px;border-radius:6px;border:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;cursor:pointer}
 .nova-export-pdf{background:#dc2626}.nova-export-excel{background:#16a34a}

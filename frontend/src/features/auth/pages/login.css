@@ -352,21 +352,138 @@
 }
 
 /* ---------- RESPONSIVE ---------- */
-@media (max-width: 960px) {
+@media (max-width: 1024px) {
   .lg-page {
     grid-template-columns: 1fr;
+    min-height: 100dvh;
+    background:
+      linear-gradient(155deg, rgba(8, 18, 14, 0.62) 0%, rgba(12, 26, 20, 0.48) 50%, rgba(8, 18, 14, 0.68) 100%),
+      url('/images/pharmacy-background.png') center / cover no-repeat scroll;
   }
+
   .lg-left {
-    padding: 36px 24px 8px;
-    gap: 18px;
+    padding: clamp(28px, 5vw, 44px) clamp(18px, 5vw, 40px) 8px;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
   }
-  .lg-lead,
-  .lg-info,
-  .lg-support {
-    display: none;
+
+  .lg-headline {
+    font-size: clamp(21px, 4.5vw, 30px);
+    max-width: 580px;
   }
+
+  .lg-lead {
+    max-width: 520px;
+  }
+
+  .lg-info {
+    text-align: left;
+    max-width: 460px;
+  }
+
+  .lg-help {
+    text-align: left;
+    max-width: 440px;
+  }
+
   .lg-right {
     background: none;
-    padding: 20px 16px 40px;
+    padding: 16px clamp(14px, 4vw, 32px) calc(36px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .lg-card {
+    width: min(420px, 100%);
+    padding: clamp(28px, 6vw, 40px) clamp(20px, 5.5vw, 36px) clamp(24px, 5vw, 32px);
+  }
+}
+
+@media (max-width: 640px) {
+  .lg-lead,
+  .lg-info {
+    display: none;
+  }
+
+  .lg-left {
+    padding-top: max(24px, env(safe-area-inset-top, 24px));
+    gap: 12px;
+  }
+
+  .lg-logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+  }
+
+  .lg-brand {
+    gap: 12px;
+  }
+
+  .lg-brand-name {
+    font-size: 14.5px;
+  }
+
+  .lg-headline {
+    font-size: clamp(19px, 5.6vw, 24px);
+  }
+
+  .lg-support {
+    padding: 9px 18px;
+    font-size: 11.5px;
+  }
+
+  .lg-card {
+    border-radius: 22px;
+  }
+
+  .lg-card h1 {
+    font-size: 22px;
+  }
+
+  .lg-sub {
+    margin-bottom: 22px;
+  }
+}
+
+@media (max-width: 360px) {
+  .lg-card {
+    padding: 24px 16px 20px;
+    border-radius: 18px;
+  }
+
+  .lg-field input,
+  .lg-submit {
+    height: 46px;
+  }
+}
+
+@media (max-height: 620px) and (orientation: landscape) {
+  .lg-page {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+
+  .lg-left {
+    padding: 20px 24px;
+    align-items: flex-start;
+    text-align: left;
+    gap: 12px;
+  }
+
+  .lg-lead,
+  .lg-info {
+    display: none;
+  }
+
+  .lg-right {
+    padding: 16px 20px;
+  }
+
+  .lg-card {
+    padding: 22px 22px 18px;
+  }
+
+  .lg-sub {
+    margin-bottom: 14px;
   }
 }

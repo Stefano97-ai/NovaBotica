@@ -212,7 +212,7 @@
 /* ================= 4. KPI RIBBON CARDS (3D REALISTIC) ================= */
 .rep-kpi-ribbon {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -566,6 +566,7 @@
 
 .rep-table {
   width: 100%;
+  min-width: 720px;
   border-collapse: collapse;
   font-size: 11.5px;
 }
@@ -796,6 +797,106 @@
 
 [data-theme='dark'] .rep-table tr:hover td {
   background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme='dark'] .rep-quick-btn:not(.active),
+[data-theme='dark'] .rep-page-btn:not(.active) {
+  background: #262626;
+  border-color: #3f3f46;
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .rep-method-info {
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .rep-progress-track {
+  background: #1a1a1a;
+}
+
+@media (max-width: 1100px) {
+  .rep-kpi-ribbon {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .rep-bar {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .rep-actions {
+    width: 100%;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .rep-dash-btn {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 135px;
+    justify-content: center;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.05);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    text-align: center;
+  }
+
+  [data-theme='dark'] .rep-dash-btn {
+    background: #27272a;
+    border-color: #3f3f46;
+  }
+
+  .rep-dash-btn::before,
+  .rep-dash-btn::after {
+    display: none;
+  }
+
+  .rep-card {
+    padding: 16px 14px 20px;
+    border-radius: 16px;
+  }
+
+  .rep-filters-box {
+    padding: 12px;
+  }
+
+  .rep-date-group,
+  .rep-select {
+    flex: 1 1 150px;
+    min-width: 0;
+  }
+
+  .rep-search-input {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .rep-kpi-ribbon {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .rep-dash-btn {
+    flex: 1 1 100%;
+  }
+
+  .rep-quick-dates {
+    width: 100%;
+  }
+
+  .rep-quick-btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .rep-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 [data-theme='dark'] .rep-page-btn {

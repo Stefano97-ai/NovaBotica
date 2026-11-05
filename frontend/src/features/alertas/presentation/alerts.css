@@ -132,13 +132,18 @@
 .alerts-bell :focus-visible, .alerts-page :focus-visible { outline: 2px solid var(--alert-accent); outline-offset: 3px; }
 .alerts-popover button:hover:not(:disabled), .alerts-page button:hover:not(:disabled) { color: var(--alert-accent); }
 @media (max-width: 600px) {
-  .alerts-popover { right: 12px; }
+  .alerts-popover { left: 10px; right: 10px; width: auto; max-height: calc(100dvh - 70px); }
+  .alerts-popover-heading, .alerts-popover-subtitle, .alerts-popover-footer { padding-inline: 14px; }
   .alerts-popover-footer { flex-wrap: wrap; }
-  .alerts-page-heading { padding: 10px 16px; }
-  .alerts-page-panel { padding: 18px 16px; }
+  .alerts-page-heading { padding: 10px 14px; }
+  .alerts-page-panel { padding: 16px 14px; border-radius: 16px; }
   .alerts-page-actions { width: 100%; }
-  .alerts-page-actions button { flex: 1; min-height: 38px; }
-  .alerts-filters label { flex: 1; min-width: 140px; }
+  .alerts-page-actions button { flex: 1 1 calc(50% - 4px); min-height: 38px; }
+  .alerts-filters label { flex: 1 1 100%; min-width: 0; }
   .alerts-filters select { width: 100%; min-width: 0; }
   .alert-item { padding: 14px 12px; gap: 8px; }
+  .alert-item-heading { flex-wrap: wrap; gap: 6px; }
+  .alert-item-actions { flex-wrap: wrap; gap: 10px 14px; }
+  .alerts-pagination span { width: 100%; margin-right: 0; }
+  .alerts-pagination button { flex: 1 1 calc(50% - 6px); min-height: 36px; }
 }

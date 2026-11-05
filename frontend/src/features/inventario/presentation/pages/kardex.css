@@ -31,5 +31,13 @@
 [data-theme='dark'] .kardex-warning { background:#342a18; color:#fde68a; border-color:#8b7038; }
 .kardex-real :focus-visible { outline:2px solid #6366f1; outline-offset:3px; }
 @media(max-width:1000px) { .kardex-filter-form { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media(max-width:520px) { .kardex-filter-form { grid-template-columns:minmax(0,1fr); } .kardex-product-search { grid-column:auto; } .kardex-real .inv-header-row { flex-wrap:wrap; gap:12px; } }
+@media(max-width:560px) {
+  .kardex-filter-form { grid-template-columns:minmax(0,1fr); }
+  .kardex-product-search { grid-column:auto; }
+  .kardex-real .inv-header-row { flex-wrap:wrap; gap:12px; }
+  .kardex-filter-actions .kardex-control { flex:1 1 calc(50% - 4px); }
+  .kardex-toolbar p { width:100%; margin-bottom:4px; }
+  .kardex-pagination { justify-content:flex-start; }
+  .kardex-pagination label { width:100%; margin-right:0; justify-content:space-between; }
+}
 @media print { .kardex-filter-form,.kardex-toolbar,.kardex-pagination,.kardex-real .inv-header-row button { display:none; } .kardex-real .kardex-table-wrap { overflow:visible; } .kardex-real .kardex-table { min-width:0; } }

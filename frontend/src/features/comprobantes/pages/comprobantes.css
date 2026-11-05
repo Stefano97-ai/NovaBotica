@@ -166,6 +166,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 12px;
 }
@@ -176,6 +178,7 @@
   color: #0f172a;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -230,6 +233,7 @@
 
 .consult-actions-bar {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   padding-top: 10px;
   border-top: 1px solid #e2e8f0;
@@ -294,26 +298,53 @@
   border-color: #2a2a2a;
 }
 
+[data-theme='dark'] .consult-result-header,
+[data-theme='dark'] .consult-actions-bar {
+  border-color: #2a2a2a;
+}
+
+[data-theme='dark'] .consult-act-download {
+  background: #222222;
+  border-color: #3a3a3a;
+  color: #e2e8f0;
+}
+
 @media (max-width: 900px) {
   .consult-form {
     grid-template-columns: 1fr 1fr;
   }
   .consult-submit-btn {
     grid-column: span 2;
+    justify-content: center;
   }
   .consult-grid-info {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 550px) {
+@media (max-width: 560px) {
+  .consult-card {
+    padding: 18px 14px 20px;
+    border-radius: 16px;
+  }
+  .consult-result-card {
+    padding: 16px 14px;
+  }
   .consult-form {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   .consult-submit-btn {
     grid-column: span 1;
+    width: 100%;
   }
   .consult-grid-info {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .consult-act-btn {
+    flex: 1 1 calc(50% - 5px);
+    justify-content: center;
+    min-height: 38px;
   }
 }
