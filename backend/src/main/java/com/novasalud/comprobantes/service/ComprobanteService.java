@@ -42,6 +42,23 @@ public class ComprobanteService {
     }
 
     @Transactional(readOnly = true)
+    public List<ComprobanteResponseDto> buscar(String serie, Long correlativo) {
+        return comprobanteRepository.findAllByOrderByCreadoEnDesc().stream()
+            .filter(c -> {
+                if (c.getSerieComprobante() == null || c.getSerieComprobante().getSerie() == null) return false;
+                if (serie != null && !serie.isBlank() && !c.getSerieComprobante().getSerie().equalsIgnoreCase(serie.trim())) {
+                    return false;
+                }
+                if (correlativo != null && (c.getCorrelativo() == null || !c.getCorrelativo().equals(correlativo))) {
+                    return false;
+                }
+                return true;
+            })
+            .map(this::toDto)
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
     public ComprobanteResponseDto obtenerPorId(Long id) {
         return comprobanteRepository.findById(id)
             .map(this::toDto)
@@ -90,11 +107,19 @@ public class ComprobanteService {
         doc.put("correlativo", nuevoCorrelativo);
         doc.put("numeroCompleto", String.format("%s-%08d", serie.getSerie(), nuevoCorrelativo));
         doc.put("fecha", venta.getFecha().toString());
-        doc.put("cliente", venta.getCliente() != null ? Map.of(
-            "tipoDocumento", venta.getCliente().getTipoDocumento(),
-            "numeroDocumento", venta.getCliente().getNumeroDocumento(),
-            "nombre", venta.getCliente().getNombre()
-        ) : Map.of("nombre", "CLIENTES VARIOS"));
+        String tipoDoc = "DNI";
+        String numDoc = "00000000";
+        String nomCliente = "CLIENTES VARIOS";
+        if (venta.getCliente() != null) {
+            tipoDoc = venta.getCliente().getTipoDocumento() != null ? venta.getCliente().getTipoDocumento() : "DNI";
+            numDoc = venta.getCliente().getNumeroDocumento() != null ? venta.getCliente().getNumeroDocumento() : "00000000";
+            nomCliente = venta.getCliente().getNombre() != null ? venta.getCliente().getNombre() : "CLIENTES VARIOS";
+        }
+        doc.put("cliente", Map.of(
+            "tipoDocumento", tipoDoc,
+            "numeroDocumento", numDoc,
+            "nombre", nomCliente
+        ));
         doc.put("vendedor", venta.getUsuario().getNombre());
         doc.put("subtotal", venta.getSubtotal());
         doc.put("impuesto", venta.getImpuesto());
@@ -181,9 +206,31 @@ public class ComprobanteService {
 
     private ComprobanteResponseDto toDto(Comprobante c) {
         String num = String.format("%s-%08d", c.getSerieComprobante().getSerie(), c.getCorrelativo());
+        String clienteTipoDoc = "DNI";
+        String clienteNumeroDoc = "00000000";
+        String clienteNombre = "CLIENTES VARIOS";
+        Double total = 0.0;
+
+        if (c.getVenta() != null) {
+            if (c.getVenta().getTotal() != null) {
+                total = c.getVenta().getTotal().doubleValue();
+            }
+            if (c.getVenta().getCliente() != null) {
+                if (c.getVenta().getCliente().getTipoDocumento() != null) {
+                    clienteTipoDoc = c.getVenta().getCliente().getTipoDocumento();
+                }
+                if (c.getVenta().getCliente().getNumeroDocumento() != null) {
+                    clienteNumeroDoc = c.getVenta().getCliente().getNumeroDocumento();
+                }
+                if (c.getVenta().getCliente().getNombre() != null) {
+                    clienteNombre = c.getVenta().getCliente().getNombre();
+                }
+            }
+        }
+
         return new ComprobanteResponseDto(
             c.getId(),
-            c.getVenta().getId(),
+            c.getVenta() != null ? c.getVenta().getId() : null,
             c.getSerieComprobante().getTipoComprobante().getCodigo(),
             c.getSerieComprobante().getTipoComprobante().getNombre(),
             c.getSerieComprobante().getSerie(),
@@ -191,6 +238,10 @@ public class ComprobanteService {
             num,
             c.getEstado(),
             c.isSimulado(),
+            clienteTipoDoc,
+            clienteNumeroDoc,
+            clienteNombre,
+            total,
             c.getDatosDocumento(),
             c.getCreadoEn()
         );

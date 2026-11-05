@@ -42,58 +42,104 @@ export default function ComprobantesPage() {
 
   async function handleConsultar(e: React.FormEvent) {
     e.preventDefault();
+    const corrTrimmed = correlativo.trim();
+    if (!corrTrimmed) {
+      setSinResultados(true);
+      setResultado(null);
+      return;
+    }
+
+    const corrNum = parseInt(corrTrimmed, 10);
+    if (isNaN(corrNum) || corrNum <= 0) {
+      setSinResultados(true);
+      setResultado(null);
+      return;
+    }
+
     setBuscando(true);
     setSinResultados(false);
     setResultado(null);
 
-    const corrNum = parseInt(correlativo.trim(), 10) || 1;
+    const serieTrimmed = serie.trim().toUpperCase();
 
     try {
-      const res = await fetch('/api/comprobantes');
+      const res = await fetch(`/api/comprobantes?serie=${encodeURIComponent(serieTrimmed)}&correlativo=${corrNum}`);
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          const match = data.find(
-            (c: { serie?: string; correlativo?: number }) =>
-              c.serie?.toUpperCase() === serie.toUpperCase() && c.correlativo === corrNum
-          );
-          if (match) {
-            setResultado({
-              id: match.id,
-              tipo: tipoComprobante,
-              serie: match.serie || serie,
-              correlativo: match.correlativo || corrNum,
-              estado: match.estado || 'ACEPTADO POR SUNAT',
-              clienteNombre: match.datosDocumento?.cliente?.nombre || 'CLIENTES VARIOS',
-              clienteDoc: match.datosDocumento?.cliente?.numero || '00000000',
-              fecha: match.creadoEn ? new Date(match.creadoEn).toLocaleString('es-PE') : '02/11/2026 19:40',
-              total: match.datosDocumento?.total || 120.0,
-            });
-            setBuscando(false);
-            return;
+        const list = Array.isArray(data) ? data : [data];
+        const match = list.find(
+          (c: any) =>
+            c &&
+            c.serie?.toUpperCase() === serieTrimmed &&
+            Number(c.correlativo) === corrNum
+        );
+        if (match) {
+          // Parse datosDocumento as fallback if fields are nested
+          let parsedDoc: any = {};
+          try {
+            if (typeof match.datosDocumento === 'string') {
+              parsedDoc = JSON.parse(match.datosDocumento);
+            } else if (match.datosDocumento && typeof match.datosDocumento === 'object') {
+              parsedDoc = match.datosDocumento;
+            }
+          } catch {
+            parsedDoc = {};
           }
+
+          const rawNumDoc =
+            match.clienteNumeroDoc ||
+            parsedDoc.cliente?.numeroDocumento ||
+            parsedDoc.cliente?.numero ||
+            '';
+          const rawTipoDoc =
+            match.clienteTipoDoc ||
+            parsedDoc.cliente?.tipoDocumento ||
+            (tipoComprobante === 'FACTURA' ? 'RUC' : 'DNI');
+          const clienteNombre =
+            match.clienteNombre ||
+            parsedDoc.cliente?.nombre ||
+            'CLIENTES VARIOS';
+
+          let clienteDoc = '';
+          if (rawNumDoc && rawNumDoc !== '00000000' && rawNumDoc !== '-') {
+            clienteDoc = `${rawTipoDoc} ${rawNumDoc}`;
+          } else if (rawNumDoc === '00000000' || clienteNombre.toUpperCase().includes('VARIOS')) {
+            clienteDoc = 'DNI 00000000';
+          } else {
+            clienteDoc = '-';
+          }
+
+          const totalVal =
+            typeof match.total === 'number'
+              ? match.total
+              : typeof parsedDoc.total === 'number'
+              ? parsedDoc.total
+              : 0;
+
+          setResultado({
+            id: match.id,
+            tipo: match.tipoNombre || tipoComprobante,
+            serie: match.serie || serieTrimmed,
+            correlativo: match.correlativo || corrNum,
+            estado: match.estado || 'ACEPTADO POR SUNAT',
+            clienteNombre,
+            clienteDoc,
+            fecha: match.creadoEn ? new Date(match.creadoEn).toLocaleString('es-PE') : new Date().toLocaleString('es-PE'),
+            total: totalVal,
+          });
+          setSinResultados(false);
+          setBuscando(false);
+          return;
         }
       }
+      setSinResultados(true);
+      setResultado(null);
     } catch {
-      // Fallback below
-    }
-
-    // Fallback simulated result
-    setTimeout(() => {
-      setResultado({
-        id: corrNum,
-        tipo: tipoComprobante,
-        serie: serie,
-        correlativo: corrNum,
-        estado: 'ACEPTADO POR SUNAT',
-        clienteNombre:
-          tipoComprobante === 'FACTURA' ? 'INVERSIONES FARMACEUTICAS S.A.C.' : 'DNI 00000000 CLIENTES VARIOS',
-        clienteDoc: tipoComprobante === 'FACTURA' ? '20601234567' : '00000000',
-        fecha: new Date().toLocaleString('es-PE'),
-        total: tipoComprobante === 'FACTURA' ? 1450.0 : 45.0,
-      });
+      setSinResultados(true);
+      setResultado(null);
+    } finally {
       setBuscando(false);
-    }, 400);
+    }
   }
 
   function handleDescargar(id: number) {
@@ -174,7 +220,7 @@ export default function ComprobantesPage() {
               <div className="consult-result-doc">
                 <FaFileInvoiceDollar size={16} color="#1d68ed" />
                 <span>
-                  {resultado.tipo} {resultado.serie}-{String(resultado.correlativo).padStart(6, '0')}
+                  {resultado.tipo} {resultado.serie}-{String(resultado.correlativo).padStart(8, '0')}
                 </span>
               </div>
               <span className="consult-status-badge status-aceptado">
@@ -187,7 +233,9 @@ export default function ComprobantesPage() {
               <div className="consult-info-item">
                 <span className="consult-info-label">Cliente / Receptor</span>
                 <span className="consult-info-val">
-                  {resultado.clienteDoc} - {resultado.clienteNombre}
+                  {resultado.clienteDoc && resultado.clienteDoc !== '-'
+                    ? `${resultado.clienteDoc} - ${resultado.clienteNombre}`
+                    : resultado.clienteNombre}
                 </span>
               </div>
               <div className="consult-info-item">
@@ -236,8 +284,11 @@ export default function ComprobantesPage() {
           <div className="consult-result-card" style={{ textAlign: 'center', color: '#64748b' }}>
             <FaCircleExclamation size={24} color="#f59e0b" style={{ margin: '0 auto 8px' }} />
             <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>
-              No se encontró ningún comprobante con la serie {serie} y correlativo {correlativo}.
+              No se encontró ningún comprobante registrado con la serie {serie} y correlativo {correlativo}.
             </p>
+            <span style={{ fontSize: 12, color: '#94a3b8', display: 'block', marginTop: 4 }}>
+              Verifica que el número y serie ingresados correspondan a una venta registrada en el sistema.
+            </span>
           </div>
         )}
       </section>

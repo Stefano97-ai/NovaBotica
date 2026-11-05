@@ -20,7 +20,12 @@ public class ComprobanteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ComprobanteResponseDto>> listar() {
+    public ResponseEntity<List<ComprobanteResponseDto>> listar(
+            @RequestParam(required = false) String serie,
+            @RequestParam(required = false) Long correlativo) {
+        if ((serie != null && !serie.isBlank()) || correlativo != null) {
+            return ResponseEntity.ok(comprobanteService.buscar(serie, correlativo));
+        }
         return ResponseEntity.ok(comprobanteService.listar());
     }
 

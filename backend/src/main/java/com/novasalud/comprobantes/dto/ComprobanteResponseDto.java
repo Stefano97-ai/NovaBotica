@@ -12,6 +12,10 @@ public record ComprobanteResponseDto(
     String numeroCompleto,
     String estado,
     boolean simulado,
+    String clienteTipoDoc,
+    String clienteNumeroDoc,
+    String clienteNombre,
+    Double total,
     String datosDocumento,
     Instant creadoEn
 ) {}
