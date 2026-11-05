@@ -41,6 +41,33 @@ public class Movimiento {
     @Column(name = "recepcion_lote_id")
     private Long recepcionLoteId;
 
+    @Column(name = "saldo_anterior")
+    private Integer saldoAnterior;
+
+    @Column(name = "saldo_posterior")
+    private Integer saldoPosterior;
+
+    @Column(name = "origen_tipo", insertable = false, updatable = false)
+    private String origenTipo;
+
+    @Column(name = "origen_id", insertable = false, updatable = false)
+    private Long origenId;
+
+    @PrePersist
+    void capturarSaldos() {
+        // Services update the managed lot before creating its movement. Read the in-memory
+        // balance here, not the database, whose flush order is controlled by Hibernate.
+        if (saldoAnterior == null && saldoPosterior == null && lote != null && cantidad != null) {
+            saldoPosterior = lote.getStockActual();
+            saldoAnterior = Math.subtractExact(saldoPosterior, cantidad);
+        }
+    }
+
+    public Integer getSaldoAnterior() { return saldoAnterior; }
+    public Integer getSaldoPosterior() { return saldoPosterior; }
+    public String getOrigenTipo() { return origenTipo; }
+    public Long getOrigenId() { return origenId; }
+
     public Movimiento() {}
 
     public Long getId() {

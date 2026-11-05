@@ -46,7 +46,7 @@ class BackendIntegrationTest {
  @AfterEach void cleanup(){jdbc.update("DELETE FROM sesion WHERE usuario_id=?",userId);jdbc.update("DELETE FROM venta WHERE usuario_id=?",userId);jdbc.update("DELETE FROM usuario WHERE id=?",userId);}
  @Test void authContractAndRevocation()throws Exception{
   mvc.perform(get("/api/auth/me")).andExpect(status().isUnauthorized());
-  mvc.perform(get("/api/health/db")).andExpect(status().isOk()).andExpect(jsonPath("$.migration").value("002_auth.sql"));
+  mvc.perform(get("/api/health/db")).andExpect(status().isOk()).andExpect(jsonPath("$.migration").value("003_modelo_er_serializacion.sql"));
   mvc.perform(postWeb("/api/auth/login").content(body(username,"incorrecta"))).andExpect(status().isUnauthorized());
   mvc.perform(postWeb("/api/auth/login").content(body("inexistente",password))).andExpect(status().isUnauthorized());
   Cookie first=login(null);
@@ -86,7 +86,7 @@ class BackendIntegrationTest {
   try{
    jdbc.update("INSERT INTO lote(producto_id,numero_lote,fecha_vencimiento,stock_actual) VALUES(?,'hoy',CURRENT_DATE,2),(?,'30',CURRENT_DATE+30,2),(?,'31',CURRENT_DATE+31,1),(?,'vencido',CURRENT_DATE-1,99)",product,product,product,product);
    var after=inicio.summary("0","ADMINISTRADOR");assertEquals(before.lowStock()+1,after.lowStock());assertEquals(before.expiringCount()+2,after.expiringCount());assertEquals(before.expired()+1,after.expired());
-   var migrator=new DatabaseMigration(source);migrator.afterPropertiesSet();assertEquals(2,jdbc.queryForObject("SELECT count(*) FROM schema_migrations",Integer.class));
+   var migrator=new DatabaseMigration(source);migrator.afterPropertiesSet();assertEquals(3,jdbc.queryForObject("SELECT count(*) FROM schema_migrations",Integer.class));
    jdbc.update("UPDATE schema_migrations SET checksum='wrong' WHERE version='002_auth.sql'");
    try{assertThrows(IllegalStateException.class,migrator::afterPropertiesSet);}finally{byte[] bytes=getClass().getResourceAsStream("/database/migrations/002_auth.sql").readAllBytes();jdbc.update("UPDATE schema_migrations SET checksum=? WHERE version='002_auth.sql'",java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes)));}
   }finally{jdbc.update("DELETE FROM lote WHERE producto_id=?",product);jdbc.update("DELETE FROM producto WHERE id=?",product);jdbc.update("DELETE FROM categoria WHERE id=?",category);}

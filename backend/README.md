@@ -63,3 +63,9 @@ La API escucha 127.0.0.1 salvo HOST explícito. Docker usa 0.0.0.0 internamente.
 Los comandos de preparación de PostgreSQL Windows quedan en scripts/database/local-db.mjs como herramientas de desarrollo; no forman parte del servidor Java ni contienen reglas de negocio. Los antiguos fuentes/tests de NestJS fueron retirados y siguen recuperables en Git.
 
 Referencia de plataforma: [requisitos oficiales de Spring Boot 3.5](https://docs.spring.io/spring-boot/3.5/system-requirements.html). Java 21 está dentro del rango soportado.
+
+## Modelo ER y serialización
+
+La migración `003_modelo_er_serializacion.sql` amplía el esquema sin renombrar identificadores ni alterar migraciones aplicadas. Añade `unidad_serializada`, claves compuestas, trazabilidad de movimientos y campos compatibles con el diagrama. Consultar `docs/modelo-er-serializacion.md` para los alias calculados, límites de la serialización y validación sobre copias aisladas.
+
+Validación de esta ampliación: 9 pruebas Java relevantes correctas y pruebas SQL de integridad e historial correctas. La suite completa conserva un fallo ajeno a esta migración en `BackendIntegrationTest.validationOriginLimitsAndExpiry`: el test exige 403 para un login sin cabecera Origin, mientras el filtro de autenticación actual permite esa petición. No se cambió esa política de seguridad en este trabajo.

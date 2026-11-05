@@ -1,3 +1,4 @@
+import { File as FileIcon, FilePlus2, FileMinus2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import {
@@ -153,7 +154,7 @@ export default function Page() {
           </div>
 
           <div className="kpi-card card-dark">
-            <div className="kpi-icon-box icon-box-dark"><ClipboardList size={22} strokeWidth={2.2} /></div>
+            <div className="kpi-icon-box icon-box-dark"><FileIcon size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
               <span className="kpi-title">Notas de venta</span>
               <span className="kpi-value">S/ 0.00</span>
@@ -162,29 +163,20 @@ export default function Page() {
           </div>
 
           <div className="kpi-card card-emerald">
-            <div className="kpi-icon-box icon-box-emerald"><Boxes size={22} strokeWidth={2.2} /></div>
+            <div className="kpi-icon-box icon-box-emerald"><FilePlus2 size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
-              <span className="kpi-title">Productos activos</span>
-              <span className="kpi-value">{data?.products ?? 0}</span>
-              <span className="kpi-subtext">En catálogo</span>
-            </div>
-          </div>
-
-          <div className="kpi-card card-orange">
-            <div className="kpi-icon-box icon-box-orange"><AlertTriangle size={22} strokeWidth={2.2} /></div>
-            <div className="kpi-info">
-              <span className="kpi-title">Stock por reponer</span>
-              <span className="kpi-value">{data?.lowStock ?? 0}</span>
-              <span className="kpi-subtext">Bajo el stock mínimo</span>
+              <span className="kpi-title">Notas de débito</span>
+              <span className="kpi-value" aria-label="Importe no disponible">—</span>
+              <span className="kpi-subtext">Sin datos disponibles</span>
             </div>
           </div>
 
           <div className="kpi-card card-rose">
-            <div className="kpi-icon-box icon-box-rose"><Clock size={22} strokeWidth={2.2} /></div>
+            <div className="kpi-icon-box icon-box-rose"><FileMinus2 size={22} strokeWidth={2.2} /></div>
             <div className="kpi-info">
-              <span className="kpi-title">Próximos a vencer</span>
-              <span className="kpi-value">{data?.expiringCount ?? 0}</span>
-              <span className="kpi-subtext">Próximos 30 días</span>
+              <span className="kpi-title">Notas de crédito</span>
+              <span className="kpi-value" aria-label="Importe no disponible">—</span>
+              <span className="kpi-subtext">Sin datos disponibles</span>
             </div>
           </div>
         </div>

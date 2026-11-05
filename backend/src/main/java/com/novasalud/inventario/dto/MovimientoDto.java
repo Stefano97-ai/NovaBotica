@@ -14,5 +14,9 @@ public record MovimientoDto(
     String motivo,
     String referencia,
     Long ventaId,
-    Long recepcionLoteId
+    Long recepcionLoteId,
+    Integer saldoAnterior,
+    Integer saldoPosterior,
+    String origenTipo,
+    Long origenId
 ) {}

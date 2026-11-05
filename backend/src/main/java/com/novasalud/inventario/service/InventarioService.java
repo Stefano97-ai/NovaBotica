@@ -215,7 +215,11 @@ public class InventarioService {
             m.getMotivo(),
             m.getReferencia(),
             m.getVentaId(),
-            m.getRecepcionLoteId()
+            m.getRecepcionLoteId(),
+            m.getSaldoAnterior(),
+            m.getSaldoPosterior(),
+            m.getOrigenTipo(),
+            m.getOrigenId()
         );
     }
 }
