@@ -61,22 +61,16 @@ const entries: NavEntry[] = [
     icon: ShoppingCart, // Matching screenshot 1 cart icon
     children: [
       {
-        path: '/inventario',
-        label: 'Administrar Inventario',
+        path: '/productos',
+        label: 'Administrar Productos',
         icon: List,
-        element: <Page2 view="movimientos" />
+        element: <Page2 view="productos" />
       },
       {
         path: '/inventario/kardex',
         label: 'Kardex',
         icon: List,
         element: <Page2 view="kardex" />
-      },
-      {
-        path: '/productos',
-        label: 'Administrar Productos',
-        icon: List,
-        element: <Page2 view="productos" />
       }
     ]
   },
@@ -236,7 +230,7 @@ function Layout() {
         </div>
 
         <div className="topbar-right">
-          <button className="icon-btn" aria-label="Alertas de inventario" title="Alertas de inventario" onClick={() => navigate('/inventario')}>
+          <button className="icon-btn" aria-label="Alertas de inventario" title="Alertas de inventario" onClick={() => navigate('/inventario/kardex')}>
             <Bell size={17} />
             <span className="notification-badge">0</span>
           </button>
@@ -363,9 +357,14 @@ export const router = createBrowserRouter([
     element: <Layout />,
     loader: sessionLoader,
     errorElement: <RouteError />,
-    children: entries
-      .filter((entry) => entry.path !== '/ventas')
-      .flatMap((entry) => {
+    children: [
+      {
+        path: '/inventario',
+        loader: () => redirect('/inventario/kardex'),
+      },
+      ...entries
+        .filter((entry) => entry.path !== '/ventas')
+        .flatMap((entry) => {
         if (entry.children && entry.children.length > 0) {
           return entry.children.map((child) => ({
             path: child.path,
@@ -389,6 +388,7 @@ export const router = createBrowserRouter([
           },
         ];
       }),
+    ],
   },
   { path: '*', loader: () => redirect('/') },
 ]);
