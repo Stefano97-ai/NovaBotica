@@ -272,6 +272,297 @@
   background: #f1f5f9;
 }
 
+/* =========================================================
+   TICKET DE COMPROBANTE ELECTRÓNICO (SUNAT)
+   Formato térmico profesional 80mm
+   ========================================================= */
+
+.ticket-screen-preview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.ticket-preview-box {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 380px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-preview-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border-radius: 12px 12px 0 0;
+}
+
+.ticket-preview-header h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.ticket-preview-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #64748b;
+  line-height: 1;
+}
+
+.ticket-preview-actions {
+  padding: 12px 16px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  background: #f8fafc;
+  border-radius: 0 0 12px 12px;
+}
+
+.ticket-paper {
+  background: #ffffff;
+  color: #111111;
+  width: 100%;
+  max-width: 330px;
+  margin: 0 auto;
+  padding: 18px 14px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  box-sizing: border-box;
+}
+
+.ticket-paper * {
+  box-sizing: border-box;
+}
+
+.ticket-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.ticket-brand {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #000;
+  margin-bottom: 2px;
+}
+
+.ticket-company {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ticket-ruc {
+  font-size: 12px;
+  font-weight: 800;
+  margin: 3px 0;
+}
+
+.ticket-address, .ticket-phone {
+  font-size: 10px;
+  color: #333;
+}
+
+.ticket-divider {
+  border-top: 1px dashed #555;
+  margin: 8px 0;
+}
+
+.ticket-doc-type {
+  text-align: center;
+  padding: 4px 0;
+}
+
+.ticket-doc-title {
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  display: block;
+}
+
+.ticket-doc-number {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-top: 2px;
+}
+
+.ticket-data-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 10.5px;
+}
+
+.ticket-data-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ticket-data-label {
+  color: #333;
+  flex-shrink: 0;
+}
+
+.ticket-data-val {
+  font-weight: 700;
+  text-align: right;
+  word-break: break-word;
+}
+
+.ticket-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 6px 0;
+  font-size: 10.5px;
+}
+
+.ticket-items-table th {
+  border-bottom: 1px dashed #555;
+  padding: 4px 0;
+  font-weight: 800;
+  text-align: left;
+}
+
+.ticket-items-table td {
+  padding: 4px 0;
+  vertical-align: top;
+}
+
+.ticket-col-cant { width: 14%; text-align: center; }
+.ticket-col-desc { width: 50%; text-align: left; padding-right: 4px; }
+.ticket-col-pu   { width: 18%; text-align: right; }
+.ticket-col-tot  { width: 18%; text-align: right; font-weight: 700; }
+
+.ticket-totals-box {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 6px 0;
+}
+
+.ticket-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.ticket-total-main {
+  font-size: 13.5px;
+  font-weight: 900;
+  border-top: 1px dashed #333;
+  padding-top: 4px;
+  margin-top: 2px;
+}
+
+.ticket-footer {
+  text-align: center;
+  font-size: 9.5px;
+  color: #444;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ticket-qr-sim {
+  margin: 8px auto;
+  width: 80px;
+  height: 80px;
+  border: 1px dashed #444;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: #fbfbfb;
+  color: #333;
+}
+
+.ticket-thanks {
+  font-size: 11px;
+  font-weight: 800;
+  color: #000;
+  margin-top: 4px;
+}
+
+.ticket-print-only {
+  display: none;
+}
+
+/* =========================================================
+   ESTILOS DE IMPRESIÓN (PRINT MEDIA)
+   ========================================================= */
+@media print {
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+
+  .erp-topbar,
+  .erp-sidebar,
+  .sidebar-backdrop,
+  .consult-breadcrumb,
+  .consult-card,
+  .consult-recents-wrap,
+  .ticket-screen-preview-modal,
+  #workspace-main > *:not(.ticket-print-only) {
+    display: none !important;
+  }
+
+  .ticket-print-only {
+    display: block !important;
+    position: static !important;
+    margin: 0 auto !important;
+    width: 78mm !important;
+    max-width: 78mm !important;
+    padding: 2mm !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .ticket-paper {
+    max-width: 100% !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  @page {
+    size: 80mm auto;
+    margin: 2mm;
+  }
+}
+
 /* Dark mode */
 [data-theme='dark'] .consult-breadcrumb,
 [data-theme='dark'] .consult-card {

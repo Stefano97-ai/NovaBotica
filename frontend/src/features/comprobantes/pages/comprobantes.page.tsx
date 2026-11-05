@@ -12,6 +12,13 @@ import {
 } from 'react-icons/fa6';
 import './comprobantes.css';
 
+interface ComprobanteItemDetail {
+  producto: string;
+  cantidad: number;
+  precioUnitario: number;
+  total: number;
+}
+
 interface ComprobanteItem {
   id: number;
   ventaId?: number;
@@ -21,8 +28,133 @@ interface ComprobanteItem {
   estado: string;
   clienteNombre: string;
   clienteDoc: string;
+  vendedor?: string;
   fecha: string;
+  subtotal?: number;
+  impuesto?: number;
   total: number;
+  items?: ComprobanteItemDetail[];
+}
+
+function TicketPaper({ comp }: { comp: ComprobanteItem }) {
+  const isFactura = comp.tipo.toUpperCase().includes('FACTURA');
+  const docTitulo = isFactura ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA';
+  const cleanDocNum = comp.clienteDoc.replace(/^(DNI|RUC)\s*/i, '');
+  const subtotal = comp.subtotal ?? (comp.total / 1.18);
+  const impuesto = comp.impuesto ?? (comp.total - subtotal);
+
+  return (
+    <div className="ticket-paper">
+      <div className="ticket-header">
+        <div className="ticket-brand">BOTICA NOVA SALUD</div>
+        <div className="ticket-company">NOVA SALUD S.A.C.</div>
+        <div className="ticket-ruc">R.U.C. 20608945612</div>
+        <div className="ticket-address">Av. Los Rosales 450 - San Borja, Lima</div>
+        <div className="ticket-phone">Teléf: (01) 456-7890 / 987 654 321</div>
+      </div>
+
+      <div className="ticket-divider" />
+
+      <div className="ticket-doc-type">
+        <span className="ticket-doc-title">{docTitulo}</span>
+        <span className="ticket-doc-number">
+          {comp.serie}-{String(comp.correlativo).padStart(8, '0')}
+        </span>
+      </div>
+
+      <div className="ticket-divider" />
+
+      <div className="ticket-data-grid">
+        <div className="ticket-data-row">
+          <span className="ticket-data-label">Fecha de Emisión:</span>
+          <span className="ticket-data-val">{comp.fecha}</span>
+        </div>
+        <div className="ticket-data-row">
+          <span className="ticket-data-label">N° Operación:</span>
+          <span className="ticket-data-val">#{comp.ventaId || comp.id}</span>
+        </div>
+        <div className="ticket-data-row">
+          <span className="ticket-data-label">Cajero/Vendedor:</span>
+          <span className="ticket-data-val">{comp.vendedor || 'Administrador'}</span>
+        </div>
+        <div className="ticket-data-row">
+          <span className="ticket-data-label">Cliente / Receptor:</span>
+          <span className="ticket-data-val">{comp.clienteNombre}</span>
+        </div>
+        <div className="ticket-data-row">
+          <span className="ticket-data-label">{isFactura ? 'R.U.C.' : 'D.N.I.'}:</span>
+          <span className="ticket-data-val">{cleanDocNum || '00000000'}</span>
+        </div>
+        <div className="ticket-data-row">
+          <span className="ticket-data-label">Moneda:</span>
+          <span className="ticket-data-val">SOLES (PEN)</span>
+        </div>
+      </div>
+
+      <div className="ticket-divider" />
+
+      <table className="ticket-items-table">
+        <thead>
+          <tr>
+            <th className="ticket-col-cant">CANT</th>
+            <th className="ticket-col-desc">DESCRIPCIÓN</th>
+            <th className="ticket-col-pu">P.U.</th>
+            <th className="ticket-col-tot">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {comp.items && comp.items.length > 0 ? (
+            comp.items.map((it, idx) => (
+              <tr key={idx}>
+                <td className="ticket-col-cant">{it.cantidad}</td>
+                <td className="ticket-col-desc">{it.producto}</td>
+                <td className="ticket-col-pu">{Number(it.precioUnitario).toFixed(2)}</td>
+                <td className="ticket-col-tot">{Number(it.total).toFixed(2)}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td className="ticket-col-cant">1</td>
+              <td className="ticket-col-desc">PRODUCTOS FARMACÉUTICOS VARIOS</td>
+              <td className="ticket-col-pu">{Number(comp.total).toFixed(2)}</td>
+              <td className="ticket-col-tot">{Number(comp.total).toFixed(2)}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <div className="ticket-divider" />
+
+      <div className="ticket-totals-box">
+        <div className="ticket-total-row">
+          <span>OP. GRAVADA:</span>
+          <span>S/ {subtotal.toFixed(2)}</span>
+        </div>
+        <div className="ticket-total-row">
+          <span>I.G.V. (18%):</span>
+          <span>S/ {impuesto.toFixed(2)}</span>
+        </div>
+        <div className="ticket-total-row ticket-total-main">
+          <span>TOTAL A PAGAR:</span>
+          <span>S/ {Number(comp.total).toFixed(2)}</span>
+        </div>
+      </div>
+
+      <div className="ticket-divider" />
+
+      <div className="ticket-footer">
+        <p>Representación impresa de la {isFactura ? 'Factura' : 'Boleta'} de Venta Electrónica.</p>
+        <p>HASH: 4b29e06917f8a32cd801</p>
+        <p>Autorizado mediante Resolución de Superintendencia SUNAT</p>
+        <div className="ticket-qr-sim">
+          <div>[ QR SUNAT ]</div>
+          <div style={{ fontSize: 7, marginTop: 2 }}>{comp.serie}-{String(comp.correlativo).padStart(8, '0')}</div>
+        </div>
+        <p className="ticket-thanks">¡GRACIAS POR SU COMPRA!</p>
+        <p>Nova Salud · Cuidamos de su salud y bienestar</p>
+      </div>
+    </div>
+  );
 }
 
 export default function ComprobantesPage() {
@@ -33,6 +165,7 @@ export default function ComprobantesPage() {
   const [resultado, setResultado] = useState<ComprobanteItem | null>(null);
   const [sinResultados, setSinResultados] = useState(false);
   const [recientes, setRecientes] = useState<any[]>([]);
+  const [showTicketModal, setShowTicketModal] = useState(false);
 
   // Load latest emitted receipts for instant navigation
   useEffect(() => {
@@ -52,9 +185,20 @@ export default function ComprobantesPage() {
     setSerie(comp.serie || 'B001');
     setCorrelativo(String(comp.correlativo));
 
-    const rawNumDoc = comp.clienteNumeroDoc || '';
-    const rawTipoDoc = comp.clienteTipoDoc || 'DNI';
-    const clienteNombre = comp.clienteNombre || 'CLIENTES VARIOS';
+    let parsedDoc: any = {};
+    try {
+      if (typeof comp.datosDocumento === 'string') {
+        parsedDoc = JSON.parse(comp.datosDocumento);
+      } else if (comp.datosDocumento && typeof comp.datosDocumento === 'object') {
+        parsedDoc = comp.datosDocumento;
+      }
+    } catch {
+      parsedDoc = {};
+    }
+
+    const rawNumDoc = comp.clienteNumeroDoc || parsedDoc.cliente?.numeroDocumento || '';
+    const rawTipoDoc = comp.clienteTipoDoc || parsedDoc.cliente?.tipoDocumento || 'DNI';
+    const clienteNombre = comp.clienteNombre || parsedDoc.cliente?.nombre || 'CLIENTES VARIOS';
     let clienteDoc = '';
     if (rawNumDoc && rawNumDoc !== '00000000' && rawNumDoc !== '-') {
       clienteDoc = `${rawTipoDoc} ${rawNumDoc}`;
@@ -62,17 +206,36 @@ export default function ComprobantesPage() {
       clienteDoc = 'DNI 00000000';
     }
 
+    let items: ComprobanteItemDetail[] = [];
+    if (Array.isArray(parsedDoc.items)) {
+      items = parsedDoc.items.map((it: any) => ({
+        producto: String(it.producto || 'Producto farmacéutico'),
+        cantidad: Number(it.cantidad || 1),
+        precioUnitario: Number(it.precioUnitario || 0),
+        total: Number(it.total || 0),
+      }));
+    }
+
+    const totalVal = Number(comp.total) || (typeof parsedDoc.total === 'number' ? parsedDoc.total : 0);
+    const subtotalVal = typeof parsedDoc.subtotal === 'number' ? parsedDoc.subtotal : (totalVal / 1.18);
+    const impuestoVal = typeof parsedDoc.impuesto === 'number' ? parsedDoc.impuesto : (totalVal - subtotalVal);
+    const vendedorVal = typeof parsedDoc.vendedor === 'string' ? parsedDoc.vendedor : 'Administrador';
+
     setResultado({
       id: comp.id,
       ventaId: comp.ventaId,
-      tipo: comp.tipoNombre || 'BOLETA',
+      tipo: comp.tipoNombre || (comp.tipoCodigo === 'FACTURA' ? 'FACTURA' : 'BOLETA'),
       serie: comp.serie || 'B001',
       correlativo: comp.correlativo || 1,
       estado: comp.estado || 'ACEPTADO POR SUNAT',
       clienteNombre,
       clienteDoc,
+      vendedor: vendedorVal,
       fecha: comp.creadoEn ? new Date(comp.creadoEn).toLocaleString('es-PE') : new Date().toLocaleString('es-PE'),
-      total: Number(comp.total) || 0,
+      total: totalVal,
+      subtotal: subtotalVal,
+      impuesto: impuestoVal,
+      items,
     });
     setSinResultados(false);
   }
@@ -221,12 +384,25 @@ export default function ComprobantesPage() {
           clienteDoc = '-';
         }
 
+        let items: ComprobanteItemDetail[] = [];
+        if (Array.isArray(parsedDoc.items)) {
+          items = parsedDoc.items.map((it: any) => ({
+            producto: String(it.producto || 'Producto farmacéutico'),
+            cantidad: Number(it.cantidad || 1),
+            precioUnitario: Number(it.precioUnitario || 0),
+            total: Number(it.total || 0),
+          }));
+        }
+
         const totalVal =
           typeof match.total === 'number'
             ? match.total
             : typeof parsedDoc.total === 'number'
             ? parsedDoc.total
             : 0;
+        const subtotalVal = typeof parsedDoc.subtotal === 'number' ? parsedDoc.subtotal : (totalVal / 1.18);
+        const impuestoVal = typeof parsedDoc.impuesto === 'number' ? parsedDoc.impuesto : (totalVal - subtotalVal);
+        const vendedorVal = typeof parsedDoc.vendedor === 'string' ? parsedDoc.vendedor : 'Administrador';
 
         setResultado({
           id: match.id,
@@ -237,8 +413,12 @@ export default function ComprobantesPage() {
           estado: match.estado || 'ACEPTADO POR SUNAT',
           clienteNombre,
           clienteDoc,
+          vendedor: vendedorVal,
           fecha: match.creadoEn ? new Date(match.creadoEn).toLocaleString('es-PE') : new Date().toLocaleString('es-PE'),
           total: totalVal,
+          subtotal: subtotalVal,
+          impuesto: impuestoVal,
+          items,
         });
         setSinResultados(false);
         setBuscando(false);
@@ -377,6 +557,13 @@ export default function ComprobantesPage() {
               <button
                 type="button"
                 className="consult-act-btn consult-act-download"
+                onClick={() => setShowTicketModal(true)}
+              >
+                <FaFileInvoice size={12} /> Vista Previa Ticket
+              </button>
+              <button
+                type="button"
+                className="consult-act-btn consult-act-download"
                 onClick={() => handleDescargar(resultado.id)}
               >
                 <FaDownload size={12} /> Descargar PDF / TXT
@@ -456,6 +643,49 @@ export default function ComprobantesPage() {
           </div>
         )}
       </section>
+
+      {/* Ticket formal que se imprime exclusivamente al presionar window.print() */}
+      {resultado && (
+        <div className="ticket-print-only">
+          <TicketPaper comp={resultado} />
+        </div>
+      )}
+
+      {/* Modal de vista previa en pantalla */}
+      {showTicketModal && resultado && (
+        <div className="ticket-screen-preview-modal" onClick={() => setShowTicketModal(false)}>
+          <div className="ticket-preview-box" onClick={(e) => e.stopPropagation()}>
+            <div className="ticket-preview-header">
+              <h4>Vista Previa del Comprobante (Ticket 80mm)</h4>
+              <button type="button" className="ticket-preview-close" onClick={() => setShowTicketModal(false)}>
+                ×
+              </button>
+            </div>
+            <div style={{ padding: '12px 16px', overflowY: 'auto', background: '#e2e8f0' }}>
+              <TicketPaper comp={resultado} />
+            </div>
+            <div className="ticket-preview-actions">
+              <button
+                type="button"
+                className="consult-act-btn consult-act-download"
+                onClick={() => setShowTicketModal(false)}
+              >
+                Cerrar
+              </button>
+              <button
+                type="button"
+                className="consult-act-btn consult-act-print"
+                onClick={() => {
+                  setShowTicketModal(false);
+                  setTimeout(() => window.print(), 150);
+                }}
+              >
+                <FaPrint size={12} /> Imprimir Ahora
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
