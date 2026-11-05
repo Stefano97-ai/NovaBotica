@@ -375,9 +375,6 @@ export default function UsuariosPage() {
           <Link to="/ventas?tipo=BOLETA" className="usr-dash-btn">
             <Receipt size={12} strokeWidth={2} /> EMITIR BOLETA
           </Link>
-          <Link to="/ventas?tipo=NOTA_VENTA" className="usr-dash-btn">
-            <ClipboardList size={12} strokeWidth={2} /> NOTA DE VENTA
-          </Link>
         </div>
       </div>
 

@@ -317,9 +317,6 @@ export default function ComprasPage() {
           <Link to="/ventas?tipo=BOLETA" className="compras-dash-btn">
             <Receipt size={12} strokeWidth={2} /> EMITIR BOLETA
           </Link>
-          <Link to="/ventas?tipo=NOTA_VENTA" className="compras-dash-btn">
-            <ClipboardList size={12} strokeWidth={2} /> NOTA DE VENTA
-          </Link>
         </div>
       </div>
 

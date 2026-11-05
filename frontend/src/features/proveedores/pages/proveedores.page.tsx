@@ -324,9 +324,6 @@ export default function ProveedoresPage() {
           <Link to="/ventas?tipo=BOLETA" className="prov-dash-btn">
             <Receipt size={12} strokeWidth={2} /> EMITIR BOLETA
           </Link>
-          <Link to="/ventas?tipo=NOTA_VENTA" className="prov-dash-btn">
-            <ClipboardList size={12} strokeWidth={2} /> NOTA DE VENTA
-          </Link>
         </div>
       </div>
 

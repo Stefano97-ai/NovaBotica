@@ -14,15 +14,17 @@
 
 /* ================= 1. SUBHEADER BAR ================= */
 .compras-bar {
-  background: #1f1f1f;
-  border-radius: 8px;
-  min-height: 42px;
-  padding: 0 30px;
+  background: #ffffff;
+  border: 1px solid rgba(215, 226, 218, 0.85);
+  border-radius: 12px;
+  min-height: 44px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .compras-bar-title {
@@ -32,15 +34,19 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #fff;
+  color: #0f172a;
   margin: 0;
   text-transform: uppercase;
+}
+
+.compras-bar-title svg {
+  color: #0d9488;
 }
 
 .compras-actions {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 22px;
 }
 
 .compras-dash-btn {
@@ -48,43 +54,76 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #fff;
+  color: #1e293b;
   text-decoration: none;
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  padding: 8px 14px 8px 4px;
+  letter-spacing: 0.03em;
+  padding: 7px 14px 7px 4px;
   transition: color 0.15s ease;
+}
+
+.compras-dash-btn svg {
+  color: #475569;
 }
 
 .compras-dash-btn::after {
   content: '';
   position: absolute;
-  right: -16px;
+  right: -14px;
   top: 50%;
-  width: 24px;
-  height: 34px;
+  width: 22px;
+  height: 32px;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: #fff;
+  background: #1e293b;
 }
 
 .compras-dash-btn::before {
   content: '';
   position: absolute;
-  right: -10px;
+  right: -9px;
   top: 50%;
-  width: 24px;
-  height: 36px;
+  width: 22px;
+  height: 34px;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: #1f1f1f;
+  background: #ffffff;
   z-index: 1;
 }
 
 .compras-dash-btn:hover {
-  color: #d1fae5;
+  color: #0d9488;
+}
+
+.compras-dash-btn:hover svg {
+  color: #0d9488;
+}
+
+.compras-dash-btn:hover::after {
+  background: #0d9488;
+}
+
+[data-theme='dark'] .compras-bar {
+  background: #1f1f1f;
+  border-color: #333333;
+}
+
+[data-theme='dark'] .compras-bar-title {
+  color: #ffffff;
+}
+
+[data-theme='dark'] .compras-dash-btn {
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .compras-dash-btn::after {
+  background: #ffffff;
+}
+
+[data-theme='dark'] .compras-dash-btn::before {
+  background: #1f1f1f;
 }
 
 /* ================= 2. MAIN CARD PANEL ================= */

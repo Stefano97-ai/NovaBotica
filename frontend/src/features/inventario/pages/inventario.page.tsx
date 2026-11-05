@@ -702,7 +702,7 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
 
   return (
     <div className="inv-page">
-      {/* ================= 1. SUBHEADER BAR OSCURA (SOLO EN KARDEX) ================= */}
+      {/* ================= 1. SUBHEADER BAR (SOLO EN KARDEX) ================= */}
       {activeView === 'kardex' && (
         <div className="inv-bar">
           <h1 className="inv-bar-title">
@@ -714,9 +714,6 @@ export default function InventarioPage({ view, defaultTab }: InventarioPageProps
             </Link>
             <Link to="/ventas?tipo=BOLETA" className="inv-dash-btn" title="Emitir Boleta de Venta">
               <Receipt size={12} strokeWidth={2} /> EMITIR BOLETA
-            </Link>
-            <Link to="/ventas?tipo=NOTA_VENTA" className="inv-dash-btn" title="Emitir Nota de Venta">
-              <ClipboardList size={12} strokeWidth={2} /> NOTA DE VENTA
             </Link>
           </div>
         </div>
