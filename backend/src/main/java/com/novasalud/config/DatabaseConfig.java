@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class DatabaseConfig {
-    @Bean public DataSource dataSource(@Value("${DATABASE_URL}") String url) {
+    @Bean public DataSource dataSource(@Value("${DATABASE_URL:postgresql://postgres:postgres@localhost:5432/novasalud}") String url) {
         URI uri=URI.create(url);
         if(!SetHolder.SCHEMES.contains(uri.getScheme()) || uri.getHost()==null || uri.getRawUserInfo()==null) throw new IllegalArgumentException("DATABASE_URL debe ser una URL PostgreSQL con usuario y contraseña.");
         String[] credentials=uri.getRawUserInfo().split(":",2);

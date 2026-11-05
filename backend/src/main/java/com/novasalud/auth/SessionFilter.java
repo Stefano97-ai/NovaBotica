@@ -59,6 +59,10 @@ public class SessionFilter extends OncePerRequestFilter {
         }
 
         String path = request.getRequestURI().substring(request.getContextPath().length());
+        if (!path.startsWith("/api/")) {
+            chain.doFilter(request, response);
+            return;
+        }
         boolean publicPath = (request.getMethod().equals("GET") && (path.equals("/api/health") || path.equals("/api/health/db")))
             || (request.getMethod().equals("POST") && (path.equals("/api/auth/login") || path.equals("/api/auth/logout")));
 

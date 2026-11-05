@@ -25,9 +25,16 @@ public class SecurityConfig {
             .logout(logout -> logout.disable())
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(a -> a
-                .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
+                .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR, jakarta.servlet.DispatcherType.FORWARD).permitAll()
+                .requestMatchers(
+                    "/", "/index.html", "/favicon.ico", "/assets/**",
+                    "/manifest.json", "/*.png", "/*.svg", "/*.ico",
+                    "/login", "/inicio", "/dashboard/**", "/ventas/**", "/comprobantes/**", "/productos/**",
+                    "/inventario/**", "/compras/**", "/proveedores/**", "/reportes/**", "/usuarios/**"
+                ).permitAll()
                 .requestMatchers("/api/health", "/api/health/db", "/api/auth/login", "/api/auth/logout").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().permitAll()
             )
             .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(e -> e
